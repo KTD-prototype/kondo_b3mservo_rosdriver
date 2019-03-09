@@ -14,7 +14,9 @@ def resetServo(ID):
 	resetServo_command = []
 	resetServo_command += [chr(0x06), chr(0x05), chr(0x00), chr(ID), chr(0x02), chr(SUM)]
 	ser.write(resetServo_command)
+	time.sleep(1)
 	print("Reset servo ID:" + str(ID))
+
 
 #IDが"ID"なサーボをフリーにする関数
 def enFreeServo(ID):
@@ -24,6 +26,7 @@ def enFreeServo(ID):
 	ser.write(enFreeServo_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to FREE mode")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
@@ -47,6 +50,7 @@ def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 04>velocityCTRL
 		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain #2")
 	elif mode == 3:
 		print("set servo ID:" + str(ID) + " to feed-forward control mode")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
 #IDが"ID"なサーボの位置制御モード時の軌道生成を5-polyモードにする関数
 def set_servo_trajectory_to_5Poly(ID):
@@ -56,6 +60,7 @@ def set_servo_trajectory_to_5Poly(ID):
 	ser.write(set_servo_trajectory_to_5Poly_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to 5-poly Trajectory")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの位置制御モード時の軌道生成をEVENモード（等速）にする関数
@@ -66,18 +71,8 @@ def set_servo_trajectory_to_EVEN(ID):
 	ser.write(set_servo_trajectory_to_EVEN_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to Even Trajectroy")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
-"""
-#IDが"ID"なサーボをトルク制御モードにする関数（制御ゲイン：プリセット#2）
-def set_servo_to_TorqueCtrlMode(ID):
-	set_servo_gain_to_presets(ID, 2)
-	SUM = (0x08 + 0x04 + 0x00 + ID + 0x08 + 0x28 + 0x01) & 0b11111111
-	set_servo_to_TorqueCtrlMode_command = []
-	set_servo_to_TorqueCtrlMode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x08), chr(0x28), chr(0x01), chr(SUM)]
-	ser.write(set_servo_to_TorqueCtrlMode_command)
-	time.sleep(0.0001) #wait until this process done
-	print("set servo ID:" + str(ID) + " to Trq Ctrl mode, Gain:preset#2")
-"""
 
 #IDが"ID"なサーボの制御ゲインをプリセットのものに設定する関数
 #プリセット0:位置制御用、1:速度制御用、2:トルク制御用
@@ -87,13 +82,7 @@ def set_servo_gain_to_presets(ID, PresetNumber):
 	set_servo_gain_to_presets_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(PresetNumber), chr(0x5c), chr(0x01), chr(SUM)]
 	ser.write(set_servo_gain_to_presets_command)
 	time.sleep(0.0001) #wait until this process done
-	# if PresetNumber == 0:
-	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Position Control")
-	# if PresetNumber == 1:
-	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Velocity Control")
-	# if PresetNumber == 2:
-	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Torque Control")
-	#ser.flush()
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの位置を、目標時間"Time(ms)"をかけて"Angle(/100 deg)"にセットする関数
@@ -109,10 +98,11 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
 	ser.write(control_servo_by_position_with_time_command)
 	time.sleep(1.0*Time_msec/1000)
 	print("set servo ID:" + str(ID) + " to position " + str(Angle_centDeg/100) + "[deg] by " + str(Time_msec) + "[ms]")
-
+	Receive = ser.read(7) #返信データを読み取ってバッファから消しておく
 
 #IDが"ID"なサーボの位置を"Angle(/100 deg)"にセットする関数、余裕時間として"Time[ms]"を見ておく
 #軌道生成を行わないので急峻な動きになる。
+#移動に要する時間は関数呼び出し側で確保する必要あり。
 def control_servo_by_position_without_time(ID, Angle_centDeg):
 	if Angle_centDeg < 0:	#目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
 		modAngle = 65536 + Angle_centDeg
@@ -123,8 +113,24 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
 	control_servo_by_position_without_time_command = []
 	control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modAngle&0xff), chr(modAngle>>8), chr(0x2A), chr(0x01), chr(SUM)]
 	ser.write(control_servo_by_position_without_time_command)
-	time.sleep(1)
-	print("set servo ID:" + str(ID) + " to position " + str(Angle_centDeg/100) + "[deg]")
+	print("set servo ID:" + str(ID) + " to position " + str(Angle_centDeg/100.0) + "[deg]")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+
+
+
+def control_servo_by_Velocity(ID, Velocity_centDeg_perSec): #velocity(100*deg/sec)
+	if Velocity_centDeg_perSec < 0:	#目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
+		modVelocity = 65536 + Velocity_centDeg_perSec
+	else:		#目標角度が正の場合でも、コンソールにAngle値を表示したいので、信号送信用の変数はmodAngleとする
+		modVelocity = Velocity_centDeg_perSec
+
+	SUM = (0x09 + 0x04 + 0x00 + ID + (modVelocity&0xff) + (modVelocity>>8) + 0x30 + 0x01) & 0b11111111
+	control_servo_by_Velocity_command = []
+	control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modVelocity&0xff), chr(modVelocity>>8), chr(0x30), chr(0x01), chr(SUM)]
+	ser.write(control_servo_by_Velocity_command)
+	print("set servo ID:" + str(ID) + " to Velocity " + str(Velocity_centDeg_perSec/100.0) + "[deg/sec]")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+
 
 
 ##IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
@@ -139,6 +145,7 @@ def control_servo_by_Torque(ID, Torque_mNm):
 	ser.write(control_servo_by_Torque_command)
 	#time.sleep(2)
 	print("set servo ID:" + str(ID) + " to Torque " + str(Torque_mNm) +"[mNm]")
+	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
 
 
@@ -172,6 +179,37 @@ def read_servo_Position(ID):
 	#角度を返す
 	print(str(Ang/100.0) + "[deg]")
 	return Ang
+
+
+
+#IDが"ID"なサーボの速度取得
+def read_servo_Velocity(ID):
+	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+	ser.reset_input_buffer()
+
+	#アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
+	SUM = (0x07 + 0x03 + 0x00 + ID + 0x32 + 0x02) & 0b11111111
+	read_servo_Velocity_command = []
+	read_servo_Velocity_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x32), chr(0x02), chr(SUM)]
+	#通信が来るまで待つ(1us)
+	time.sleep(0.000001)
+
+	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが角度なので、受信し、リトルエンディアンで整数に変換。
+	Receive = ser.read(4)
+	Velocity1 = ser.read(1)
+	Velocity2 = ser.read(1)
+	intVelocity1 = ord(Velocity1)
+	intVelocity2 = ord(Velocity2)
+
+	Velocity = (intVelocity2<<8)|intVelocity1
+
+	#角度が正の場合は角度*100の値が表示されるが、負の場合は違うので、そこを処理
+	if Velocity > 0x8300:
+		Velocity = Velocity - 0x10000
+
+	#角度を返す
+	print(str(Velocity/100.0) + "[deg/sec]")
+	return Velocity
 
 
 """
@@ -243,6 +281,19 @@ def Trq_by_Ang(ID, goal_Angle):
 				setTRQ(ID, 0)	#トルクをゼロにして制御をやめる。
 				break
 	print("end of Positioning by Torque Ctrl")
+"""
+
+
+"""
+#IDが"ID"なサーボをトルク制御モードにする関数（制御ゲイン：プリセット#2）
+def set_servo_to_TorqueCtrlMode(ID):
+	set_servo_gain_to_presets(ID, 2)
+	SUM = (0x08 + 0x04 + 0x00 + ID + 0x08 + 0x28 + 0x01) & 0b11111111
+	set_servo_to_TorqueCtrlMode_command = []
+	set_servo_to_TorqueCtrlMode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x08), chr(0x28), chr(0x01), chr(SUM)]
+	ser.write(set_servo_to_TorqueCtrlMode_command)
+	time.sleep(0.0001) #wait until this process done
+	print("set servo ID:" + str(ID) + " to Trq Ctrl mode, Gain:preset#2")
 """
 
 
