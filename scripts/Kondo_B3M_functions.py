@@ -159,26 +159,25 @@ def read_servo_Position(ID):
 	read_servo_Position_command = []
 	read_servo_Position_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x2c), chr(0x02), chr(SUM)]
 	ser.write(read_servo_Position_command)
-
-	#通信が来るまで待つ(1us)
-	time.sleep(0.000001)
+	#通信が来るまで待つ(10us)
+	time.sleep(0.00001)
 
 	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが角度なので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
-	Ang1 = ser.read(1)
-	Ang2 = ser.read(1)
-	intAng1 = ord(Ang1)
-	intAng2 = ord(Ang2)
+	Angle1 = ser.read(1)
+	Angle2 = ser.read(1)
+	intAngle1 = ord(Angle1)
+	intAngle2 = ord(Angle2)
 
-	Ang = (intAng2<<8)|intAng1
+	Angle = (intAngle2<<8)|intAngle1
 
 	#角度が正の場合は角度*100の値が表示されるが、負の場合は違うので、そこを処理
-	if Ang > 0x8300:
-		Ang = Ang - 0x10000
+	if Angle > 0x8300:
+		Angle = Angle - 0x10000
 
 	#角度を返す
-	print(str(Ang/100.0) + "[deg]")
-	return Ang
+	print(str(Angle/100.0) + "[deg]")
+	return Angle
 
 
 
@@ -191,10 +190,11 @@ def read_servo_Velocity(ID):
 	SUM = (0x07 + 0x03 + 0x00 + ID + 0x32 + 0x02) & 0b11111111
 	read_servo_Velocity_command = []
 	read_servo_Velocity_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x32), chr(0x02), chr(SUM)]
-	#通信が来るまで待つ(1us)
-	time.sleep(0.000001)
+	ser.write(read_servo_Velocity_command)
+	#通信が来るまで待つ(10us)
+	time.sleep(0.00001)
 
-	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが角度なので、受信し、リトルエンディアンで整数に変換。
+	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが速度なので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
 	Velocity1 = ser.read(1)
 	Velocity2 = ser.read(1)
@@ -210,6 +210,44 @@ def read_servo_Velocity(ID):
 	#角度を返す
 	print(str(Velocity/100.0) + "[deg/sec]")
 	return Velocity
+
+
+def reset_encoder_total_count(ID):
+	SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00 + 0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
+	reset_encoder_total_count_command = []
+	reset_encoder_total_count_command += [chr(0x0B), chr(0x04), chr(0x00), chr(ID), chr(0x00), chr(0x00), chr(0x00), chr(0x00), chr(0x52), chr(0x01), chr(SUM)]
+	ser.write(reset_encoder_total_count_command)
+	time.sleep(0.1) #wait until this process done
+	print("reset encoder")
+
+
+def get_encoder_total_count(ID):
+	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+	ser.reset_input_buffer()
+
+	SUM = (0x07 + 0x03 + 0x00 + ID + 0x52 + 0x04) & 0b11111111
+	get_encoder_total_count_command = []
+	get_encoder_total_count_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x52), chr(0x04), chr(SUM)]
+	ser.write(get_encoder_total_count_command)
+	time.sleep(0.00001) #wait until this process done
+
+	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の4バイトがカウントなので、受信し、リトルエンディアンで整数に変換。
+	Receive = ser.read(4)
+	EncoderCount1 = ser.read(1)
+	EncoderCount2 = ser.read(1)
+	EncoderCount3 = ser.read(1)
+	EncoderCount4 = ser.read(1)
+	EncoderCount1 = ord(EncoderCount1)
+	EncoderCount2 = ord(EncoderCount2)
+	EncoderCount3 = ord(EncoderCount3)
+	EncoderCount4 = ord(EncoderCount4)
+
+	EncoderCount = (EncoderCount4<<24)|(EncoderCount3<<16)|(EncoderCount2<<8)|EncoderCount1
+	if EncoderCount >= 2147483648:
+		EncoderCount = EncoderCount - 4294967296
+	#カウント値を返す
+	print(str(EncoderCount) + "[count]")
+	return EncoderCount
 
 
 """
