@@ -27,7 +27,7 @@ def enFreeServo(ID):
 
 
 #IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
-def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 01>velocityCTRL, 02>current(torque)CTRL, 03>feedforwardCTRL
+def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
 	SUM = (0x08 + 0x04 + 0x00 + ID + mode + 0x28 + 0x01) & 0b11111111
 	change_servocontrol_mode_command = []
 	change_servocontrol_mode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(mode), chr(0x28), chr(0x01), chr(SUM)]
