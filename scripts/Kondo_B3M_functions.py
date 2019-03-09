@@ -22,19 +22,28 @@ def enFreeServo(ID):
 	enFreeServo_command = []
 	enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
 	ser.write(enFreeServo_command)
+	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to FREE mode")
 
 
 #IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
-def set_servo_to_PositionCtrlMode(ID):
-	enFreeServo(ID)	#モード変更前にサーボをフリーにする
-	set_servo_gain_to_presets(ID, 0)
-	SUM = (0x08 + 0x04 + 0x00 + ID + 0x00 + 0x28 + 0x01) & 0b11111111
-	set_servo_to_PositionCtrlMode_command = []
-	set_servo_to_PositionCtrlMode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x00), chr(0x28), chr(0x01), chr(SUM)]
-	ser.write(set_servo_to_PositionCtrlMode_command)
-	print("set servo ID:" + str(ID) + " to Pos Ctrl mode, Gain:preset#0")
-
+def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 01>velocityCTRL, 02>current(torque)CTRL, 03>feedforwardCTRL
+	SUM = (0x08 + 0x04 + 0x00 + ID + mode + 0x28 + 0x01) & 0b11111111
+	change_servocontrol_mode_command = []
+	change_servocontrol_mode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(mode), chr(0x28), chr(0x01), chr(SUM)]
+	ser.write(change_servocontrol_mode_command)
+	time.sleep(0.0001) #wait until this process done
+	if mode == 0:
+		set_servo_gain_to_presets(ID, mode)
+		print("set servo ID:" + str(ID) + " to position control mode with preset gain #0")
+	elif mode == 1:
+		set_servo_gain_to_presets(ID, mode)
+		print("set servo ID:" + str(ID) + " to velocity control mode with preset gain #1")
+	elif mode == 2:
+		set_servo_gain_to_presets(ID, mode)
+		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain#3")
+	elif mode == 3:
+		print("set servo ID:" + str(ID) + " to feed-forward control mode")
 
 #IDが"ID"なサーボの位置制御モード時の軌道生成を5-polyモードにする関数
 def set_servo_trajectory_to_5Poly(ID):
@@ -42,6 +51,7 @@ def set_servo_trajectory_to_5Poly(ID):
 	set_servo_trajectory_to_5Poly_command = []
 	set_servo_trajectory_to_5Poly_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x05), chr(0x29), chr(0x01), chr(SUM)]
 	ser.write(set_servo_trajectory_to_5Poly_command)
+	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to 5-poly Trajectory")
 
 
@@ -51,9 +61,10 @@ def set_servo_trajectory_to_EVEN(ID):
 	set_servo_trajectory_to_EVEN_command = []
 	set_servo_trajectory_to_EVEN_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x01), chr(0x29), chr(0x01), chr(SUM)]
 	ser.write(set_servo_trajectory_to_EVEN_command)
+	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to Even Trajectroy")
 
-
+"""
 #IDが"ID"なサーボをトルク制御モードにする関数（制御ゲイン：プリセット#2）
 def set_servo_to_TorqueCtrlMode(ID):
 	set_servo_gain_to_presets(ID, 2)
@@ -61,8 +72,9 @@ def set_servo_to_TorqueCtrlMode(ID):
 	set_servo_to_TorqueCtrlMode_command = []
 	set_servo_to_TorqueCtrlMode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(0x08), chr(0x28), chr(0x01), chr(SUM)]
 	ser.write(set_servo_to_TorqueCtrlMode_command)
+	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to Trq Ctrl mode, Gain:preset#2")
-
+"""
 
 #IDが"ID"なサーボの制御ゲインをプリセットのものに設定する関数
 #プリセット0:位置制御用、1:速度制御用、2:トルク制御用
@@ -71,12 +83,13 @@ def set_servo_gain_to_presets(ID, PresetNumber):
 	set_servo_gain_to_presets_command = []
 	set_servo_gain_to_presets_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(PresetNumber), chr(0x5c), chr(0x01), chr(SUM)]
 	ser.write(set_servo_gain_to_presets_command)
-	if PresetNumber == 0:
-		print("set Ctrl-gains of servo ID:" + str(ID) + " for Position Control")
-	if PresetNumber == 1:
-		print("set Ctrl-gains of servo ID:" + str(ID) + " for Velocity Control")
-	if PresetNumber == 2:
-		print("set Ctrl-gains of servo ID:" + str(ID) + " for Torque Control")
+	time.sleep(0.0001) #wait until this process done
+	# if PresetNumber == 0:
+	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Position Control")
+	# if PresetNumber == 1:
+	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Velocity Control")
+	# if PresetNumber == 2:
+	# 	print("set Ctrl-gains of servo ID:" + str(ID) + " for Torque Control")
 	#ser.flush()
 
 
