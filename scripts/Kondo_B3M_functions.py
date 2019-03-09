@@ -6,7 +6,7 @@ import time
 import math
 import struct
 
-ser = serial.Serial('/dev/ttyUSB0', 1500000)
+ser = serial.Serial('/dev/Kondo', 1500000)
 
 #IDが"ID"なサーボをリセットする関数
 def resetServo(ID):
@@ -40,15 +40,15 @@ def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 04>velocityCTRL
 		set_servo_gain_to_presets(ID, mode)
 		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to position control mode with preset gain #0")
-	elif mode == 1:
+	elif mode == 4:
 		set_servo_gain_to_presets(ID, mode)
 		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to velocity control mode with preset gain #1")
-	elif mode == 2:
+	elif mode == 8:
 		set_servo_gain_to_presets(ID, mode)
 		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain #2")
-	elif mode == 3:
+	elif mode == 12:
 		print("set servo ID:" + str(ID) + " to feed-forward control mode")
 	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
 
