@@ -23,11 +23,11 @@ Kondo_B3M.read_servo_Position(4)
 Kondo_B3M.control_servo_by_position_with_time(4, 0, 500)
 Kondo_B3M.read_servo_Position(4)
 
-Kondo_B3M.set_servo_to_TorqueCtrlMode(4)
-Kondo_B3M.control_servo_by_Torque(4, 100)
-time.sleep(5)
-Kondo_B3M.control_servo_by_Torque(4, -100)
-time.sleep(5)
+Kondo_B3M.change_servocontrol_mode(4, 2)
+Kondo_B3M.control_servo_by_Torque(4, 500)
+time.sleep(3)
+Kondo_B3M.control_servo_by_Torque(4, -500)
+time.sleep(3)
 Kondo_B3M.enFreeServo(4)
 
 

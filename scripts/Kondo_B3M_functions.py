@@ -35,13 +35,16 @@ def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 01>velocityCTRL
 	time.sleep(0.0001) #wait until this process done
 	if mode == 0:
 		set_servo_gain_to_presets(ID, mode)
+		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to position control mode with preset gain #0")
 	elif mode == 1:
 		set_servo_gain_to_presets(ID, mode)
+		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to velocity control mode with preset gain #1")
 	elif mode == 2:
 		set_servo_gain_to_presets(ID, mode)
-		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain#3")
+		time.sleep(0.0001) #wait until this process done
+		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain #2")
 	elif mode == 3:
 		print("set servo ID:" + str(ID) + " to feed-forward control mode")
 
@@ -156,21 +159,18 @@ def read_servo_Position(ID):
 	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが角度なので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
 	Ang1 = ser.read(1)
-	Ang2 = ser.read(2)
-	Ang1 = ord(Ang1)
-	Ang2 = ord(Ang2)
+	Ang2 = ser.read(1)
+	intAng1 = ord(Ang1)
+	intAng2 = ord(Ang2)
 
-	#Ang = int.from_bytes(Ang, 'little') python3.2以降で使える記述
-	#Ang = int(Ang.encode('hex'), 16)
-	#Ang = struct.unpack("<i", Ang)
-
+	Ang = (intAng2<<8)|intAng1
 
 	#角度が正の場合は角度*100の値が表示されるが、負の場合は違うので、そこを処理
 	if Ang > 0x8300:
 		Ang = Ang - 0x10000
 
 	#角度を返す
-	print(str(Ang/100) + "[deg]")
+	print(str(Ang/100.0) + "[deg]")
 	return Ang
 
 
