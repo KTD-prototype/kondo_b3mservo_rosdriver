@@ -213,6 +213,36 @@ def read_servo_Velocity(ID):
 	return Velocity
 
 
+def read_servo_Current(ID):
+	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+	ser.reset_input_buffer()
+	#アドレス0x48から2バイト分（=電流値）読みだす信号を作成し、送信
+	SUM = (0x07 + 0x03 + 0x00 + ID + 0x48 + 0x02) & 0b11111111
+	read_servo_Current_command = []
+	read_servo_Current_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x48), chr(0x02), chr(SUM)]
+	ser.write(read_servo_Current_command)
+	while True:
+		if ser.inWaiting() == 7:
+			break
+
+	Receive = ser.read(4)
+	Current1 = ser.read(1)
+	Current2 = ser.read(1)
+	intCurrent1 = ord(Current1)
+	intCurrent2 = ord(Current2)
+	Current = (intCurrent2<<8)|intCurrent1
+
+	#電流値が正の場合はその値が表示されるが、負の場合は違うので、そこを処理
+	if Current > 0x8300:
+		Current = Current - 0x10000
+
+	#角度を返す
+	print(str(Current) + " [mA]")
+	return Current
+
+	
+
+
 def reset_encoder_total_count(ID):
 	SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00 + 0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
 	reset_encoder_total_count_command = []
