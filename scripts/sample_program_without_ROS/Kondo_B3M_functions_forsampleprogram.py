@@ -36,7 +36,7 @@ def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 04>velocityCTRL
 	change_servocontrol_mode_command = []
 	change_servocontrol_mode_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(mode), chr(0x28), chr(0x01), chr(SUM)]
 	ser.write(change_servocontrol_mode_command)
-	time.sleep(0.0001) #wait until this process done
+	time.sleep(0.1) #wait until this process done
 	if mode == 0:
 		set_servo_gain_to_presets(ID, mode)
 		print("set servo ID:" + str(ID) + " to position control mode with preset gain #0")
@@ -81,7 +81,7 @@ def set_servo_gain_to_presets(ID, PresetNumber):
 	set_servo_gain_to_presets_command = []
 	set_servo_gain_to_presets_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(PresetNumber), chr(0x5c), chr(0x01), chr(SUM)]
 	ser.write(set_servo_gain_to_presets_command)
-	time.sleep(0.0001) #wait until this process done
+	time.sleep(0.1) #wait until this process done
 	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
@@ -144,13 +144,16 @@ def control_servo_by_Torque(ID, Torque_mNm):
 	SUM = (0x09 + 0x04 + 0x00 + ID + (modTorque&0xff) + (modTorque>>8) + 0x3c + 0x01) & 0b11111111
 	control_servo_by_Torque_command = []
 	control_servo_by_Torque_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modTorque&0xff), chr(modTorque>>8), chr(0x3c), chr(0x01), chr(SUM)]
+	ser.reset_input_buffer()
 	ser.write(control_servo_by_Torque_command)
+
 	#通信が来るまで待つ
 	while True:
 		if ser.inWaiting() == 5:
 			ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 			break
 	print("set servo ID:" + str(ID) + " to Torque " + str(Torque_mNm) +"[mNm]")
+
 
 
 

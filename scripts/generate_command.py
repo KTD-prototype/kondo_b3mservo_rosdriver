@@ -19,10 +19,10 @@ def generate_command(joy_msg):
     target_torque = joy_msg.axes[1] * 7000 #left stick FB
     #joy_msg.axes[4] : right stick FB
 
-    if target_torque - pre_target_torque < -500:
-        target_torque = pre_target_torque - 500
-    elif target_torque - pre_target_torque > 500:
-        target_torque = pre_target_torque + 500
+    if target_torque - pre_target_torque < -200:
+        target_torque = pre_target_torque - 200
+    elif target_torque - pre_target_torque > 200:
+        target_torque = pre_target_torque + 200
 
     command = servo_command()
     command.target_position = target_position
@@ -31,6 +31,10 @@ def generate_command(joy_msg):
     command.encoder_total_count = 0
     pub.publish(command)
 
+    print(str(pre_target_torque))
+    print(str(target_torque))
+    print("")
+
     pre_target_torque = target_torque
 
 
@@ -38,8 +42,8 @@ def generate_command(joy_msg):
 
 if __name__ == '__main__':
     rospy.init_node('generate_command')
-    rospy.Subscriber('joy', Joy, generate_command, queue_size = 1)
-    pub = rospy.Publisher('command', servo_command, queue_size = 1)
+    rospy.Subscriber('joy', Joy, generate_command, queue_size = 5)
+    pub = rospy.Publisher('command', servo_command, queue_size = 5)
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         rate.sleep()
