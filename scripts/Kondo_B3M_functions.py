@@ -6,7 +6,7 @@ import time
 import math
 import struct
 
-ser = serial.Serial('/dev/Kondo', 1500000)
+ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
 #IDが"ID"なサーボをリセットする関数
 def resetServo(ID):

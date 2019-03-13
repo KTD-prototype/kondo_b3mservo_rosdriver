@@ -8,7 +8,7 @@ from kondo_b3mservo_rosdriver.msg import servo_command
 
 global target_position, target_velocity, target_torque, pre_target_torque
 
-ser = serial.Serial('/dev/Kondo', 1500000)
+ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 def generate_command(joy_msg):

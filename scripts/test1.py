@@ -3,7 +3,7 @@
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyUSB0', 1500000)
+ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(1)
 
 #set servo mode to FREE mode

@@ -7,7 +7,7 @@ from kondo_b3mservo_rosdriver.msg import servo_command
 import Kondo_B3M_functions as Kondo_B3M
 
 
-ser = serial.Serial('/dev/Kondo', 1500000)
+ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 Kondo_B3M.enFreeServo(4)
