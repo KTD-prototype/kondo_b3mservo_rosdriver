@@ -14,8 +14,9 @@ def resetServo(ID):
 	resetServo_command = []
 	resetServo_command += [chr(0x06), chr(0x05), chr(0x00), chr(ID), chr(0x02), chr(SUM)]
 	ser.write(resetServo_command)
-	time.sleep(1)
+	time.sleep(1) #wait until this process done
 	print("Reset servo ID:" + str(ID))
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボをフリーにする関数
@@ -26,7 +27,7 @@ def enFreeServo(ID):
 	ser.write(enFreeServo_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to FREE mode")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
@@ -38,19 +39,16 @@ def change_servocontrol_mode(ID, mode): #mode : 00>positionCTRL, 04>velocityCTRL
 	time.sleep(0.0001) #wait until this process done
 	if mode == 0:
 		set_servo_gain_to_presets(ID, mode)
-		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to position control mode with preset gain #0")
 	elif mode == 4:
 		set_servo_gain_to_presets(ID, mode)
-		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to velocity control mode with preset gain #1")
 	elif mode == 8:
 		set_servo_gain_to_presets(ID, mode)
-		time.sleep(0.0001) #wait until this process done
 		print("set servo ID:" + str(ID) + " to current(torque) control mode with preset gain #2")
 	elif mode == 12:
 		print("set servo ID:" + str(ID) + " to feed-forward control mode")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの位置制御モード時の軌道生成を5-polyモードにする関数
@@ -61,7 +59,7 @@ def set_servo_trajectory_to_5Poly(ID):
 	ser.write(set_servo_trajectory_to_5Poly_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to 5-poly Trajectory")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの位置制御モード時の軌道生成をEVENモード（等速）にする関数
@@ -72,18 +70,19 @@ def set_servo_trajectory_to_EVEN(ID):
 	ser.write(set_servo_trajectory_to_EVEN_command)
 	time.sleep(0.0001) #wait until this process done
 	print("set servo ID:" + str(ID) + " to Even Trajectroy")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの制御ゲインをプリセットのものに設定する関数
 #プリセット0:位置制御用、1:速度制御用、2:トルク制御用
 def set_servo_gain_to_presets(ID, PresetNumber):
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 	SUM = (0x08 + 0x04 + 0x00 + ID + PresetNumber + 0x5c + 0x01) & 0b11111111
 	set_servo_gain_to_presets_command = []
 	set_servo_gain_to_presets_command += [chr(0x08), chr(0x04), chr(0x00), chr(ID), chr(PresetNumber), chr(0x5c), chr(0x01), chr(SUM)]
 	ser.write(set_servo_gain_to_presets_command)
 	time.sleep(0.0001) #wait until this process done
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 #IDが"ID"なサーボの位置を、目標時間"Time(ms)"をかけて"Angle(/100 deg)"にセットする関数
@@ -99,7 +98,8 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
 	ser.write(control_servo_by_position_with_time_command)
 	time.sleep(1.0*Time_msec/1000)
 	print("set servo ID:" + str(ID) + " to position " + str(Angle_centDeg/100) + "[deg] by " + str(Time_msec) + "[ms]")
-	Receive = ser.read(7) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
+
 
 #IDが"ID"なサーボの位置を"Angle(/100 deg)"にセットする関数、余裕時間として"Time[ms]"を見ておく
 #軌道生成を行わないので急峻な動きになる。
@@ -115,7 +115,7 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
 	control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modAngle&0xff), chr(modAngle>>8), chr(0x2A), chr(0x01), chr(SUM)]
 	ser.write(control_servo_by_position_without_time_command)
 	print("set servo ID:" + str(ID) + " to position " + str(Angle_centDeg/100.0) + "[deg]")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 
@@ -130,12 +130,13 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec): #velocity(100*deg/se
 	control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modVelocity&0xff), chr(modVelocity>>8), chr(0x30), chr(0x01), chr(SUM)]
 	ser.write(control_servo_by_Velocity_command)
 	print("set servo ID:" + str(ID) + " to Velocity " + str(Velocity_centDeg_perSec/100.0) + "[deg/sec]")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 
 
 
 ##IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
 def control_servo_by_Torque(ID, Torque_mNm):
+	ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
 	if Torque_mNm < 0:	#目標トルクが負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
 		modTorque = 65536 + Torque_mNm
 	else:		#目標トルクが正の場合でも、コンソールにTorque値を表示したいので、信号送信用の変数はmodTorqueとする
@@ -144,24 +145,31 @@ def control_servo_by_Torque(ID, Torque_mNm):
 	control_servo_by_Torque_command = []
 	control_servo_by_Torque_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(modTorque&0xff), chr(modTorque>>8), chr(0x3c), chr(0x01), chr(SUM)]
 	ser.write(control_servo_by_Torque_command)
-	#time.sleep(2)
+	#通信が来るまで待つ
+	while True:
+		if ser.inWaiting() == 5:
+			ser.reset_input_buffer() #返信データを読み取ってバッファから消しておく
+			break
 	print("set servo ID:" + str(ID) + " to Torque " + str(Torque_mNm) +"[mNm]")
-	Receive = ser.read(5) #返信データを読み取ってバッファから消しておく
+
+
 
 
 
 #IDが"ID"なサーボの角度取得
-def read_servo_Position(ID):
+def get_servo_Position(ID):
 	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
 	ser.reset_input_buffer()
 
 	#アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
 	SUM = (0x07 + 0x03 + 0x00 + ID + 0x2c + 0x02) & 0b11111111
-	read_servo_Position_command = []
-	read_servo_Position_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x2c), chr(0x02), chr(SUM)]
-	ser.write(read_servo_Position_command)
-	#通信が来るまで待つ(10us)
-	time.sleep(0.00001)
+	get_servo_Position_command = []
+	get_servo_Position_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x2c), chr(0x02), chr(SUM)]
+	ser.write(get_servo_Position_command)
+	#通信が来るまで待つ
+	while True:
+		if ser.inWaiting() == 7:
+			break
 
 	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが角度なので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
@@ -183,17 +191,19 @@ def read_servo_Position(ID):
 
 
 #IDが"ID"なサーボの速度取得
-def read_servo_Velocity(ID):
+def get_servo_Velocity(ID):
 	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
 	ser.reset_input_buffer()
 
 	#アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
 	SUM = (0x07 + 0x03 + 0x00 + ID + 0x32 + 0x02) & 0b11111111
-	read_servo_Velocity_command = []
-	read_servo_Velocity_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x32), chr(0x02), chr(SUM)]
-	ser.write(read_servo_Velocity_command)
-	#通信が来るまで待つ(10us)
-	time.sleep(0.00001)
+	get_servo_Velocity_command = []
+	get_servo_Velocity_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x32), chr(0x02), chr(SUM)]
+	ser.write(get_servo_Velocity_command)
+	#通信が来るまで待つ
+	while True:
+		if ser.inWaiting() == 7:
+			break
 
 	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが速度なので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
@@ -213,14 +223,15 @@ def read_servo_Velocity(ID):
 	return Velocity
 
 
-def read_servo_Current(ID):
+def get_servo_Current(ID):
 	#何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
 	ser.reset_input_buffer()
 	#アドレス0x48から2バイト分（=電流値）読みだす信号を作成し、送信
 	SUM = (0x07 + 0x03 + 0x00 + ID + 0x48 + 0x02) & 0b11111111
-	read_servo_Current_command = []
-	read_servo_Current_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x48), chr(0x02), chr(SUM)]
-	ser.write(read_servo_Current_command)
+	get_servo_Current_command = []
+	get_servo_Current_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x48), chr(0x02), chr(SUM)]
+	ser.write(get_servo_Current_command)
+	#通信が来るまで待つ
 	while True:
 		if ser.inWaiting() == 7:
 			break
@@ -258,7 +269,10 @@ def get_encoder_total_count(ID):
 	get_encoder_total_count_command = []
 	get_encoder_total_count_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x52), chr(0x04), chr(SUM)]
 	ser.write(get_encoder_total_count_command)
-	time.sleep(0.00001) #wait until this process done
+	#通信が来るまで待つ
+	while True:
+		if ser.inWaiting() == 9:
+			break
 
 	#返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の4バイトがカウントなので、受信し、リトルエンディアンで整数に変換。
 	Receive = ser.read(4)
@@ -296,7 +310,10 @@ def read_current_limit(ID):
 	read_current_limit_command = []
 	read_current_limit_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x11), chr(0x02), chr(SUM)]
 	ser.write(read_current_limit_command)
-	time.sleep(0.1)
+	#通信が来るまで待つ
+	while True:
+		if ser.inWaiting() == 7:
+			break
 
 	Receive = ser.read(4)
 	current_limit1 = ser.read(1)

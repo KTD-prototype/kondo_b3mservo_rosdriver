@@ -16,16 +16,16 @@ Kondo_B3M.set_servo_gain_to_presets(4, 0)
 Kondo_B3M.change_servocontrol_mode(4, 0) #mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
 """
 Kondo_B3M.control_servo_by_position_with_time(4, 9000, 500)
-Kondo_B3M.read_servo_Position(4)
+Kondo_B3M.get_servo_Position(4)
 
 Kondo_B3M.control_servo_by_position_with_time(4, 0, 500)
-Kondo_B3M.read_servo_Position(4)
+Kondo_B3M.get_servo_Position(4)
 
 Kondo_B3M.control_servo_by_position_with_time(4, 9000, 500)
-Kondo_B3M.read_servo_Position(4)
+Kondo_B3M.get_servo_Position(4)
 
 Kondo_B3M.control_servo_by_position_with_time(4, 0, 500)
-Kondo_B3M.read_servo_Position(4)
+Kondo_B3M.get_servo_Position(4)
 """
 
 Kondo_B3M.change_servocontrol_mode(4, 8) #mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL

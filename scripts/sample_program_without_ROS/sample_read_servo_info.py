@@ -9,7 +9,7 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 Kondo_B3M.read_current_limit(4)
-Kondo_B3M.read_servo_Current(4)
+Kondo_B3M.get_servo_Current(4)
 
 
 ser.close()

@@ -10,7 +10,7 @@ time.sleep(1)
 
 Kondo_B3M.enFreeServo(4)
 
-Kondo_B3M.read_servo_Position(4)
+Kondo_B3M.get_servo_Position(4)
 
 Kondo_B3M.enFreeServo(4)
 
