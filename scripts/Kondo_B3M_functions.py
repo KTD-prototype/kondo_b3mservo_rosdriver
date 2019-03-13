@@ -251,6 +251,35 @@ def get_encoder_total_count(ID):
 	return EncoderCount
 
 
+def change_current_limit(ID, current_limit_mA):
+	SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA&0xff) + (current_limit_mA>>8) + 0x11 + 0x01) & 0b11111111
+	change_current_limit_command = []
+	change_current_limit_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(current_limit_mA&0xff), chr(current_limit_mA>>8), chr(0x11), chr(0x01), chr(SUM)]
+	ser.write(change_current_limit_command)
+	time.sleep(0.01)
+
+	current_limit = read_current_limit(ID)
+	print("set current limit of servo ID: " + str(ID) + " as " + str(current_limit) + "[mA]")
+
+
+def read_current_limit(ID):
+	ser.reset_input_buffer()
+	SUM = (0x07 + 0x03 + 0x00 + ID + 0x11 + 0x02) & 0b11111111
+	read_current_limit_command = []
+	read_current_limit_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x11), chr(0x02), chr(SUM)]
+	ser.write(read_current_limit_command)
+	time.sleep(0.01)
+
+	Receive = ser.read(4)
+	current_limit1 = ser.read(1)
+	current_limit2 = ser.read(1)
+	current_limit1 = ord(current_limit1)
+	current_limit2 = ord(current_limit2)
+
+	current_limit = (current_limit2<<8)|current_limit1
+	print("current limit of servo ID: " + str(ID) + " is " + str(current_limit) + "[mA]")
+	return current_limit
+
 """
 #IDが"ID"なサーボのトルク制御（角度フィードバック, 目標角度"goal_Angle"）
 def Trq_by_Ang(ID, goal_Angle):
