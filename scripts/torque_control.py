@@ -24,7 +24,7 @@ signal.signal(signal.SIGINT, enfree_servo_after_node_ends)
 
 if __name__ == '__main__':
     rospy.init_node('position_control')
-    rospy.Subscriber('command', servo_command, position_control)
+    rospy.Subscriber('command', servo_command, position_control, queue_size = 1)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         rate.sleep()

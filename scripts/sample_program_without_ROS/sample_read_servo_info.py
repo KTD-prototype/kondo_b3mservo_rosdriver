@@ -8,9 +8,7 @@ import Kondo_B3M_functions_forsampleprogram as Kondo_B3M
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
-Kondo_B3M.change_current_limit(4, 20000)
-
-#Kondo_B3M.read_current_limit(4)
+Kondo_B3M.read_current_limit(4)
 
 
 ser.close()

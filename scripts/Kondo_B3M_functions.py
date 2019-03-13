@@ -256,7 +256,7 @@ def change_current_limit(ID, current_limit_mA):
 	change_current_limit_command = []
 	change_current_limit_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(current_limit_mA&0xff), chr(current_limit_mA>>8), chr(0x11), chr(0x01), chr(SUM)]
 	ser.write(change_current_limit_command)
-	time.sleep(0.01)
+	time.sleep(0.1)
 
 	current_limit = read_current_limit(ID)
 	print("set current limit of servo ID: " + str(ID) + " as " + str(current_limit) + "[mA]")
@@ -268,7 +268,7 @@ def read_current_limit(ID):
 	read_current_limit_command = []
 	read_current_limit_command += [chr(0x07), chr(0x03), chr(0x00), chr(ID), chr(0x11), chr(0x02), chr(SUM)]
 	ser.write(read_current_limit_command)
-	time.sleep(0.01)
+	time.sleep(0.1)
 
 	Receive = ser.read(4)
 	current_limit1 = ser.read(1)
@@ -279,6 +279,15 @@ def read_current_limit(ID):
 	current_limit = (current_limit2<<8)|current_limit1
 	print("current limit of servo ID: " + str(ID) + " is " + str(current_limit) + "[mA]")
 	return current_limit
+
+
+def save_RAM_to_ROM(ID):
+	SUM = (0x05 + 0x02 + 0x00 + ID) & 0b11111111
+	save_RAM_to_ROM_command = []
+	save_RAM_to_ROM_command += [chr(0x05), chr(0x02), chr(0x00), chr(ID), chr(SUM)]
+	ser.write(save_RAM_to_ROM_command)
+	time.sleep(0.1)
+	print("save parameters to ROM of servo ID: " + str(ID))
 
 """
 #IDが"ID"なサーボのトルク制御（角度フィードバック, 目標角度"goal_Angle"）
