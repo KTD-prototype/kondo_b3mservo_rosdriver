@@ -3,7 +3,7 @@
 #code for python2
 import serial
 import time
-import Kondo_B3M_functions as Kondo_B3M
+import Kondo_B3M_functions_forsampleprogram as Kondo_B3M
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(1)
