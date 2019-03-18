@@ -275,6 +275,94 @@ def get_servo_Current(ID):
     return Current
 
 
+def get_servo_voltage(ID):
+    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+    ser.reset_input_buffer()
+    # アドレス0x4aから2バイト分（=電流値）読みだす信号を作成し、送信
+    SUM = (0x07 + 0x03 + 0x00 + ID + 0x4a + 0x02) & 0b11111111
+    get_servo_voltage_command = []
+    get_servo_voltage_command += [chr(0x07), chr(0x03),
+                                  chr(0x00), chr(ID), chr(0x4a), chr(0x02), chr(SUM)]
+    ser.write(get_servo_voltage_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 7:
+            break
+
+    Receive = ser.read(4)
+    voltage1 = ser.read(1)
+    voltage2 = ser.read(1)
+    int_voltage1 = ord(voltage1)
+    int_voltage2 = ord(voltage2)
+    voltage = (int_voltage2 << 8) | int_voltage1
+
+    # return voltage
+    print(str(voltage) + " [mV]")
+    return voltage
+
+
+def get_mcu_temperature(ID):
+    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+    ser.reset_input_buffer()
+    # アドレス0x44から2バイト分（=電流値）読みだす信号を作成し、送信
+    SUM = (0x07 + 0x03 + 0x00 + ID + 0x44 + 0x02) & 0b11111111
+    get_mcu_temperature_command = []
+    get_mcu_temperature_command += [chr(0x07), chr(0x03),
+                                    chr(0x00), chr(ID), chr(0x44), chr(0x02), chr(SUM)]
+    ser.write(get_mcu_temperature_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 7:
+            break
+
+    Receive = ser.read(4)
+    mcu_temperature1 = ser.read(1)
+    mcu_temperature2 = ser.read(1)
+    int_mcu_temperature1 = ord(mcu_temperature1)
+    int_mcu_temperature2 = ord(mcu_temperature2)
+    mcu_temperature = (int_mcu_temperature2 << 8) | int_mcu_temperature1
+
+    # ondoが正の場合はその値が表示されるが、負の場合は違うので、そこを処理
+    if > 0x8300:
+        mcu_temperature = mcu_temperature - 0x10000
+
+    # return mcu_temperature
+    mcu_temperature = mcu_temperature / 100.0
+    print(str(mcu_temperature) + " [degree_celcius]")
+    return mcu_temperature
+
+
+def get_servo_temperature(ID):
+    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
+    ser.reset_input_buffer()
+    # アドレス0x46から2バイト分（=電流値）読みだす信号を作成し、送信
+    SUM = (0x07 + 0x03 + 0x00 + ID + 0x46 + 0x02) & 0b11111111
+    get_servo_temperature_command = []
+    get_servo_temperature_command += [chr(0x07), chr(0x03),
+                                      chr(0x00), chr(ID), chr(0x46), chr(0x02), chr(SUM)]
+    ser.write(get_servo_temperature_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 7:
+            break
+
+    Receive = ser.read(4)
+    servo_temperature1 = ser.read(1)
+    servo_temperature2 = ser.read(1)
+    int_servo_temperature1 = ord(servo_temperature1)
+    int_servo_temperature2 = ord(servo_temperature2)
+    servo_temperature = (int_servo_temperature2 << 8) | int_servo_temperature1
+
+    # ondoが正の場合はその値が表示されるが、負の場合は違うので、そこを処理
+    if > 0x8300:
+        servo_temperature = servo_temperature - 0x10000
+
+    # return mcu_temperature
+    servo_temperature = servo_temperature / 100.0
+    print(str(servo_temperature) + " [degree_celcius]")
+    return servo_temperature
+
+
 def reset_encoder_total_count(ID):
     SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00
            + 0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
@@ -452,7 +540,7 @@ def set_servo_to_TorqueCtrlMode(ID):
 	print("set servo ID:" + str(ID) + " to Trq Ctrl mode, Gain:preset#2")
 """
 
-
+"""
 # IDが"ID"なサーボのトルク制御（角度フィードバック, 目標角度"goal_Angle"）、無限ループなし（実質P制御）
 def Trq_by_Ang(ID, goal_Angle):
     # トルクゲインを決定
@@ -518,3 +606,4 @@ def Trq_by_Ang(ID, goal_Angle):
         if count3 > 10:
             setTRQ(ID, 0)  # トルクをゼロにして制御をやめる。
     #print("end of Positioning by Torque Ctrl")
+"""
