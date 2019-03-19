@@ -45,16 +45,16 @@ def change_servocontrol_mode(ID, mode):
     time.sleep(0.1)  # wait until this process done
     if mode == 0:
         set_servo_gain_to_presets(ID, mode)
-        print("set servo ID:" + str(ID)
-              + " to position control mode with preset gain #0")
+        print("set servo ID:" + str(ID) +
+              " to position control mode with preset gain #0")
     elif mode == 4:
         set_servo_gain_to_presets(ID, mode)
-        print("set servo ID:" + str(ID)
-              + " to velocity control mode with preset gain #1")
+        print("set servo ID:" + str(ID) +
+              " to velocity control mode with preset gain #1")
     elif mode == 8:
         set_servo_gain_to_presets(ID, mode)
-        print("set servo ID:" + str(ID)
-              + " to current(torque) control mode with preset gain #2")
+        print("set servo ID:" + str(ID) +
+              " to current(torque) control mode with preset gain #2")
     elif mode == 12:
         print("set servo ID:" + str(ID) + " to feed-forward control mode")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
@@ -104,15 +104,15 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
     else:
         modAngle = Angle_centDeg
 
-    SUM = (0x09 + 0x06 + 0x00 + ID + (modAngle & 0xff) + (modAngle >>
-                                                          8) + (Time_msec & 0xff) + (Time_msec >> 8)) & 0b11111111
+    SUM = (0x09 + 0x06 + 0x00 + ID + (modAngle & 0xff) + (modAngle
+                                                          >> 8) + (Time_msec & 0xff) + (Time_msec >> 8)) & 0b11111111
     control_servo_by_position_with_time_command = []
     control_servo_by_position_with_time_command += [chr(0x09), chr(0x06), chr(0x00), chr(ID), chr(
         modAngle & 0xff), chr(modAngle >> 8), chr(Time_msec & 0xff), chr(Time_msec >> 8), chr(SUM)]
     ser.write(control_servo_by_position_with_time_command)
     time.sleep(1.0 * Time_msec / 1000)
-    print("set servo ID:" + str(ID) + " to position "
-          + str(Angle_centDeg / 100) + "[deg] by " + str(Time_msec) + "[ms]")
+    print("set servo ID:" + str(ID) + " to position " +
+          str(Angle_centDeg / 100) + "[deg] by " + str(Time_msec) + "[ms]")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
@@ -125,14 +125,14 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     else:  # 目標角度が正の場合でも、コンソールにAngle値を表示したいので、信号送信用の変数はmodAngleとする
         modAngle = Angle_centDeg
 
-    SUM = (0x09 + 0x04 + 0x00 + ID + (modAngle & 0xff)
-           + (modAngle >> 8) + 0x2A + 0x01) & 0b11111111
+    SUM = (0x09 + 0x04 + 0x00 + ID + (modAngle & 0xff) +
+           (modAngle >> 8) + 0x2A + 0x01) & 0b11111111
     control_servo_by_position_without_time_command = []
     control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modAngle & 0xff), chr(modAngle >> 8), chr(0x2A), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_position_without_time_command)
-    print("set servo ID:" + str(ID) + " to position "
-          + str(Angle_centDeg / 100.0) + "[deg]")
+    print("set servo ID:" + str(ID) + " to position " +
+          str(Angle_centDeg / 100.0) + "[deg]")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
@@ -143,14 +143,14 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
     else:  # 目標角度が正の場合でも、コンソールにAngle値を表示したいので、信号送信用の変数はmodAngleとする
         modVelocity = Velocity_centDeg_perSec
 
-    SUM = (0x09 + 0x04 + 0x00 + ID + (modVelocity & 0xff)
-           + (modVelocity >> 8) + 0x30 + 0x01) & 0b11111111
+    SUM = (0x09 + 0x04 + 0x00 + ID + (modVelocity & 0xff) +
+           (modVelocity >> 8) + 0x30 + 0x01) & 0b11111111
     control_servo_by_Velocity_command = []
     control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
         modVelocity & 0xff), chr(modVelocity >> 8), chr(0x30), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_Velocity_command)
-    print("set servo ID:" + str(ID) + " to Velocity "
-          + str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
+    print("set servo ID:" + str(ID) + " to Velocity " +
+          str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
@@ -161,8 +161,8 @@ def control_servo_by_Torque(ID, Torque_mNm):
         modTorque = 65536 + Torque_mNm
     else:  # 目標トルクが正の場合でも、コンソールにTorque値を表示したいので、信号送信用の変数はmodTorqueとする
         modTorque = Torque_mNm
-    SUM = (0x09 + 0x04 + 0x00 + ID + (modTorque & 0xff)
-           + (modTorque >> 8) + 0x3c + 0x01) & 0b11111111
+    SUM = (0x09 + 0x04 + 0x00 + ID + (modTorque & 0xff) +
+           (modTorque >> 8) + 0x3c + 0x01) & 0b11111111
     control_servo_by_Torque_command = []
     control_servo_by_Torque_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modTorque & 0xff), chr(modTorque >> 8), chr(0x3c), chr(0x01), chr(SUM)]
@@ -173,8 +173,8 @@ def control_servo_by_Torque(ID, Torque_mNm):
             ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
             # time.sleep(0.01)
             break
-    print("set servo ID:" + str(ID) +
-          " to Torque " + str(Torque_mNm) + "[mNm]")
+    print("set servo ID:" + str(ID)
+          + " to Torque " + str(Torque_mNm) + "[mNm]")
 
 
 # IDが"ID"なサーボの角度取得
@@ -323,7 +323,7 @@ def get_mcu_temperature(ID):
     mcu_temperature = (int_mcu_temperature2 << 8) | int_mcu_temperature1
 
     # ondoが正の場合はその値が表示されるが、負の場合は違うので、そこを処理
-    if > 0x8300:
+    if mcu_temperature > 0x8300:
         mcu_temperature = mcu_temperature - 0x10000
 
     # return mcu_temperature
@@ -354,7 +354,7 @@ def get_servo_temperature(ID):
     servo_temperature = (int_servo_temperature2 << 8) | int_servo_temperature1
 
     # ondoが正の場合はその値が表示されるが、負の場合は違うので、そこを処理
-    if > 0x8300:
+    if servo_temperature > 0x8300:
         servo_temperature = servo_temperature - 0x10000
 
     # return mcu_temperature
@@ -364,8 +364,8 @@ def get_servo_temperature(ID):
 
 
 def reset_encoder_total_count(ID):
-    SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00
-           + 0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
+    SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00 +
+           0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
     reset_encoder_total_count_command = []
     reset_encoder_total_count_command += [chr(0x0B), chr(0x04), chr(0x00), chr(
         ID), chr(0x00), chr(0x00), chr(0x00), chr(0x00), chr(0x52), chr(0x01), chr(SUM)]
@@ -399,8 +399,8 @@ def get_encoder_total_count(ID):
     EncoderCount3 = ord(EncoderCount3)
     EncoderCount4 = ord(EncoderCount4)
 
-    EncoderCount = (EncoderCount4 << 24) | (EncoderCount3 <<
-                                            16) | (EncoderCount2 << 8) | EncoderCount1
+    EncoderCount = (EncoderCount4 << 24) | (EncoderCount3
+                                            << 16) | (EncoderCount2 << 8) | EncoderCount1
     if EncoderCount >= 2147483648:
         EncoderCount = EncoderCount - 4294967296
     # カウント値を返す
@@ -409,8 +409,8 @@ def get_encoder_total_count(ID):
 
 
 def change_current_limit(ID, current_limit_mA):
-    SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff)
-           + (current_limit_mA >> 8) + 0x11 + 0x01) & 0b11111111
+    SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff) +
+           (current_limit_mA >> 8) + 0x11 + 0x01) & 0b11111111
     change_current_limit_command = []
     change_current_limit_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
         current_limit_mA & 0xff), chr(current_limit_mA >> 8), chr(0x11), chr(0x01), chr(SUM)]
@@ -418,8 +418,8 @@ def change_current_limit(ID, current_limit_mA):
     time.sleep(0.1)
 
     current_limit = read_current_limit(ID)
-    print("set current limit of servo ID: "
-          + str(ID) + " as " + str(current_limit) + "[mA]")
+    print("set current limit of servo ID: " +
+          str(ID) + " as " + str(current_limit) + "[mA]")
 
 
 def read_current_limit(ID):
@@ -441,8 +441,8 @@ def read_current_limit(ID):
     current_limit2 = ord(current_limit2)
 
     current_limit = (current_limit2 << 8) | current_limit1
-    print("current limit of servo ID: " + str(ID)
-          + " is " + str(current_limit) + "[mA]")
+    print("current limit of servo ID: " + str(ID) +
+          " is " + str(current_limit) + "[mA]")
     return current_limit
 
 
@@ -462,8 +462,8 @@ def read_servo_lock_time(ID):
     lock_time = ser.read(1)
     int_lock_time = ord(lock_time)
 
-    print("lock time of servo ID: " + str(ID)
-          + " is " + str(int_lock_time) + "[mSec]")
+    print("lock time of servo ID: " + str(ID) +
+          " is " + str(int_lock_time) + "[mSec]")
     return int_lock_time
 
 
@@ -483,8 +483,8 @@ def read_servo_lock_output(ID):
     lock_output = ser.read(1)
     int_lock_output = ord(lock_output)
 
-    print("lock output of servo ID: " + str(ID)
-          + " is " + str(int_lock_output) + "[ %]")
+    print("lock output of servo ID: " + str(ID) +
+          " is " + str(int_lock_output) + "[ %]")
     return int_lock_output
 
 

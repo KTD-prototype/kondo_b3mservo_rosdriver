@@ -51,6 +51,8 @@ def damp_target_torque(torque_command, previous_torque_command):
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
         elif torque_command < 0:
             torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
+    elif torque_command * previous_torque_command < 0:
+        torque_command = 0
     return torque_command
 
 
