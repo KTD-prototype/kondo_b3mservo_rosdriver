@@ -31,8 +31,8 @@ def torque_control(servo_command):
 
     Kondo_B3M.control_servo_by_Torque(4, target_torque)
     # print(str(time.time()))
-    # Kondo_B3M.get_encoder_total_count(4)
-    Kondo_B3M.get_servo_voltage(4)
+    Kondo_B3M.get_encoder_total_count(4)
+    # Kondo_B3M.get_servo_voltage(4)
     # Kondo_B3M.get_mcu_temperature(4)
     # Kondo_B3M.get_servo_temperature(4)
 

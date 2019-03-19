@@ -446,12 +446,12 @@ def read_current_limit(ID):
     return current_limit
 
 
-def read_servo_lock_time(ID):
+def read_time_for_determine_that_servo_is_locked(ID):
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x14 + 0x01) & 0b11111111
     read_servo_lock_time_command = []
     read_servo_lock_time_command += [chr(0x07), chr(0x03),
-                                     chr(0x00), chr(ID), chr(0x14), chr(0x02), chr(SUM)]
+                                     chr(0x00), chr(ID), chr(0x14), chr(0x01), chr(SUM)]
     ser.write(read_servo_lock_time_command)
     # 通信が来るまで待つ
     while True:
@@ -463,16 +463,16 @@ def read_servo_lock_time(ID):
     int_lock_time = ord(lock_time)
 
     print("lock time of servo ID: " + str(ID) +
-          " is " + str(int_lock_time) + "[mSec]")
+          " is " + str(int_lock_time) + " [mSec]")
     return int_lock_time
 
 
-def read_servo_lock_output(ID):
+def read_servo_output_to_countup_time_to_determine_that_servo_is_locked(ID):
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x15 + 0x01) & 0b11111111
     read_servo_lock_output_command = []
     read_servo_lock_output_command += [chr(0x07), chr(0x03),
-                                       chr(0x00), chr(ID), chr(0x15), chr(0x02), chr(SUM)]
+                                       chr(0x00), chr(ID), chr(0x15), chr(0x01), chr(SUM)]
     ser.write(read_servo_lock_output_command)
     # 通信が来るまで待つ
     while True:
@@ -484,7 +484,7 @@ def read_servo_lock_output(ID):
     int_lock_output = ord(lock_output)
 
     print("lock output of servo ID: " + str(ID) +
-          " is " + str(int_lock_output) + "[ %]")
+          " is " + str(int_lock_output) + " [%]")
     return int_lock_output
 
 
