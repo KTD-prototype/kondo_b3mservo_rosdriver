@@ -1,2 +1,3 @@
 int32 encoder_count
 int16 motor_voltage
+int16 motor_velocity
