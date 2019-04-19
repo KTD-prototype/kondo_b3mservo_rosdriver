@@ -13,7 +13,7 @@ import Kondo_B3M_functions as Kondo_B3M
 pre_target_torque = 0
 id = 0
 flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 200
+MINIMUM_STEP_OF_TARGET_TORQUE = 150
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
@@ -36,7 +36,9 @@ def torque_control(servo_command):
 
     # damp target torque since drastic difference of target torque may cause lock of servo
     target_torque = damp_target_torque(target_torque, pre_target_torque)
+    # print(str(target_torque))
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
+    publish_servo_info()
     pre_target_torque = target_torque
 
 
@@ -57,7 +59,7 @@ def publish_servo_info():
     servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
     servo_info.input_voltage = Kondo_B3M.get_servo_voltage(id)
     servo_info.motor_velocity = Kondo_B3M.get_servo_Velocity(id)
-    servo_info_pub.Publish(servo_info)
+    servo_info_pub.publish(servo_info)
     # Kondo_B3M.get_mcu_temperature(4)
     # Kondo_B3M.get_servo_temperature(4)
 
