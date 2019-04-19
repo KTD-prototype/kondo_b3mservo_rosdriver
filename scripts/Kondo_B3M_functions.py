@@ -377,17 +377,16 @@ def reset_encoder_total_count(ID):
 def get_encoder_total_count(ID):
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
-
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x52 + 0x04) & 0b11111111
     get_encoder_total_count_command = []
     get_encoder_total_count_command += [chr(0x07), chr(
         0x03), chr(0x00), chr(ID), chr(0x52), chr(0x04), chr(SUM)]
     ser.write(get_encoder_total_count_command)
+    print("test")
     # 通信が来るまで待つ
     while True:
         if ser.inWaiting() == 9:
             break
-
     # 返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の4バイトがカウントなので、受信し、リトルエンディアンで整数に変換。
     Receive = ser.read(4)
     EncoderCount1 = ser.read(1)
@@ -499,9 +498,9 @@ def save_RAM_to_ROM(ID):
 
 
 """
-#IDが"ID"なサーボのトルク制御（角度フィードバック, 目標角度"goal_Angle"）
+# IDが"ID"なサーボのトルク制御（角度フィードバック, 目標角度"goal_Angle"）
 def Trq_by_Ang(ID, goal_Angle):
-	#トルクゲインを決定
+	# トルクゲインを決定
 	Kp = 0.2	#比例ゲイン
 	Ki = 0.3	#積分ゲイン
 	Kd = 0.3	#微分ゲイン
@@ -517,50 +516,50 @@ def Trq_by_Ang(ID, goal_Angle):
 	Torque_MAX = 700	#目標トルクの最大値を規定（mNm)
 
 	while(True):
-		#トルクの立ち上がりを穏やかにする変数の処理
+		# トルクの立ち上がりを穏やかにする変数の処理
 		count2 = count / 10
 		count += 1
 
-		#一定周期ごとに積分制御用の累積角度誤差をゼロにする（外乱を受けつつ一定角度に保持するような場合に発散してしまうので）
-		#count4 += 1
+		# 一定周期ごとに積分制御用の累積角度誤差をゼロにする（外乱を受けつつ一定角度に保持するような場合に発散してしまうので）
+		# count4 += 1
 		if count4 == 100:
 			offset = 0
 			count4 = 0
 
-		#現在角度を取得
+		# 現在角度を取得
 		previous_Angle = current_Angle
 		current_Angle = readServoPOS(ID)
 
-		#位置オフセットを積分により取得
+		# 位置オフセットを積分により取得
 		previous_time = current_time
 		current_time = time.time()
 		dt = current_time - previous_time
 		if math.fabs(goal_Angle - current_Angle) < 500:
 			offset += (goal_Angle - current_Angle) * dt
 
-		#目標角度との差分に応じたトルクを発揮（PID制御）
+		# 目標角度との差分に応じたトルクを発揮（PID制御）
 		Torque = (goal_Angle - current_Angle)*Kp + (previous_Angle - current_Angle)*Kd + offset * Ki
 
-		#そもそもトルクが大きすぎるとサーボに負荷がかかるので、制限する。
+		# そもそもトルクが大きすぎるとサーボに負荷がかかるので、制限する。
 		if Torque > Torque_MAX:
 			Torque = Torque_MAX
 		if Torque < -1 * Torque_MAX:
 			Torque = -1 * Torque_MAX
 
-		#トルクの立ち上がりを穏やかにする係数をかける
-		#トルクは整数しか受け取れないので、変換
+		# トルクの立ち上がりを穏やかにする係数をかける
+		# トルクは整数しか受け取れないので、変換
 		Torque = Torque * (1 - (1 / count2))
 		Torque = int(Torque)
 
 
-		#目標トルク値をコンソールに出力しつつ、実際にトルク制御
-		#print(str(current_Angle/100) + '[deg], ' + str(Torque) + '[mNm]')
-		#print(count2)
-		#print(offset)
+		# 目標トルク値をコンソールに出力しつつ、実際にトルク制御
+		# print(str(current_Angle/100) + '[deg], ' + str(Torque) + '[mNm]')
+		# print(count2)
+		# print(offset)
 		setTRQ(ID, Torque)
 		time.sleep(0.002)
 
-		#角度誤差が一定以下の時間が一定期間続いたら、制御終了
+		# 角度誤差が一定以下の時間が一定期間続いたら、制御終了
 		if math.fabs(goal_Angle - current_Angle) < 100:	#単位：[/100 deg]
 			count3 += 1
 			if count3 > 10:
@@ -571,7 +570,7 @@ def Trq_by_Ang(ID, goal_Angle):
 
 
 """
-#IDが"ID"なサーボをトルク制御モードにする関数（制御ゲイン：プリセット#2）
+# IDが"ID"なサーボをトルク制御モードにする関数（制御ゲイン：プリセット#2）
 def set_servo_to_TorqueCtrlMode(ID):
 	set_servo_gain_to_presets(ID, 2)
 	SUM = (0x08 + 0x04 + 0x00 + ID + 0x08 + 0x28 + 0x01) & 0b11111111
@@ -605,7 +604,7 @@ def Trq_by_Ang(ID, goal_Angle):
     count += 1
 
     # 一定周期ごとに積分制御用の累積角度誤差をゼロにする（外乱を受けつつ一定角度に保持するような場合に発散してしまうので）
-    #count4 += 1
+    # count4 += 1
     if count4 == 100:
         offset = 0
         count4 = 0
@@ -632,7 +631,7 @@ def Trq_by_Ang(ID, goal_Angle):
 
     # トルクの立ち上がりを穏やかにする係数をかける
     # トルクは整数しか受け取れないので、変換
-    #Torque = Torque * (1 - (1 / count2))
+    # Torque = Torque * (1 - (1 / count2))
     Torque = int(Torque)
 
     # 目標トルク値をコンソールに出力しつつ、実際にトルク制御
@@ -647,5 +646,5 @@ def Trq_by_Ang(ID, goal_Angle):
         count3 += 1
         if count3 > 10:
             setTRQ(ID, 0)  # トルクをゼロにして制御をやめる。
-    #print("end of Positioning by Torque Ctrl")
+    # print("end of Positioning by Torque Ctrl")
 """

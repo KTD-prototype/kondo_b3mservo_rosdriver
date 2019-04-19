@@ -13,7 +13,7 @@ import Kondo_B3M_functions as Kondo_B3M
 pre_target_torque = 0
 id = 0
 flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 150
+MINIMUM_STEP_OF_TARGET_TORQUE = 200
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
@@ -43,7 +43,7 @@ def torque_control(servo_command):
 
 
 def damp_target_torque(torque_command, previous_torque_command):
-   if abs(torque_command) > abs(previous_torque_command):
+    if abs(torque_command) > abs(previous_torque_command):
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
         elif torque_command < 0:
@@ -56,9 +56,14 @@ def damp_target_torque(torque_command, previous_torque_command):
 def publish_servo_info():
     global id
     servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
-    servo_info.input_voltage = float(Kondo_B3M.get_servo_voltage(id)) / 1000.0
+    servo_info.input_voltage = Kondo_B3M.get_servo_voltage(id)
     servo_info.motor_velocity = Kondo_B3M.get_servo_Velocity(id)
     servo_info_pub.publish(servo_info)
+
+    # voltage = Kondo_B3M.get_servo_voltage(id)
+    # voltage = float(voltage)
+    # voltage = voltage / 1000.0
+    # print(str(voltage))
     # Kondo_B3M.get_mcu_temperature(4)
     # Kondo_B3M.get_servo_temperature(4)
 
