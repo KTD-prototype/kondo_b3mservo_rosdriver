@@ -131,8 +131,8 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modAngle & 0xff), chr(modAngle >> 8), chr(0x2A), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_position_without_time_command)
-    print("set servo ID:" + str(ID) + " to position " +
-          str(Angle_centDeg / 100.0) + "[deg]")
+    # print("set servo ID:" + str(ID) + " to position " +
+    #       str(Angle_centDeg / 100.0) + "[deg]")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
@@ -149,8 +149,8 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
     control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
         modVelocity & 0xff), chr(modVelocity >> 8), chr(0x30), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_Velocity_command)
-    print("set servo ID:" + str(ID) + " to Velocity " +
-          str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
+    # print("set servo ID:" + str(ID) + " to Velocity " +
+    #       str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
@@ -173,8 +173,8 @@ def control_servo_by_Torque(ID, Torque_mNm):
             ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
             # time.sleep(0.01)
             break
-    print("set servo ID:" + str(ID)
-          + " to Torque " + str(Torque_mNm) + "[mNm]")
+    # print("set servo ID:" + str(ID)
+    #       + " to Torque " + str(Torque_mNm) + "[mNm]")
 
 
 # IDが"ID"なサーボの角度取得
@@ -207,7 +207,7 @@ def get_servo_Position(ID):
         Angle = Angle - 0x10000
 
     # 角度を返す
-    print(str(Angle / 100.0) + "[deg]")
+    # print(str(Angle / 100.0) + "[deg]")
     return Angle
 
 
@@ -241,7 +241,7 @@ def get_servo_Velocity(ID):
         Velocity = Velocity - 0x10000
 
     # 角度を返す
-    print(str(Velocity / 100.0) + "[deg/sec]")
+    # print(str(Velocity / 100.0) + "[deg/sec]")
     return Velocity
 
 
@@ -270,8 +270,8 @@ def get_servo_Current(ID):
     if Current > 0x8300:
         Current = Current - 0x10000
 
-    # 角度を返す
-    print(str(Current) + " [mA]")
+    # return current
+    # print(str(Current) + " [mA]")
     return Current
 
 
@@ -297,7 +297,7 @@ def get_servo_voltage(ID):
     voltage = (int_voltage2 << 8) | int_voltage1
 
     # return voltage
-    print(str(voltage) + " [mV]")
+    # print(str(voltage) + " [mV]")
     return voltage
 
 
@@ -404,7 +404,7 @@ def get_encoder_total_count(ID):
     if EncoderCount >= 2147483648:
         EncoderCount = EncoderCount - 4294967296
     # カウント値を返す
-    print(str(EncoderCount) + "[count]")
+    # print(str(EncoderCount) + "[count]")
     return EncoderCount
 
 
