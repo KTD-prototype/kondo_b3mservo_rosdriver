@@ -7,6 +7,7 @@ import time
 import signal
 import sys
 from kondo_b3mservo_rosdriver.msg import Servo_command
+from kondo_b3mservo_rosdriver.msg import Servo_info
 import Kondo_B3M_functions as Kondo_B3M
 
 pre_target_torque = 0
@@ -35,14 +36,7 @@ def torque_control(servo_command):
 
     # damp target torque since drastic difference of target torque may cause lock of servo
     target_torque = damp_target_torque(target_torque, pre_target_torque)
-
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
-    # print(str(time.time()))
-    Kondo_B3M.get_encoder_total_count(id)
-    # Kondo_B3M.get_servo_voltage(4)
-    # Kondo_B3M.get_mcu_temperature(4)
-    # Kondo_B3M.get_servo_temperature(4)
-
     pre_target_torque = target_torque
 
 
@@ -58,6 +52,16 @@ def damp_target_torque(torque_command, previous_torque_command):
     return torque_command
 
 
+def publish_servo_info():
+    global id
+    servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
+    servo_info.input_voltage = Kondo_B3M.get_servo_voltage(id)
+    servo_info.motor_velocity = Kondo_B3M.get_servo_Velocity(id)
+    servo_info_pub.Publish(servo_info)
+    # Kondo_B3M.get_mcu_temperature(4)
+    # Kondo_B3M.get_servo_temperature(4)
+
+
 def enfree_servo_after_node_ends(signal, frame):
     global id
     Kondo_B3M.enFreeServo(id)
@@ -69,9 +73,12 @@ signal.signal(signal.SIGINT, enfree_servo_after_node_ends)
 
 if __name__ == '__main__':
     rospy.init_node('torque_control')
+
+    servo_info_pub = rospy.Publisher(
+        'servo_info', Servo_info, queue_size=1)
+    servo_info = Servo_info()
+
     rospy.Subscriber('servo_command', Servo_command,
                      torque_control, queue_size=1)
-    # rate = rospy.Rate(100)
-    # while not rospy.is_shutdown():
-    #     rate.sleep()
+
     rospy.spin()
