@@ -57,7 +57,7 @@ def damp_target_torque(torque_command, previous_torque_command):
 def publish_servo_info():
     global id
     servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
-    servo_info.input_voltage = Kondo_B3M.get_servo_voltage(id) / 1000
+    servo_info.input_voltage = Kondo_B3M.get_servo_voltage(id) / 1000.0
     servo_info.motor_velocity = Kondo_B3M.get_servo_Velocity(id)
     servo_info_pub.publish(servo_info)
     # Kondo_B3M.get_mcu_temperature(4)
