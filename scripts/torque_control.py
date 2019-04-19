@@ -42,17 +42,6 @@ def torque_control(servo_command):
     pre_target_torque = target_torque
 
 
-def damp_target_torque(torque_command, previous_torque_command):
-    if abs(torque_command) > abs(previous_torque_command):
-        if torque_command > 0:
-            torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
-        elif torque_command < 0:
-            torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
-    elif torque_command * previous_torque_command < 0:
-        torque_command = 0
-    return torque_command
-
-
 def publish_servo_info():
     global id
     servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
@@ -72,6 +61,17 @@ def enfree_servo_after_node_ends(signal, frame):
     global id
     Kondo_B3M.enFreeServo(id)
     sys.exit(0)
+
+
+def damp_target_torque(torque_command, previous_torque_command):
+    if abs(torque_command) > abs(previous_torque_command):
+        if torque_command > 0:
+            torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
+        elif torque_command < 0:
+            torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
+    elif torque_command * previous_torque_command < 0:
+        torque_command = 0
+    return torque_command
 
 
 signal.signal(signal.SIGINT, enfree_servo_after_node_ends)

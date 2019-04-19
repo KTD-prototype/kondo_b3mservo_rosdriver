@@ -99,6 +99,7 @@ def set_servo_gain_to_presets(ID, PresetNumber):
 
 # IDが"ID"なサーボの位置を、目標時間"Time(ms)"をかけて"Angle(/100 deg)"にセットする関数
 def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
     else:
@@ -120,6 +121,7 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
 # 軌道生成を行わないので急峻な動きになる。
 # 移動に要する時間は関数呼び出し側で確保する必要あり。
 def control_servo_by_position_without_time(ID, Angle_centDeg):
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
     else:  # 目標角度が正の場合でも、コンソールにAngle値を表示したいので、信号送信用の変数はmodAngleとする
@@ -131,12 +133,17 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modAngle & 0xff), chr(modAngle >> 8), chr(0x2A), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_position_without_time_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 5:
+            ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+            break
     # print("set servo ID:" + str(ID) + " to position " +
     #       str(Angle_centDeg / 100.0) + "[deg]")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/sec)
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
     if Velocity_centDeg_perSec < 0:
         modVelocity = 65536 + Velocity_centDeg_perSec
@@ -149,9 +156,13 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
     control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
         modVelocity & 0xff), chr(modVelocity >> 8), chr(0x30), chr(0x01), chr(SUM)]
     ser.write(control_servo_by_Velocity_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 5:
+            ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+            break
     # print("set servo ID:" + str(ID) + " to Velocity " +
     #       str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 # IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
@@ -208,6 +219,7 @@ def get_servo_Position(ID):
 
     # 角度を返す
     # print(str(Angle / 100.0) + "[deg]")
+    ser.reset_input_buffer()
     return Angle
 
 
@@ -242,6 +254,7 @@ def get_servo_Velocity(ID):
 
     # 角度を返す
     # print(str(Velocity / 100.0) + "[deg/sec]")
+    ser.reset_input_buffer()
     return Velocity
 
 
@@ -272,6 +285,7 @@ def get_servo_Current(ID):
 
     # return current
     # print(str(Current) + " [mA]")
+    ser.reset_input_buffer()
     return Current
 
 
@@ -298,6 +312,7 @@ def get_servo_voltage(ID):
 
     # return voltage
     # print(str(voltage) + " [mV]")
+    ser.reset_input_buffer()
     return voltage
 
 
@@ -329,6 +344,7 @@ def get_mcu_temperature(ID):
     # return mcu_temperature
     mcu_temperature = mcu_temperature / 100.0
     print(str(mcu_temperature) + " [degree_celcius]")
+    ser.reset_input_buffer()
     return mcu_temperature
 
 
@@ -360,6 +376,7 @@ def get_servo_temperature(ID):
     # return mcu_temperature
     servo_temperature = servo_temperature / 100.0
     print(str(servo_temperature) + " [degree_celcius]")
+    ser.reset_input_buffer()
     return servo_temperature
 
 
@@ -371,6 +388,7 @@ def reset_encoder_total_count(ID):
         ID), chr(0x00), chr(0x00), chr(0x00), chr(0x00), chr(0x52), chr(0x01), chr(SUM)]
     ser.write(reset_encoder_total_count_command)
     time.sleep(0.1)  # wait until this process done
+    ser.reset_input_buffer()
     print("reset encoder")
 
 
@@ -382,9 +400,9 @@ def get_encoder_total_count(ID):
     get_encoder_total_count_command += [chr(0x07), chr(
         0x03), chr(0x00), chr(ID), chr(0x52), chr(0x04), chr(SUM)]
     ser.write(get_encoder_total_count_command)
-    print("test")
     # 通信が来るまで待つ
     while True:
+        # print(str(ser.inWaiting()))
         if ser.inWaiting() == 9:
             break
     # 返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の4バイトがカウントなので、受信し、リトルエンディアンで整数に変換。
@@ -404,6 +422,7 @@ def get_encoder_total_count(ID):
         EncoderCount = EncoderCount - 4294967296
     # カウント値を返す
     # print(str(EncoderCount) + "[count]")
+    ser.reset_input_buffer()
     return EncoderCount
 
 
