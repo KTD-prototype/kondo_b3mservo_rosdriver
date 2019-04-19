@@ -43,8 +43,7 @@ def torque_control(servo_command):
 
 
 def damp_target_torque(torque_command, previous_torque_command):
-
-    if abs(torque_command) > abs(previous_torque_command):
+   if abs(torque_command) > abs(previous_torque_command):
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
         elif torque_command < 0:
