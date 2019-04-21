@@ -51,6 +51,8 @@ add_message_files(
    FILES
    Servo_command.msg
    Servo_info.msg
+   Multi_servo_command
+   Multi_servo_info
  )
 
 ## Generate services in the 'srv' folder
