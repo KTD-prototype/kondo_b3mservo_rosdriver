@@ -26,7 +26,7 @@ time.sleep(0.1)
 
 def set_servo_id():
     global id
-    id = rospy.get_param('servo_id', 0)
+    id = rospy.get_param('/servo_id', 0)
     try:
         if id < 0:
             raise Exception()
