@@ -26,7 +26,7 @@ time.sleep(0.1)
 
 def set_servo_id():
     global id
-    id = rospy.get_param(param_name, 0)
+    id = rospy.get_param('servo_id', 0)
     try:
         if id < 0:
             raise Exception()
@@ -59,6 +59,7 @@ def torque_control(servo_command):
     # print(str(target_torque))
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
     publish_servo_info()
+    print(target_torque)
     pre_target_torque = target_torque
 
 
@@ -93,12 +94,12 @@ def enfree_servo_after_node_ends(signal, frame):
 
 
 def damp_target_torque(torque_command, previous_torque_command):
-    if abs(torque_command) > abs(previous_torque_command):
+    if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
         elif torque_command < 0:
             torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
-    elif torque_command * previous_torque_command < 0:
+    elif torque_command * previous_torque_command < 0 and abs(previous_torque_command) > MINIMUM_STEP_OF_TARGET_TORQUE:
         torque_command = 0
     return torque_command
 
@@ -108,10 +109,7 @@ signal.signal(signal.SIGINT, enfree_servo_after_node_ends)
 
 if __name__ == '__main__':
     rospy.init_node('torque_control')
-    node_name = rospy.get_name()
-    print(node_name)
-    param_name = node_name + '/servo_id'
-    print(param_name)
+
     servo_info_pub = rospy.Publisher(
         'servo_info', Servo_info, queue_size=1)
     servo_info = Servo_info()
