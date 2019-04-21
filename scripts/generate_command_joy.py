@@ -14,11 +14,8 @@ from kondo_b3mservo_rosdriver.msg import Servo_command
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
-id = 4
-
 
 def generate_command(joy_msg):
-    global id
 
     target_position = joy_msg.axes[0] * 32000  # left stick LR
     target_velocity = joy_msg.axes[3] * 32767  # right stick LR

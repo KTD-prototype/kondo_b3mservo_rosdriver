@@ -44,6 +44,9 @@ def torque_control(servo_command):
         Kondo_B3M.reset_encoder_total_count(id)
         # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
         Kondo_B3M.change_servocontrol_mode(id, 8)
+        print("")
+        print("you are controlling servo ID : " + str(id))
+        print("if you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>")
         flag = 0
 
     # damp target torque since drastic difference of target torque may cause lock of servo
