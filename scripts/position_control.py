@@ -17,14 +17,26 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 
+def set_servo_id():
+    global id
+    id = rospy.get_param('servo_id', 0)
+    try:
+        if id < 0:
+            raise Exception()
+    except:
+        rospy.logerr("value error: servo_id")
+        sys.exit(1)
+    return id
+
+
 def position_control(servo_command):
     global id, flag
 
-    id = servo_command.servo_id
     target_position = servo_command.target_position
 
     # execute only single time
     if flag == 1:
+        id = set_servo_id()
         Kondo_B3M.resetServo(id)
         Kondo_B3M.enFreeServo(id)
         Kondo_B3M.reset_encoder_total_count(id)

@@ -26,7 +26,6 @@ def generate_command(joy_msg):
     # joy_msg.axes[4] : right stick FB
 
     servo_command = Servo_command()
-    servo_command.servo_id = id
     servo_command.target_position = target_position
     servo_command.target_velocity = target_velocity
     servo_command.target_torque = target_torque
