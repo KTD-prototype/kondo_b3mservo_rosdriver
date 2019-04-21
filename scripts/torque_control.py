@@ -26,7 +26,7 @@ time.sleep(0.1)
 
 def set_servo_id():
     global id
-    id = rospy.get_param('/servo_id', 0)
+    id = rospy.get_param(param_name, 0)
     try:
         if id < 0:
             raise Exception()
@@ -108,7 +108,10 @@ signal.signal(signal.SIGINT, enfree_servo_after_node_ends)
 
 if __name__ == '__main__':
     rospy.init_node('torque_control')
-
+    node_name = rospy.get_name()
+    print(node_name)
+    param_name = node_name + '/servo_id'
+    print(param_name)
     servo_info_pub = rospy.Publisher(
         'servo_info', Servo_info, queue_size=1)
     servo_info = Servo_info()
