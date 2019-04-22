@@ -28,8 +28,8 @@ time.sleep(0.1)
 
 def set_the_num_of_servo():
     global num
-    if rospy.has_param('num_of_servo'):
-        num = rospy.get_param('num_of_servo')
+    if rospy.has_param('~num_of_servo'):
+        num = rospy.get_param('~num_of_servo')
     else:
         rospy.logwarn(
             "you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
@@ -45,8 +45,8 @@ def set_the_num_of_servo():
 
 def set_servo_id():
     global id
-    if rospy.has_param('multi_servo_id'):
-        id = rospy.get_param('multi_servo_id')
+    if rospy.has_param('~multi_servo_id'):
+        id = rospy.get_param('~multi_servo_id')
     else:
         rospy.logwarn(
             "you haven't set ros parameter indicates the IDs of servos. Plsease command '$rosparam set /multi_servo_id [ID1,ID2,etc]]'")
@@ -66,6 +66,7 @@ def collback_multi_torque_control(multi_servo_command):
     if initial_process_flag == 1:
         num = set_the_num_of_servo()
         id = set_servo_id()
+        print(id)
 
         print("")
         print("the number of servos you are controling is : " + str(num))
