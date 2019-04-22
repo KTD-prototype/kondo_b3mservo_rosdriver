@@ -66,7 +66,11 @@ def collback_multi_torque_control(multi_servo_command):
     if initial_process_flag == 1:
         num = set_the_num_of_servo()
         id = set_servo_id()
-        print(num)
+
+        print("")
+        print("the number of servos you are controling is : " + str(num))
+        print("you are controlling servo ID : " + str(id))
+        print("")
 
         for i in range(num):
             Kondo_B3M.resetServo(id[i])
@@ -76,9 +80,6 @@ def collback_multi_torque_control(multi_servo_command):
             Kondo_B3M.change_servocontrol_mode(id[i], 8)
             pre_target_torque.append(0)
 
-        print("")
-        print("you are controlling servo ID : " + str(id))
-        print("")
         initial_process_flag = 0
 
     target_torque = multi_servo_command.target_torque

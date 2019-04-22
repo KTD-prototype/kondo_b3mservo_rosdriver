@@ -63,6 +63,9 @@ def callback_generate_multi_command(joy_msg):
 
 if __name__ == '__main__':
     rospy.init_node('generate_multi_command')
+    node_name = rospy.get_name()
+    # param_name_num = node_name + "/num_of_servo"
+    # param_name_id = node_name+"/multi_servo_id"
 
     rospy.Subscriber('joy', Joy, callback_generate_multi_command, queue_size=5)
     pub = rospy.Publisher('multi_servo_command',
