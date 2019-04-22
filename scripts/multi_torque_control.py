@@ -59,14 +59,13 @@ def set_servo_id():
     return id
 
 
-def collback_multi_torque_control(multi_servo_command):
+def callback_multi_torque_control(multi_servo_command):
     global num, id, initial_process_flag, target_torque, pre_target_torque
 
     # execute only single time
     if initial_process_flag == 1:
         num = set_the_num_of_servo()
         id = set_servo_id()
-        print(id)
 
         print("")
         print("the number of servos you are controling is : " + str(num))
@@ -148,6 +147,6 @@ if __name__ == '__main__':
         'multi_servo_info', Multi_servo_info, queue_size=1)
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
-                     collback_multi_torque_control, queue_size=1)
+                     callback_multi_torque_control, queue_size=1)
 
     rospy.spin()

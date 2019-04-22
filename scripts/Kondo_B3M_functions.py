@@ -24,6 +24,7 @@ def resetServo(ID):
 
 # IDが"ID"なサーボをフリーにする関数
 def enFreeServo(ID):
+
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
     enFreeServo_command = []
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
@@ -37,6 +38,7 @@ def enFreeServo(ID):
 # IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
 # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
 def change_servocontrol_mode(ID, mode):
+
     SUM = (0x08 + 0x04 + 0x00 + ID + mode + 0x28 + 0x01) & 0b11111111
     change_servocontrol_mode_command = []
     change_servocontrol_mode_command += [chr(0x08), chr(0x04), chr(
@@ -62,6 +64,7 @@ def change_servocontrol_mode(ID, mode):
 
 # IDが"ID"なサーボの位置制御モード時の軌道生成を5-polyモードにする関数
 def set_servo_trajectory_to_5Poly(ID):
+
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x05 + 0x29 + 0x01) & 0b11111111
     set_servo_trajectory_to_5Poly_command = []
     set_servo_trajectory_to_5Poly_command += [chr(0x08), chr(0x04), chr(
@@ -74,6 +77,7 @@ def set_servo_trajectory_to_5Poly(ID):
 
 # IDが"ID"なサーボの位置制御モード時の軌道生成をEVENモード（等速）にする関数
 def set_servo_trajectory_to_EVEN(ID):
+
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x01 + 0x29 + 0x01) & 0b11111111
     set_servo_trajectory_to_EVEN_command = []
     set_servo_trajectory_to_EVEN_command += [chr(0x08), chr(0x04), chr(
@@ -87,6 +91,7 @@ def set_servo_trajectory_to_EVEN(ID):
 # IDが"ID"なサーボの制御ゲインをプリセットのものに設定する関数
 # プリセット0:位置制御用、1:速度制御用、2:トルク制御用
 def set_servo_gain_to_presets(ID, PresetNumber):
+
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     SUM = (0x08 + 0x04 + 0x00 + ID + PresetNumber + 0x5c + 0x01) & 0b11111111
     set_servo_gain_to_presets_command = []
@@ -99,6 +104,7 @@ def set_servo_gain_to_presets(ID, PresetNumber):
 
 # IDが"ID"なサーボの位置を、目標時間"Time(ms)"をかけて"Angle(/100 deg)"にセットする関数
 def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
+
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
@@ -121,6 +127,7 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
 # 軌道生成を行わないので急峻な動きになる。
 # 移動に要する時間は関数呼び出し側で確保する必要あり。
 def control_servo_by_position_without_time(ID, Angle_centDeg):
+
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
@@ -143,6 +150,7 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
 
 
 def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/sec)
+
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
     if Velocity_centDeg_perSec < 0:
@@ -167,6 +175,7 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
 
 # IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
 def control_servo_by_Torque(ID, Torque_mNm):
+
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Torque_mNm < 0:  # 目標トルクが負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modTorque = 65536 + Torque_mNm
@@ -190,6 +199,7 @@ def control_servo_by_Torque(ID, Torque_mNm):
 
 # IDが"ID"なサーボの角度取得
 def get_servo_Position(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
 
@@ -225,6 +235,7 @@ def get_servo_Position(ID):
 
 # IDが"ID"なサーボの速度取得
 def get_servo_Velocity(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
 
@@ -259,6 +270,7 @@ def get_servo_Velocity(ID):
 
 
 def get_servo_Current(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
     # アドレス0x48から2バイト分（=電流値）読みだす信号を作成し、送信
@@ -290,6 +302,7 @@ def get_servo_Current(ID):
 
 
 def get_servo_voltage(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
     # アドレス0x4aから2バイト分（=電流値）読みだす信号を作成し、送信
@@ -317,6 +330,7 @@ def get_servo_voltage(ID):
 
 
 def get_mcu_temperature(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
     # アドレス0x44から2バイト分（=電流値）読みだす信号を作成し、送信
@@ -349,6 +363,7 @@ def get_mcu_temperature(ID):
 
 
 def get_servo_temperature(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
     # アドレス0x46から2バイト分（=電流値）読みだす信号を作成し、送信
@@ -381,6 +396,7 @@ def get_servo_temperature(ID):
 
 
 def reset_encoder_total_count(ID):
+
     SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00 +
            0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
     reset_encoder_total_count_command = []
@@ -393,6 +409,7 @@ def reset_encoder_total_count(ID):
 
 
 def get_encoder_total_count(ID):
+
     # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x52 + 0x04) & 0b11111111
@@ -427,6 +444,7 @@ def get_encoder_total_count(ID):
 
 
 def change_current_limit(ID, current_limit_mA):
+
     SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff) +
            (current_limit_mA >> 8) + 0x11 + 0x01) & 0b11111111
     change_current_limit_command = []
@@ -441,6 +459,7 @@ def change_current_limit(ID, current_limit_mA):
 
 
 def read_current_limit(ID):
+
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x11 + 0x02) & 0b11111111
     read_current_limit_command = []
@@ -465,6 +484,7 @@ def read_current_limit(ID):
 
 
 def read_time_for_determine_that_servo_is_locked(ID):
+
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x14 + 0x01) & 0b11111111
     read_servo_lock_time_command = []
@@ -486,6 +506,7 @@ def read_time_for_determine_that_servo_is_locked(ID):
 
 
 def read_servo_output_to_countup_time_to_determine_that_servo_is_locked(ID):
+
     ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x15 + 0x01) & 0b11111111
     read_servo_lock_output_command = []
@@ -507,6 +528,7 @@ def read_servo_output_to_countup_time_to_determine_that_servo_is_locked(ID):
 
 
 def save_RAM_to_ROM(ID):
+
     SUM = (0x05 + 0x02 + 0x00 + ID) & 0b11111111
     save_RAM_to_ROM_command = []
     save_RAM_to_ROM_command += [chr(0x05),
