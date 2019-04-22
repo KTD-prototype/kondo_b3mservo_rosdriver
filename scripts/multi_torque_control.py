@@ -28,7 +28,12 @@ time.sleep(0.1)
 
 def set_the_num_of_servo():
     global num
-    num = rospy.get_param('num_of_servo', 1)
+    if rospy.has_param('num_of_servo'):
+        num = rospy.get_param('num_of_servo')
+    else:
+        rospy.logwarn(
+            "you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
+        print("")
     try:
         if num < 0:
             raise Exception()
@@ -40,7 +45,11 @@ def set_the_num_of_servo():
 
 def set_servo_id():
     global id
-    id = rospy.get_param('multi_servo_id')
+    if rospy.has_param('multi_servo_id'):
+        id = rospy.get_param('multi_servo_id')
+    else:
+        rospy.logwarn(
+            "you haven't set ros parameter indicates the IDs of servos. Plsease command '$rosparam set /multi_servo_id [ID1,ID2,etc]]'")
     try:
         if id < 0:
             raise Exception()
@@ -73,17 +82,14 @@ def collback_multi_torque_control(multi_servo_command):
         initial_process_flag = 0
 
     target_torque = multi_servo_command.target_torque
-
-    # damp target torque since drastic difference of target torque may cause lock of servo
     target_torque = list(target_torque)
-    pre_target_torque = list(pre_target_torque)
 
     for i in range(num):
+        # damp target torque since drastic difference of target torque may cause lock of servo
         target_torque[i] = damp_target_torque(
             target_torque[i], pre_target_torque[i])
         # print(str(target_torque))
         Kondo_B3M.control_servo_by_Torque(id[i], target_torque[i])
-        print(target_torque[i], pre_target_torque[i])
         pre_target_torque[i] = target_torque[i]
 
     publish_servo_info()
@@ -119,9 +125,7 @@ def enfree_servo_after_node_ends(signal, frame):
 
 
 def damp_target_torque(torque_command, previous_torque_command):
-    print("test1")
     if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
-        print("test2")
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
         elif torque_command < 0:
