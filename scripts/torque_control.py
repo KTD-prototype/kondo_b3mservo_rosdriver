@@ -6,8 +6,12 @@ import serial
 import time
 import signal
 import sys
+
+# import message for command and feedback to/from servo
 from kondo_b3mservo_rosdriver.msg import Servo_command
 from kondo_b3mservo_rosdriver.msg import Servo_info
+
+# import preset functions from other python file in same directory
 import Kondo_B3M_functions as Kondo_B3M
 
 pre_target_torque = 0
@@ -63,7 +67,6 @@ def torque_control(servo_command):
     # print(str(target_torque))
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
     publish_servo_info()
-    print(target_torque)
     pre_target_torque = target_torque
 
 
@@ -82,13 +85,6 @@ def publish_servo_info():
 
     servo_info.motor_velocity = Kondo_B3M.get_servo_Velocity(id)
     servo_info_pub.publish(servo_info)
-
-    # voltage = Kondo_B3M.get_servo_voltage(id)
-    # voltage = float(voltage)
-    # voltage = voltage / 1000.0
-    # print(str(voltage))
-    # Kondo_B3M.get_mcu_temperature(4)
-    # Kondo_B3M.get_servo_temperature(4)
 
 
 def enfree_servo_after_node_ends(signal, frame):
