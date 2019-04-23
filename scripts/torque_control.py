@@ -26,7 +26,11 @@ time.sleep(0.1)
 
 def set_servo_id():
     global id
-    id = rospy.get_param('servo_id', 0)
+    if rospy.has_param('~servo_id'):
+        id = rospy.get_param('~servo_id')
+    else:
+        rospy.logwarn(
+            "you haven't set ros parameter indicates the ID of servo. Plsease command '$rosparam set /servo_id YOUR_ID' or set it via launch file.")
     try:
         if id < 0:
             raise Exception()
