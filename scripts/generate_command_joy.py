@@ -25,24 +25,12 @@ def generate_command(joy_msg):
     target_torque = joy_msg.axes[1] * 7000  # left stick FB
     # joy_msg.axes[4] : right stick FB
 
-    # target_torque = damp_target_torque(target_torque, pre_target_torque)
     servo_command = Servo_command()
     servo_command.target_position = target_position
     servo_command.target_velocity = target_velocity
     servo_command.target_torque = target_torque
     pub.publish(servo_command)
     pre_target_torque = target_torque
-
-#
-# def damp_target_torque(torque_command, previous_torque_command):
-#     if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
-#         if torque_command > 0:
-#             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
-#         elif torque_command < 0:
-#             torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
-#     elif torque_command * previous_torque_command < 0 and abs(previous_torque_command) > MINIMUM_STEP_OF_TARGET_TORQUE:
-#         torque_command = 0
-#     return torque_command
 
 
 if __name__ == '__main__':

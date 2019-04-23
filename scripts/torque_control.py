@@ -62,8 +62,8 @@ def torque_control(servo_command):
                       ". If you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>")
         initial_process_flag = 0
 
-    # damp target torque since drastic difference of target torque may cause lock of servo
-    target_torque = damp_target_torque(target_torque, pre_target_torque)
+    # ramp target torque since drastic difference of target torque may cause lock of servo
+    target_torque = ramp_target_torque(target_torque, pre_target_torque)
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
     publish_servo_info()
     pre_target_torque = target_torque
@@ -92,7 +92,7 @@ def enfree_servo_after_node_ends(signal, frame):
     sys.exit(0)
 
 
-def damp_target_torque(torque_command, previous_torque_command):
+def ramp_target_torque(torque_command, previous_torque_command):
     if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
