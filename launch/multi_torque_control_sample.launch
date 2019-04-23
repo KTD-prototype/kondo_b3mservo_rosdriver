@@ -1,0 +1,14 @@
+<launch>
+
+  <node name="generate_multi_command_joy"   pkg="kondo_b3mservo_rosdriver" type="generate_multi_command_joy.py" output="screen"/>
+
+  <node name="multi_torque_control" pkg="kondo_b3mservo_rosdriver" type="multi_torque_control.py" output="screen">
+    <param name="num_of_servo" value="1"/>
+    <param name="multi_servo_id" value="4"/>
+  </node>
+
+  <node name="joy_node"   pkg="joy" type="joy_node">
+    <param name="autorepeat_rate" value="10"/>
+  </node>
+
+</launch>
