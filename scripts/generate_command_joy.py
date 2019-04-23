@@ -14,19 +14,35 @@ from kondo_b3mservo_rosdriver.msg import Servo_command
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
+# pre_target_torque = 0
+# MINIMUM_STEP_OF_TARGET_TORQUE = 200
+
 
 def generate_command(joy_msg):
-
+    global pre_target_torque, MINIMUM_STEP_OF_TARGET_TORQUE
     target_position = joy_msg.axes[0] * 32000  # left stick LR
     target_velocity = joy_msg.axes[3] * 32767  # right stick LR
     target_torque = joy_msg.axes[1] * 7000  # left stick FB
     # joy_msg.axes[4] : right stick FB
 
+    # target_torque = damp_target_torque(target_torque, pre_target_torque)
     servo_command = Servo_command()
     servo_command.target_position = target_position
     servo_command.target_velocity = target_velocity
     servo_command.target_torque = target_torque
     pub.publish(servo_command)
+    pre_target_torque = target_torque
+
+#
+# def damp_target_torque(torque_command, previous_torque_command):
+#     if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
+#         if torque_command > 0:
+#             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
+#         elif torque_command < 0:
+#             torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
+#     elif torque_command * previous_torque_command < 0 and abs(previous_torque_command) > MINIMUM_STEP_OF_TARGET_TORQUE:
+#         torque_command = 0
+#     return torque_command
 
 
 if __name__ == '__main__':

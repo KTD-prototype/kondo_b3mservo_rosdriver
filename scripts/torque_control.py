@@ -17,7 +17,7 @@ import Kondo_B3M_functions as Kondo_B3M
 pre_target_torque = 0
 id = 0
 initial_process_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 200
+MINIMUM_STEP_OF_TARGET_TORQUE = 300
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -30,8 +30,8 @@ time.sleep(0.1)
 
 def set_servo_id():
     global id
-    if rospy.has_param('~servo_id'):
-        id = rospy.get_param('~servo_id')
+    if rospy.has_param('servo_id'):
+        id = rospy.get_param('servo_id')
     else:
         rospy.logwarn(
             "you haven't set ros parameter indicates the ID of servo. Plsease command '$rosparam set /servo_id YOUR_ID' or set it via launch file.")
@@ -58,20 +58,19 @@ def torque_control(servo_command):
         # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
         Kondo_B3M.change_servocontrol_mode(id, 8)
         print("")
-        print("you are controlling servo ID : " + str(id))
-        print("if you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>")
+        rospy.logwarn("you are controlling servo ID : " + str(id) +
+                      ". If you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>")
         initial_process_flag = 0
 
     # damp target torque since drastic difference of target torque may cause lock of servo
     target_torque = damp_target_torque(target_torque, pre_target_torque)
-    # print(str(target_torque))
     Kondo_B3M.control_servo_by_Torque(id, target_torque)
     publish_servo_info()
     pre_target_torque = target_torque
 
 
 def publish_servo_info():
-    global id
+    global id, BATTERY_VOLTAGE_WARN, BATTERY_VOLTAGE_FATAL, battery_voltage_warn_flag, battery_voltage_fatal_flag
     servo_info.encoder_count = Kondo_B3M.get_encoder_total_count(id)
 
     voltage = Kondo_B3M.get_servo_voltage(id)
