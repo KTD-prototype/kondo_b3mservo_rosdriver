@@ -1,10 +1,10 @@
 <launch>
 
-  <param name="num_of_servo" value="1"/>
+  <param name="num_of_servo" value="2"/>
 
   <node name="multi_torque_control" pkg="kondo_b3mservo_rosdriver" type="multi_torque_control.py" output="screen">
     <rosparam param="multi_servo_id">
-      [4]
+      [3,4]
     </rosparam>
   </node>
 

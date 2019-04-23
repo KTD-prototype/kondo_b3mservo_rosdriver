@@ -35,7 +35,6 @@ def set_the_num_of_servo():
     except:
         rospy.logerr("value error: the number of servos")
         sys.exit(1)
-    print("test " + str(num))
     return num
 
 

@@ -21,6 +21,7 @@ battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
 BATTERY_VOLTAGE_WARN = 14200
 BATTERY_VOLTAGE_FATAL = 13800
+voltage = []
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
@@ -60,18 +61,12 @@ def set_servo_id():
 
 
 def callback_multi_torque_control(multi_servo_command):
-    global num, id, initial_process_flag, target_torque, pre_target_torque
+    global num, id, initial_process_flag, target_torque, pre_target_torque, voltage
 
     # execute only single time
     if initial_process_flag == 1:
         num = set_the_num_of_servo()
         id = set_servo_id()
-        print(id)
-        print(type(id))
-        print("")
-        print("you are controlling " + str(num) +
-              " servos whose IDs is : " + str(id))
-        print("")
 
         for i in range(num):
             Kondo_B3M.resetServo(id[i])
@@ -81,8 +76,8 @@ def callback_multi_torque_control(multi_servo_command):
             Kondo_B3M.change_servocontrol_mode(id[i], 8)
             pre_target_torque.append(0)
         print("")
-        rospy.logwarn("you are controlling servo IDs : " + str(id) +
-                      ". If you want to change the IDs, abort this code and try again after execute <$ rosparam set /multi_servo_id [YOUR_ID1, YOUR_ID2 etc]> or change them via launch file")
+        rospy.logwarn("you are controlling [" + str(num) + "] servos whose IDs is : " + str(id) +
+                      ". If you want to change the number of servos or their IDs, abort this code and try again after execute <$ rosparam set /num_of_servo THE_NUMBER_OF_SERVOS> and <$ rosparam set /multi_servo_id [YOUR_ID#1, YOUR_ID#2 etc]> or change them via launch file")
         initial_process_flag = 0
 
     target_torque = multi_servo_command.target_torque
@@ -100,21 +95,24 @@ def callback_multi_torque_control(multi_servo_command):
 
 
 def publish_servo_info():
-    global id, num, battery_voltage_warn_flag, battery_voltage_fatal_flag
+    global id, num, battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage
     multi_servo_info = Multi_servo_info()
 
     for i in range(num):
         multi_servo_info.encoder_count.append(
             Kondo_B3M.get_encoder_total_count(id[i]))
-        voltage = []
-        voltage.append(Kondo_B3M.get_servo_voltage(id[i]))
+        multi_servo_info.input_voltage.append(
+            Kondo_B3M.get_servo_voltage(id[i]))
+        voltage = multi_servo_info.input_voltage
+
         if voltage[i] < BATTERY_VOLTAGE_WARN and battery_voltage_warn_flag == 0:
+            print("")
             rospy.logwarn('battery voltage is low !')
             battery_voltage_warn_flag = 1
         elif voltage[i] < BATTERY_VOLTAGE_FATAL and battery_voltage_fatal_flag == 0:
-            rospy.logfatal('battery voltage is low !')
-            battery_voltage_fatal_flag = 1
-        multi_servo_info.input_voltage.append(voltage[i])
+            print("")
+            rospy.logfatal('battery voltage is fatally low !')
+
         multi_servo_info.motor_velocity.append(
             Kondo_B3M.get_servo_Velocity(id[i]))
     multi_servo_info_pub.publish(multi_servo_info)
