@@ -15,6 +15,7 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 initial_process_flag = 1
+initial_setparam_flag = 1
 num = 0
 target_position = []
 target_velocity = []
@@ -27,13 +28,14 @@ def set_the_num_of_servo():
         num = rospy.get_param('num_of_servo')
     else:
         rospy.logwarn(
-            "you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
+            "1 you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
     try:
         if num < 0:
             raise Exception()
     except:
         rospy.logerr("value error: the number of servos")
         sys.exit(1)
+    print("test " + str(num))
     return num
 
 
@@ -42,7 +44,7 @@ def callback_generate_multi_command(joy_msg):
     multi_servo_command = Multi_servo_command()
 
     if initial_process_flag == 1:
-        num = set_the_num_of_servo()
+        global num
         for i in range(num):
             target_position.append(0)
             target_velocity.append(0)
@@ -63,9 +65,12 @@ def callback_generate_multi_command(joy_msg):
 
 if __name__ == '__main__':
     rospy.init_node('generate_multi_command')
-    node_name = rospy.get_name()
+    # node_name = rospy.get_name()
     # param_name_num = node_name + "/num_of_servo"
     # param_name_id = node_name+"/multi_servo_id"
+    if initial_setparam_flag == 1:
+        set_the_num_of_servo()
+        initial_setparam_flag = 0
 
     rospy.Subscriber('joy', Joy, callback_generate_multi_command, queue_size=5)
     pub = rospy.Publisher('multi_servo_command',

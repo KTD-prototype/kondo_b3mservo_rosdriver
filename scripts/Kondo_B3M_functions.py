@@ -12,6 +12,7 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
 
 def resetServo(ID):
+    print(ID)
     SUM = (0x06 + 0x05 + 0x00 + ID + 0x02) & 0b11111111
     resetServo_command = []
     resetServo_command += [chr(0x06), chr(0x05),
