@@ -15,7 +15,7 @@ pre_target_torque = []
 id = []
 num = 0
 initial_process_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 200
+MINIMUM_STEP_OF_TARGET_TORQUE = 300
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -80,7 +80,9 @@ def callback_multi_torque_control(multi_servo_command):
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
             Kondo_B3M.change_servocontrol_mode(id[i], 8)
             pre_target_torque.append(0)
-
+        print("")
+        rospy.logwarn("you are controlling servo IDs : " + str(id) +
+                      ". If you want to change the IDs, abort this code and try again after execute <$ rosparam set /multi_servo_id [YOUR_ID1, YOUR_ID2 etc]> or change them via launch file")
         initial_process_flag = 0
 
     target_torque = multi_servo_command.target_torque

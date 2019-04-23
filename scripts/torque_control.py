@@ -59,7 +59,7 @@ def torque_control(servo_command):
         Kondo_B3M.change_servocontrol_mode(id, 8)
         print("")
         rospy.logwarn("you are controlling servo ID : " + str(id) +
-                      ". If you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>")
+                      ". If you want to change the ID, abort this code and try again after execute <$ rosparam set /servo_id YOUR_ID>, or change it via launch file.")
         initial_process_flag = 0
 
     # ramp target torque since drastic difference of target torque may cause lock of servo

@@ -28,7 +28,7 @@ def set_the_num_of_servo():
         num = rospy.get_param('num_of_servo')
     else:
         rospy.logwarn(
-            "1 you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
+            "you haven't set ros parameter indicates the number of servos. Plsease command '$rosparam set /num_of_servo THE_NUMBER_OF_SERVOS'")
     try:
         if num < 0:
             raise Exception()
