@@ -8,31 +8,34 @@ import struct
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
-# IDが"ID"なサーボをリセットする関数
 
-
+# reset servo whose id is "ID"
 def resetServo(ID):
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
     SUM = (0x06 + 0x05 + 0x00 + ID + 0x02) & 0b11111111
     resetServo_command = []
     resetServo_command += [chr(0x06), chr(0x05),
                            chr(0x00), chr(ID), chr(0x02), chr(SUM)]
     ser.write(resetServo_command)
-    time.sleep(1)  # wait until this process done
+    time.sleep(0.5)  # wait until this process done
     print("Reset servo ID:" + str(ID))
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
-# IDが"ID"なサーボをフリーにする関数
+# enfree servo whose id is "ID"
 def enFreeServo(ID):
-
+    ser.reset_input_buffer() # flush serial buffer before starting this process
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
     enFreeServo_command = []
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
-    time.sleep(0.0001)  # wait until this process done
-    print("set servo ID:" + str(ID) + " to FREE mode")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+    # print("set servo ID:" + str(ID) + " to FREE mode")
+    time.sleep(0.015)  # wait until this process done
+    if ser.inWaiting() == 5:
+        ret = 1
+    else:
+        ret = 0
+    return ret
 
 
 # IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
