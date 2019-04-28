@@ -48,8 +48,8 @@ def initial_process():
             Kondo_B3M.change_servocontrol_mode(id[j], 8)
             pre_target_torque.append(0)
         print("")
-        rospy.logwarn("you are controlling [" + str(num) + "] servos whose IDs is : " + str(id) +
-                      ". If you want to change the number of servos or their IDs, abort this code and try again after execute <$ rosparam set /num_of_servo THE_NUMBER_OF_SERVOS> and <$ rosparam set /multi_servo_id [YOUR_ID#1, YOUR_ID#2 etc]> or change them via launch file")
+        rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
+            id) + " at TORQUE CONTROL MODE, which are automatically detected.")
 
         initial_process_flag = 0
         the_number_of_servo_pub.publish(num)

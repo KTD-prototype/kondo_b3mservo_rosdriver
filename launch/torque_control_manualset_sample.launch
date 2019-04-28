@@ -3,7 +3,7 @@
   <!-- input the number of servos you want to control to the "value" below -->
   <param name="num_of_servo" value="2"/>
 
-  <node name="multi_position_control" pkg="kondo_b3mservo_rosdriver" type="multi_position_control.py" output="screen">
+  <node name="torque_control_manualset" pkg="kondo_b3mservo_rosdriver" type="torque_control_manualset.py" output="screen">
 
     <rosparam param="multi_servo_id">
       <!-- input the ID numbers of servos you want to control to the list below -->
@@ -11,7 +11,7 @@
     </rosparam>
   </node>
 
-  <node name="generate_multi_command_joy"   pkg="kondo_b3mservo_rosdriver" type="generate_multi_command_joy.py" output="screen"/>
+  <node name="generate_command_manualset_joy"   pkg="kondo_b3mservo_rosdriver" type="generate_command_manualset_joy.py" output="screen"/>
 
   <node name="joy_node"   pkg="joy" type="joy_node">
     <param name="autorepeat_rate" value="10"/>

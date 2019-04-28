@@ -58,7 +58,7 @@ def set_servo_id():
     return id
 
 
-def callback_multi_velocity_control(multi_servo_command):
+def callback_multi_position_control(multi_servo_command):
     global num, id, initial_process_flag, voltage
 
     # execute only single time
@@ -71,18 +71,18 @@ def callback_multi_velocity_control(multi_servo_command):
             Kondo_B3M.enFreeServo(id[i])
             Kondo_B3M.reset_encoder_total_count(id[i])
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
-            Kondo_B3M.change_servocontrol_mode(id[i], 4)
+            Kondo_B3M.change_servocontrol_mode(id[i], 0)
         print("")
-        rospy.logwarn("you are controlling [" + str(num) + "] servos whose IDs is : " + str(id) +
-                      " with VELOCITY CONTROL MODE. If you want to change the number of servos or their IDs, abort this code and try again after execute <$ rosparam set /num_of_servo THE_NUMBER_OF_SERVOS> and <$ rosparam set /multi_servo_id [YOUR_ID#1, YOUR_ID#2 etc]> or change them via launch file")
+        rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(id) +
+                      " with POSITION CONTROL MODE. If you want to change the number of servos or their IDs, abort this code and try again after execute <$ rosparam set /num_of_servo THE_NUMBER_OF_SERVOS> and <$ rosparam set /multi_servo_id [YOUR_ID#1, YOUR_ID#2 etc]> or change them via launch file")
         initial_process_flag = 0
 
-    target_velocity = multi_servo_command.target_velocity
-    target_velocity = list(target_velocity)
+    target_position = multi_servo_command.target_position
+    target_position = list(target_position)
 
     for i in range(num):
-        Kondo_B3M.control_servo_by_Velocity(
-            id[i], target_velocity[i])
+        Kondo_B3M.control_servo_by_position_without_time(
+            id[i], target_position[i])
 
     publish_servo_info()
 
@@ -129,6 +129,6 @@ if __name__ == '__main__':
         'multi_servo_info', Multi_servo_info, queue_size=1)
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
-                     callback_multi_velocity_control, queue_size=1)
+                     callback_multi_position_control, queue_size=1)
 
     rospy.spin()

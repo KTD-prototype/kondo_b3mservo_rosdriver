@@ -6,7 +6,7 @@ import serial
 import time
 import signal
 import sys
-from std_msgs.msg import Int8
+from std_msgs.msg import Int16
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import Kondo_B3M_functions as Kondo_B3M
@@ -48,7 +48,7 @@ def initial_process():
             Kondo_B3M.change_servocontrol_mode(id[j], 0)
         print("")
         rospy.logwarn("you are controlling [" + str(num) + "] servos whose IDs is : " + str(id) +
-                      " at POSITION CONTROL MODE. If you want to change the number of servos or their IDs, abort this code and try again after execute <$ rosparam set /num_of_servo THE_NUMBER_OF_SERVOS> and <$ rosparam set /multi_servo_id [YOUR_ID#1, YOUR_ID#2 etc]> or change them via launch file")
+                      " at POSITION CONTROL MODE, which are automatically detected.")
 
         initial_process_flag = 0
         the_number_of_servo_pub.publish(num)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         'multi_servo_info', Multi_servo_info, queue_size=1)
 
     the_number_of_servo_pub = rospy.Publisher(
-        'the_number_of_servo', Int8, queue_size=1, latch=True)
+        'the_number_of_servo', Int16, queue_size=1, latch=True)
 
     initial_process()
 

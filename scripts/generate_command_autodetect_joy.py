@@ -5,7 +5,7 @@ import serial
 import time
 import rospy
 import Kondo_B3M_functions as Kondo_B3M
-from std_msgs.msg import Int8
+from std_msgs.msg import Int16
 from sensor_msgs.msg import Joy
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 
@@ -52,7 +52,7 @@ def callback_generate_multi_command(joy_msg):
 if __name__ == '__main__':
     rospy.init_node('generate_multi_command')
 
-    rospy.Subscriber('the_number_of_servo', Int8, callback_init, queue_size=1)
+    rospy.Subscriber('the_number_of_servo', Int16, callback_init, queue_size=1)
     rospy.Subscriber('joy', Joy, callback_generate_multi_command, queue_size=1)
     pub = rospy.Publisher('multi_servo_command',
                           Multi_servo_command, queue_size=1)
