@@ -56,20 +56,16 @@ def initial_process():
         pass
 
 
-def callback_multi_torque_control(multi_servo_command):
+def callback_multi_position_control(multi_servo_command):
     global num, id, initial_process_flag, target_torque, pre_target_torque, voltage
 
-    target_torque = multi_servo_command.target_torque
-    target_torque = list(target_torque)
+    target_position = multi_servo_command.target_position
+    target_position = list(target_position)
     # print(num)
 
     for i in range(num):
-        # damp target torque since drastic difference of target torque may cause lock of servo
-        target_torque[i] = damp_target_torque(
-            target_torque[i], pre_target_torque[i])
-        # print(str(target_torque))
-        Kondo_B3M.control_servo_by_Torque(id[i], target_torque[i])
-        pre_target_torque[i] = target_torque[i]
+        Kondo_B3M.control_servo_by_position_without_time(
+            id[i], target_position[i])
 
     publish_servo_info()
 
@@ -106,17 +102,6 @@ def enfree_servo_after_node_ends(signal, frame):
     sys.exit(0)
 
 
-def damp_target_torque(torque_command, previous_torque_command):
-    if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
-        if torque_command > 0:
-            torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
-        elif torque_command < 0:
-            torque_command = previous_torque_command - MINIMUM_STEP_OF_TARGET_TORQUE
-    elif torque_command * previous_torque_command < 0 and abs(previous_torque_command) > MINIMUM_STEP_OF_TARGET_TORQUE:
-        torque_command = 0
-    return torque_command
-
-
 signal.signal(signal.SIGINT, enfree_servo_after_node_ends)
 
 
@@ -131,6 +116,6 @@ if __name__ == '__main__':
     initial_process()
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
-                     callback_multi_torque_control, queue_size=1)
+                     callback_multi_position_control, queue_size=1)
 
     rospy.spin()
