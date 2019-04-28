@@ -32,6 +32,7 @@ def callback_init(number):
         target_torque.append(0)
     initial_process_flag = 0
 
+
 def callback_generate_multi_command(joy_msg):
     global target_position, target_velocity, target_torque, num, initial_process_flag
     multi_servo_command = Multi_servo_command()

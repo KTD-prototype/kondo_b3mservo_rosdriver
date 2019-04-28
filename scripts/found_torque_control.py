@@ -28,6 +28,7 @@ voltage = []
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
+
 def initial_process():
     global id, num, initial_process_flag, the_number_of_servo_pub
     if initial_process_flag == 1:
@@ -35,7 +36,7 @@ def initial_process():
             # Kondo_B3M.resetServo(i)
             result = Kondo_B3M.enFreeServo(i)
             # print(result)
-            if result ==1:
+            if result == 1:
                 id.append(i)
                 num = num + 1
 
@@ -54,7 +55,6 @@ def initial_process():
         the_number_of_servo_pub.publish(num)
     else:
         pass
-
 
 
 def callback_multi_torque_control(multi_servo_command):
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         'multi_servo_info', Multi_servo_info, queue_size=1)
 
     the_number_of_servo_pub = rospy.Publisher(
-        'the_number_of_servo', Int16, queue_size=1, latch = True)
+        'the_number_of_servo', Int16, queue_size=1, latch=True)
 
     initial_process()
 

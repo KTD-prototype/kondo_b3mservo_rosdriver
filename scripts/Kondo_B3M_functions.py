@@ -23,7 +23,7 @@ def resetServo(ID):
 
 # enfree servo whose id is "ID"
 def enFreeServo(ID):
-    ser.reset_input_buffer() # flush serial buffer before starting this process
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
     enFreeServo_command = []
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
