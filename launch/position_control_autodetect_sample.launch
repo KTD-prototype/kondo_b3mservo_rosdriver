@@ -1,6 +1,6 @@
 <launch>
 
-  <node name="found_torque_control" pkg="kondo_b3mservo_rosdriver" type="found_torque_control.py" output="screen"/>
+  <node name="positon_control_autodetect" pkg="kondo_b3mservo_rosdriver" type="position_control_autodetect.py" output="screen"/>
   <node name="generate_found_command_joy"   pkg="kondo_b3mservo_rosdriver" type="generate_found_command_joy.py" output="screen"/>
 
   <node name="joy_node"   pkg="joy" type="joy_node">
