@@ -1,9 +1,12 @@
 <launch>
 
+  <!-- input the number of servos you want to control to the "value" below -->
   <param name="num_of_servo" value="2"/>
 
   <node name="multi_torque_control" pkg="kondo_b3mservo_rosdriver" type="multi_torque_control.py" output="screen">
+
     <rosparam param="multi_servo_id">
+      <!-- input the ID numbers of servos you want to control to the list below -->
       [3,4]
     </rosparam>
   </node>
