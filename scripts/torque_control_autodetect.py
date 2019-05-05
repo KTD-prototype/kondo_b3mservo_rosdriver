@@ -39,7 +39,7 @@ def initial_process():
     if initial_process_flag == 1:
         for i in range(255):
             # Kondo_B3M.resetServo(i)
-            result = Kondo_B3M.enFreeServo(i)
+            result = Kondo_B3M.initServo(i)
             # print(result)
             if result == 1:
                 id.append(i)

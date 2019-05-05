@@ -9,6 +9,23 @@ import struct
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
 
+# initialize (= reset) servo whose id is "ID"
+def initServo(ID):
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
+    enFreeServo_command = []
+    enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
+                            chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
+    ser.write(enFreeServo_command)
+    # print("set servo ID:" + str(ID) + " to FREE mode")
+    time.sleep(0.015)  # wait until this process done
+    if ser.inWaiting() == 5:
+        ret = 1
+    else:
+        ret = 0
+    return ret
+
+
 # reset servo whose id is "ID"
 def resetServo(ID):
     ser.reset_input_buffer()  # flush serial buffer before starting this process
@@ -29,7 +46,7 @@ def enFreeServo(ID):
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
-    # print("set servo ID:" + str(ID) + " to FREE mode")
+    print("set servo ID:" + str(ID) + " to FREE mode")
     time.sleep(0.015)  # wait until this process done
     if ser.inWaiting() == 5:
         ret = 1
