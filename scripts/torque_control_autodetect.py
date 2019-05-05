@@ -49,14 +49,15 @@ def initial_process():
             Kondo_B3M.reset_encoder_total_count(id[j])
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
             Kondo_B3M.change_servocontrol_mode(id[j], 8)
+
+            target_torque.append(0)
+            ramped_target_torque.append(0)
+            pre_target_torque.append(0)
+
         print("")
         rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
             id) + " at TORQUE CONTROL MODE, which are automatically detected.")
 
-        for k in range(num):
-            target_torque.append(0)
-            ramped_target_torque.append(0)
-            pre_target_torque.append(0)
 
         target_torque = list(target_torque)
         ramped_target_torque = list(ramped_target_torque)
@@ -80,13 +81,13 @@ def torque_control():
         Kondo_B3M.control_servo_by_Torque(id[i], ramped_target_torque[i])
 
     pre_target_torque = ramped_target_torque
+    publish_servo_info()
 
 
 def callback_get_command(multi_servo_command):
     global target_torque
     target_torque = multi_servo_command.target_torque
     target_torque = list(target_torque)
-    publish_servo_info()
 
 
 def publish_servo_info():
