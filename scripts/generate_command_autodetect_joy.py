@@ -9,11 +9,6 @@ from std_msgs.msg import Int16
 from sensor_msgs.msg import Joy
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 
-#global target_position, target_velocity, target_torque, pre_target_torque
-
-
-ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
-time.sleep(0.1)
 
 initial_process_flag = 1
 initial_setparam_flag = 1
