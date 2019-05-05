@@ -11,8 +11,9 @@ from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import Kondo_B3M_functions as Kondo_B3M
 
-target_torque = [0, 0]
-pre_target_torque = [0, 0]
+target_torque = []
+ramped_target_torque = []
+pre_target_torque = []
 id = []
 num = 0
 initial_process_flag = 1
@@ -31,6 +32,8 @@ time.sleep(0.1)
 
 def initial_process():
     global id, num, initial_process_flag, the_number_of_servo_pub
+    global target_torque, ramped_target_torque, pre_target_torque
+
     if initial_process_flag == 1:
         for i in range(255):
             # Kondo_B3M.resetServo(i)
@@ -50,31 +53,40 @@ def initial_process():
         rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
             id) + " at TORQUE CONTROL MODE, which are automatically detected.")
 
+        for k in range(num):
+            target_torque.append(0)
+            ramped_target_torque.append(0)
+            pre_target_torque.append(0)
+
+        target_torque = list(target_torque)
+        ramped_target_torque = list(ramped_target_torque)
+        pre_target_torque = list(pre_target_torque)
         initial_process_flag = 0
         the_number_of_servo_pub.publish(num)
+
     else:
         pass
 
 
 def torque_control():
-    global num, id, target_torque, pre_target_torque
-    target_torque = list(target_torque)
-    pre_target_torque = list(pre_target_torque)
+    global num, id, target_torque, pre_target_torque, ramped_target_torque
+    # target_torque = list(target_torque)
+    # pre_target_torque = list(pre_target_torque)
 
     for i in range(num):
-        # damp target torque since drastic difference of target torque may cause lock of servo
-        target_torque[i] = ramp_target_torque(
+        # ramp target torque since drastic difference of target torque may cause lock of servo
+        ramped_target_torque[i] = ramp_target_torque(
             target_torque[i], pre_target_torque[i])
-        Kondo_B3M.control_servo_by_Torque(id[i], target_torque[i])
+        Kondo_B3M.control_servo_by_Torque(id[i], ramped_target_torque[i])
 
-    pre_target_torque = target_torque
-    publish_servo_info()
+    pre_target_torque = ramped_target_torque
 
 
 def callback_get_command(multi_servo_command):
     global target_torque
     target_torque = multi_servo_command.target_torque
     target_torque = list(target_torque)
+    publish_servo_info()
 
 
 def publish_servo_info():
@@ -103,7 +115,7 @@ def publish_servo_info():
 
 
 def enfree_servo_after_node_ends(signal, frame):
-    global id
+    global id, num
     for i in range(num):
         Kondo_B3M.enFreeServo(id[i])
     sys.exit(0)
