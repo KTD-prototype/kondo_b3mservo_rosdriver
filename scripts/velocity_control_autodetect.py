@@ -25,7 +25,7 @@ BATTERY_VOLTAGE_WARN = 14200
 BATTERY_VOLTAGE_FATAL = 13800
 voltage = []
 
-ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 3000000)
+ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 

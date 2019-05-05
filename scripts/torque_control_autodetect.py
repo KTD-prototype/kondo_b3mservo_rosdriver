@@ -18,7 +18,7 @@ id = []
 num = 0
 initial_process_flag = 1
 found_servo_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 200
+MINIMUM_STEP_OF_TARGET_TORQUE = 300
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
