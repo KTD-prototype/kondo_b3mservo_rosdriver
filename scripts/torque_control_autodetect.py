@@ -55,7 +55,7 @@ def initial_process():
             target_torque.append(0)
             ramped_target_torque.append(0)
             pre_target_torque.append(0)
-            voltage.append(0)
+            voltage.append(16000)
 
         print("")
         rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
