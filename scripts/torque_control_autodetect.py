@@ -11,13 +11,13 @@ from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import Kondo_B3M_functions as Kondo_B3M
 
-target_torque = []
-pre_target_torque = []
+target_torque = [0, 0]
+pre_target_torque = [0, 0]
 id = []
 num = 0
 initial_process_flag = 1
 found_servo_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 300
+MINIMUM_STEP_OF_TARGET_TORQUE = 200
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -46,7 +46,6 @@ def initial_process():
             Kondo_B3M.reset_encoder_total_count(id[j])
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
             Kondo_B3M.change_servocontrol_mode(id[j], 8)
-            pre_target_torque.append(0)
         print("")
         rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
             id) + " at TORQUE CONTROL MODE, which are automatically detected.")
@@ -57,22 +56,25 @@ def initial_process():
         pass
 
 
-def callback_multi_torque_control(multi_servo_command):
-    global num, id, initial_process_flag, target_torque, pre_target_torque, voltage
-
-    target_torque = multi_servo_command.target_torque
+def torque_control():
+    global num, id, target_torque, pre_target_torque
     target_torque = list(target_torque)
-    # print(num)
+    pre_target_torque = list(pre_target_torque)
 
     for i in range(num):
         # damp target torque since drastic difference of target torque may cause lock of servo
-        target_torque[i] = damp_target_torque(
+        target_torque[i] = ramp_target_torque(
             target_torque[i], pre_target_torque[i])
-        # print(str(target_torque))
         Kondo_B3M.control_servo_by_Torque(id[i], target_torque[i])
-        pre_target_torque[i] = target_torque[i]
 
+    pre_target_torque = target_torque
     publish_servo_info()
+
+
+def callback_get_command(multi_servo_command):
+    global target_torque
+    target_torque = multi_servo_command.target_torque
+    target_torque = list(target_torque)
 
 
 def publish_servo_info():
@@ -107,7 +109,7 @@ def enfree_servo_after_node_ends(signal, frame):
     sys.exit(0)
 
 
-def damp_target_torque(torque_command, previous_torque_command):
+def ramp_target_torque(torque_command, previous_torque_command):
     if abs(torque_command) > abs(previous_torque_command) + MINIMUM_STEP_OF_TARGET_TORQUE:
         if torque_command > 0:
             torque_command = previous_torque_command + MINIMUM_STEP_OF_TARGET_TORQUE
@@ -132,6 +134,12 @@ if __name__ == '__main__':
     initial_process()
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
-                     callback_multi_torque_control, queue_size=1)
+                     callback_get_command, queue_size=1)
 
-    rospy.spin()
+    rate = rospy.Rate(50)
+    while not rospy.is_shutdown():
+        try:
+            torque_control()
+        except IOError:
+            pass
+        rate.sleep()
