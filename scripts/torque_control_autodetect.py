@@ -102,6 +102,7 @@ def publish_servo_info():
             Kondo_B3M.get_encoder_total_count(id[i]))
         multi_servo_info.motor_velocity.append(
             Kondo_B3M.get_servo_Velocity(id[i]))
+        multi_servo_info.input_voltage.append(voltage[i])
 
     # we don't have to monitor voltage at every loop, so get sparsed at a time per 100 loops
     if k % 100 == 0:
@@ -115,7 +116,6 @@ def publish_servo_info():
             elif voltage[j] < BATTERY_VOLTAGE_FATAL and battery_voltage_fatal_flag == 0:
                 print("")
                 rospy.logfatal('battery voltage is fatally low !')
-    multi_servo_info.input_voltage.append(voltage[i])
 
     k = k + 1
     multi_servo_info_pub.publish(multi_servo_info)
