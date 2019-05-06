@@ -18,7 +18,7 @@ id = []
 num = 0
 initial_process_flag = 1
 found_servo_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 300
+MINIMUM_STEP_OF_TARGET_TORQUE = 250
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -100,8 +100,11 @@ def publish_servo_info():
         voltage = list(voltage)
         multi_servo_info.encoder_count.append(
             Kondo_B3M.get_encoder_total_count(id[i]))
-        multi_servo_info.motor_velocity.append(
-            Kondo_B3M.get_servo_Velocity(id[i]))
+
+        # ommit to get motor velocity due to low control rate
+        # multi_servo_info.motor_velocity.append(
+        #     Kondo_B3M.get_servo_Velocity(id[i]))
+
         multi_servo_info.input_voltage.append(voltage[i])
 
     # we don't have to monitor voltage at every loop, so get sparsed at a time per 100 loops

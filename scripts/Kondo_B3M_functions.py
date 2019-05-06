@@ -18,7 +18,7 @@ def initServo(ID):
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
     # print("set servo ID:" + str(ID) + " to FREE mode")
-    time.sleep(0.015)  # wait until this process done
+    time.sleep(0.016)  # wait until this process done
     if ser.inWaiting() == 5:
         ret = 1
     else:
@@ -46,13 +46,8 @@ def enFreeServo(ID):
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
+    time.sleep(0.5)  # wait until this process done
     print("set servo ID:" + str(ID) + " to FREE mode")
-    time.sleep(0.015)  # wait until this process done
-    if ser.inWaiting() == 5:
-        ret = 1
-    else:
-        ret = 0
-    return ret
 
 
 # IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
@@ -195,8 +190,7 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
 
 # IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
 def control_servo_by_Torque(ID, Torque_mNm):
-
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+    now = time.time()
     if Torque_mNm < 0:  # 目標トルクが負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modTorque = 65536 + Torque_mNm
     else:  # 目標トルクが正の場合でも、コンソールにTorque値を表示したいので、信号送信用の変数はmodTorqueとする
@@ -206,13 +200,22 @@ def control_servo_by_Torque(ID, Torque_mNm):
     control_servo_by_Torque_command = []
     control_servo_by_Torque_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modTorque & 0xff), chr(modTorque >> 8), chr(0x3c), chr(0x01), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
     ser.write(control_servo_by_Torque_command)
-    # 通信が来るまで待つ
-    while True:
-        if ser.inWaiting() == 5:
-            ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
-            # time.sleep(0.01)
-            break
+
+    # wait until reply will come
+    # while True:
+    #     if ser.inWaiting() == 5:
+    #         ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+    #         break
+    time.sleep(0.008)
+    dt = time.time() - now
+    print(dt)
+    print("")
+
+    # print results
     # print("set servo ID:" + str(ID)
     #       + " to Torque " + str(Torque_mNm) + "[mNm]")
 
@@ -256,21 +259,22 @@ def get_servo_Position(ID):
 # IDが"ID"なサーボの速度取得
 def get_servo_Velocity(ID):
 
-    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
-    ser.reset_input_buffer()
-
     # アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x32 + 0x02) & 0b11111111
     get_servo_Velocity_command = []
     get_servo_Velocity_command += [chr(0x07), chr(0x03),
                                    chr(0x00), chr(ID), chr(0x32), chr(0x02), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
     ser.write(get_servo_Velocity_command)
-    # 通信が来るまで待つ
+    # wait until receive the data (3 bytes at minimum)
     while True:
-        if ser.inWaiting() == 7:
+        if ser.inWaiting() > 3:
             break
 
-    # 返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の２バイトが速度なので、受信し、リトルエンディアンで整数に変換。
+    # process the reply from servo. first 4 bytes is general information, so you can discard it.
+    # next 2 bytes are motor velocity, so get them and merge by little endian
     Receive = ser.read(4)
     Velocity1 = ser.read(1)
     Velocity2 = ser.read(1)
@@ -323,19 +327,22 @@ def get_servo_Current(ID):
 
 def get_servo_voltage(ID):
 
-    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
-    ser.reset_input_buffer()
     # アドレス0x4aから2バイト分（=電流値）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x4a + 0x02) & 0b11111111
     get_servo_voltage_command = []
     get_servo_voltage_command += [chr(0x07), chr(0x03),
                                   chr(0x00), chr(ID), chr(0x4a), chr(0x02), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
     ser.write(get_servo_voltage_command)
-    # 通信が来るまで待つ
+    # wait until receive the data (3 bytes at minimum)
     while True:
-        if ser.inWaiting() == 7:
+        if ser.inWaiting() > 3:
             break
 
+    # process the reply from servo. first 4 bytes is general information, so you can discard it.
+    # next 2 bytes are voltage, so get them and merge by little endian
     Receive = ser.read(4)
     voltage1 = ser.read(1)
     voltage2 = ser.read(1)
@@ -429,25 +436,28 @@ def reset_encoder_total_count(ID):
 
 
 def get_encoder_total_count(ID):
-
-    # 何か信号を送る度にサーボが返信を返してきており、それがバッファに溜まっているので、全てクリアする
-    ser.reset_input_buffer()
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x52 + 0x04) & 0b11111111
     get_encoder_total_count_command = []
     get_encoder_total_count_command += [chr(0x07), chr(
         0x03), chr(0x00), chr(ID), chr(0x52), chr(0x04), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
     ser.write(get_encoder_total_count_command)
-    # 通信が来るまで待つ
+
+    # # wait until receive the data (4 bytes at minimum)
     while True:
-        # print(str(ser.inWaiting()))
-        if ser.inWaiting() == 9:
+        if ser.inWaiting() > 3:
             break
-    # 返信を処理。最初の４バイトは共通なので、適当な変数に格納しておく。次の4バイトがカウントなので、受信し、リトルエンディアンで整数に変換。
+
+    # process the reply from servo. first 4 bytes is general information, so you can discard it.
+    # next 4 bytes are encoder count, so get them and merge by little endian
     Receive = ser.read(4)
     EncoderCount1 = ser.read(1)
     EncoderCount2 = ser.read(1)
     EncoderCount3 = ser.read(1)
     EncoderCount4 = ser.read(1)
+
     EncoderCount1 = ord(EncoderCount1)
     EncoderCount2 = ord(EncoderCount2)
     EncoderCount3 = ord(EncoderCount3)
