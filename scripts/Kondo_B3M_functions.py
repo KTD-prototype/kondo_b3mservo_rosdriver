@@ -18,7 +18,7 @@ def initServo(ID):
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
     # print("set servo ID:" + str(ID) + " to FREE mode")
-    time.sleep(0.016)  # wait until this process done
+    time.sleep(0.02)  # wait until this process done
     if ser.inWaiting() == 5:
         ret = 1
     else:
@@ -190,7 +190,7 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
 
 # IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
 def control_servo_by_Torque(ID, Torque_mNm):
-    now = time.time()
+    # now = time.time()
     if Torque_mNm < 0:  # 目標トルクが負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modTorque = 65536 + Torque_mNm
     else:  # 目標トルクが正の場合でも、コンソールにTorque値を表示したいので、信号送信用の変数はmodTorqueとする
@@ -206,14 +206,14 @@ def control_servo_by_Torque(ID, Torque_mNm):
     ser.write(control_servo_by_Torque_command)
 
     # wait until reply will come
-    # while True:
-    #     if ser.inWaiting() == 5:
-    #         ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
-    #         break
-    time.sleep(0.008)
-    dt = time.time() - now
-    print(dt)
-    print("")
+    while True:
+        if ser.inWaiting() == 5:
+            ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+            break
+    # time.sleep(0.012)
+    # dt = time.time() - now
+    # print(dt)
+    # print("")
 
     # print results
     # print("set servo ID:" + str(ID)
