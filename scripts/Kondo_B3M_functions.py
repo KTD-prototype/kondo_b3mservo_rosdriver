@@ -220,6 +220,43 @@ def control_servo_by_Torque(ID, Torque_mNm):
     #       + " to Torque " + str(Torque_mNm) + "[mNm]")
 
 
+def control_servo_by_Torque_multicast(args):
+    length = len(args) / 2
+    id = []
+    torque_command = []
+    id_sum = 0
+    torque_command_sum = 0
+    for i in range(length):
+        id.append(args[i])
+        torque_command.append(args[i + length])
+        if torque_command[i] < 0:
+            torque_command[i] = 65536 + torque_command[i]
+        id_sum = id_sum + id[i]
+        torque_command_sum = torque_command_sum + \
+            (torque_command[i] & 0xff) + (torque_command[i] >> 8)
+
+    print(torque_command)
+    print("")
+    command_length = 3 + 3 * length + 3
+    SUM = (command_length + 0x04 + 0x00 + id_sum +
+           torque_command_sum + 0x3c + length) & 0b11111111
+
+    control_servo_by_Torque_multicast_command = []
+    control_servo_by_Torque_multicast_command += [
+        chr(command_length), chr(0x04), chr(0x00)]
+    for j in range(length):
+        control_servo_by_Torque_multicast_command += [
+            chr(id[j]), chr(torque_command[j] & 0xff), chr(torque_command[j] >> 8)]
+    control_servo_by_Torque_multicast_command += [
+        chr(0x3c), chr(length), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
+    ser.write(control_servo_by_Torque_multicast_command)
+    time.sleep(0.01)
+    args = []
+
+
 # IDが"ID"なサーボの角度取得
 def get_servo_Position(ID):
 
