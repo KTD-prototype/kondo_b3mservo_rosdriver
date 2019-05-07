@@ -235,8 +235,8 @@ def control_servo_by_Torque_multicast(args):
         torque_command_sum = torque_command_sum + \
             (torque_command[i] & 0xff) + (torque_command[i] >> 8)
 
-    print(torque_command)
-    print("")
+    # print(torque_command)
+    # print("")
     command_length = 3 + 3 * length + 3
     SUM = (command_length + 0x04 + 0x00 + id_sum +
            torque_command_sum + 0x3c + length) & 0b11111111
@@ -487,8 +487,8 @@ def get_encoder_total_count(ID):
         if ser.inWaiting() == 9:
             break
     dt = time.time() - now
-    print(dt)
-    print("")
+    # print(dt)
+    # print("")
     # process the reply from servo. first 4 bytes is general information, so you can discard it.
     # next 4 bytes are encoder count, so get them and merge by little endian
     Receive = ser.read(4)
