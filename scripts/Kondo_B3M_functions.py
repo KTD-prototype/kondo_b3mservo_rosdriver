@@ -444,12 +444,14 @@ def get_encoder_total_count(ID):
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(get_encoder_total_count_command)
-
+    now = time.time()
     # # wait until receive the data (4 bytes at minimum)
     while True:
-        if ser.inWaiting() > 3:
+        if ser.inWaiting() == 9:
             break
-
+    dt = time.time() - now
+    print(dt)
+    print("")
     # process the reply from servo. first 4 bytes is general information, so you can discard it.
     # next 4 bytes are encoder count, so get them and merge by little endian
     Receive = ser.read(4)

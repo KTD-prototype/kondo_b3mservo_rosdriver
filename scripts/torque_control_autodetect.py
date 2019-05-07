@@ -94,8 +94,8 @@ def callback_servo_command(multi_servo_command):
     global num, target_torque, pre_target_torque, ramped_target_torque
     target_torque = multi_servo_command.target_torque
     target_torque = list(target_torque)
-    print(pre_target_torque)
-    print(target_torque)
+    # print(pre_target_torque)
+    # print(target_torque)
 
     for i in range(num):
         # ramp target torque since drastic difference of target torque may cause lock of servo
@@ -103,8 +103,8 @@ def callback_servo_command(multi_servo_command):
             target_torque[i], pre_target_torque[i])
         Kondo_B3M.control_servo_by_Torque(id[i], ramped_target_torque[i])
 
-    print(ramped_target_torque)
-    print("")
+    # print(ramped_target_torque)
+    # print("")
     pre_target_torque = ramped_target_torque
     publish_servo_info()
 
