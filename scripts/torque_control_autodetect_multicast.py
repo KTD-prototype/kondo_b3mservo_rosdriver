@@ -19,7 +19,7 @@ merged_command = []
 num = 0
 initial_process_flag = 1
 found_servo_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 150
+MINIMUM_STEP_OF_TARGET_TORQUE = 100
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -95,6 +95,7 @@ def callback_servo_command(multi_servo_command):
     pre_target_torque = ramped_target_torque
     publish_servo_info()
     merged_command = []
+    print(ramped_target_torque)
 
 
 def publish_servo_info():
