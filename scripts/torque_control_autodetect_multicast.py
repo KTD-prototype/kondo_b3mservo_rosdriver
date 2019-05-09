@@ -6,7 +6,7 @@ import serial
 import time
 import signal
 import sys
-from std_msgs.msg import Int16
+from std_msgs.msg import Int16, Int8
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import Kondo_B3M_functions as Kondo_B3M
@@ -28,6 +28,8 @@ BATTERY_VOLTAGE_FATAL = 13800
 voltage = []
 
 k = 0
+reset_flag = 0
+servo_drive_flag = 1
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
@@ -37,44 +39,40 @@ def initial_process():
     global id, num, initial_process_flag, the_number_of_servo_pub
     global target_torque, ramped_target_torque, pre_target_torque, voltage
 
-    if initial_process_flag == 1:
-        # for i in range(255):
-        for i in range(10):
-            # Kondo_B3M.resetServo(i)
-            result = Kondo_B3M.initServo(i)
-            # print(result)
-            if result == 1:
-                id.append(i)
-                num = num + 1
+    # for i in range(255):
+    for i in range(10):
+        # Kondo_B3M.resetServo(i)
+        result = Kondo_B3M.initServo(i)
+        # print(result)
+        if result == 1:
+            id.append(i)
+            num = num + 1
 
-        for j in range(num):
-            Kondo_B3M.resetServo(id[j])
-            Kondo_B3M.enFreeServo(id[j])
-            Kondo_B3M.reset_encoder_total_count(id[j])
-            # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
-            Kondo_B3M.change_servocontrol_mode(id[j], 8)
+    for j in range(num):
+        Kondo_B3M.resetServo(id[j])
+        Kondo_B3M.enFreeServo(id[j])
+        Kondo_B3M.reset_encoder_total_count(id[j])
+        # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
+        Kondo_B3M.change_servocontrol_mode(id[j], 8)
 
-            target_torque.append(0)
-            ramped_target_torque.append(0)
-            pre_target_torque.append(0)
-            voltage.append(16000)
+        target_torque.append(0)
+        ramped_target_torque.append(0)
+        pre_target_torque.append(0)
+        voltage.append(16000)
 
-        print("")
-        rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
-            id) + " at TORQUE CONTROL MODE, which are automatically detected.")
+    print("")
+    rospy.logwarn("you are controlling [ " + str(num) + " ] servos whose IDs is : " + str(
+        id) + " at TORQUE CONTROL MODE, which are automatically detected.")
 
-        target_torque = list(target_torque)
-        ramped_target_torque = list(ramped_target_torque)
-        pre_target_torque = list(pre_target_torque)
-        initial_process_flag = 0
-        the_number_of_servo_pub.publish(num)
-
-    else:
-        pass
+    target_torque = list(target_torque)
+    ramped_target_torque = list(ramped_target_torque)
+    pre_target_torque = list(pre_target_torque)
+    initial_process_flag = 0
+    the_number_of_servo_pub.publish(num)
 
 
 def callback_servo_command(multi_servo_command):
-    global num, target_torque, pre_target_torque, ramped_target_torque, id, merged_command
+    global num, target_torque, pre_target_torque, ramped_target_torque, id, merged_command, reset_flag, servo_drive_flag
     target_torque = multi_servo_command.target_torque
     target_torque = list(target_torque)
     # print(pre_target_torque)
@@ -89,13 +87,24 @@ def callback_servo_command(multi_servo_command):
         merged_command.append(id[j])
     for k in range(num):
         merged_command.append(ramped_target_torque[k])
-    Kondo_B3M.control_servo_by_Torque_multicast(merged_command)
-    # print(ramped_target_torque)
-    # print("")
+
+    if servo_drive_flag == 1:
+        Kondo_B3M.control_servo_by_Torque_multicast(merged_command)
+
     pre_target_torque = ramped_target_torque
     publish_servo_info()
     merged_command = []
-    print(ramped_target_torque)
+
+    if reset_flag == 1:
+        for j in range(num):
+            Kondo_B3M.resetServo(id[j])
+            Kondo_B3M.enFreeServo(id[j])
+            Kondo_B3M.reset_encoder_total_count(id[j])
+            # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
+            Kondo_B3M.change_servocontrol_mode(id[j], 8)
+        rospy.logwarn(complete resetting servos!)
+        reset_flag = 0
+        servo_drive_flag = 0
 
 
 def publish_servo_info():
@@ -129,6 +138,24 @@ def publish_servo_info():
     k = k + 1
     multi_servo_info_pub.publish(multi_servo_info)
     del multi_servo_info
+
+
+def callback_servo_reset(trigger):
+    global reset_flag
+    if trigger.data == 1:
+        servo_drive_flag = 0
+        reset_flag = 1
+    else:
+        pass
+
+
+def callback_servo_drive(trigger):
+    global servo_drive_flag
+    if trigger.data == 1:
+        servo_drive_flag = 1
+        rospy.logwarn(restarting servos!)
+    else:
+        pass
 
 
 def enfree_servo_after_node_ends(signal, frame):
@@ -166,6 +193,8 @@ if __name__ == '__main__':
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
                      callback_servo_command, queue_size=1)
+    rospy.Subscriber('reset_trigger', Int8, callback_servo_reset, queue_size=1)
+    rospy.Subscriber('drive_trigger', Int8, callback_servo_drive, queue_size=1)
 
     rospy.spin()
     # rate = rospy.Rate(50)
