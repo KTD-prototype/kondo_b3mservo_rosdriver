@@ -102,7 +102,7 @@ def callback_servo_command(multi_servo_command):
             Kondo_B3M.reset_encoder_total_count(id[j])
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
             Kondo_B3M.change_servocontrol_mode(id[j], 8)
-        rospy.logwarn(complete resetting servos!)
+        rospy.logwarn('complete resetting servos!')
         reset_flag = 0
         servo_drive_flag = 0
 
@@ -151,9 +151,9 @@ def callback_servo_reset(trigger):
 
 def callback_servo_drive(trigger):
     global servo_drive_flag
-    if trigger.data == 1:
+    if trigger.data == 1 and servo_drive_flag == 0:
         servo_drive_flag = 1
-        rospy.logwarn(restarting servos!)
+        rospy.logwarn('restarting servos!')
     else:
         pass
 
