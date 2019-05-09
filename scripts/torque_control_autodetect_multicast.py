@@ -27,8 +27,8 @@ BATTERY_VOLTAGE_WARN = 14200
 BATTERY_VOLTAGE_FATAL = 13800
 voltage = []
 
-k = 0
-reset_flag = 0
+voltage_monitor_flag = 0
+servo_reset_flag = 0
 servo_drive_flag = 1
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
@@ -72,7 +72,7 @@ def initial_process():
 
 
 def callback_servo_command(multi_servo_command):
-    global num, target_torque, pre_target_torque, ramped_target_torque, id, merged_command, reset_flag, servo_drive_flag
+    global num, target_torque, pre_target_torque, ramped_target_torque, id, merged_command, servo_reset_flag, servo_drive_flag
     target_torque = multi_servo_command.target_torque
     target_torque = list(target_torque)
     # print(pre_target_torque)
@@ -88,6 +88,7 @@ def callback_servo_command(multi_servo_command):
     for k in range(num):
         merged_command.append(ramped_target_torque[k])
 
+    # actual locomotions are only conducted when the flag is active
     if servo_drive_flag == 1:
         Kondo_B3M.control_servo_by_Torque_multicast(merged_command)
 
@@ -95,20 +96,23 @@ def callback_servo_command(multi_servo_command):
     publish_servo_info()
     merged_command = []
 
-    if reset_flag == 1:
-        for j in range(num):
+    # if flag for resetting servos is active
+    if servo_reset_flag == 1:
+        for j in range(num):  # start resetting and initiating servos again
             Kondo_B3M.resetServo(id[j])
             Kondo_B3M.enFreeServo(id[j])
             Kondo_B3M.reset_encoder_total_count(id[j])
             # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
             Kondo_B3M.change_servocontrol_mode(id[j], 8)
         rospy.logwarn('complete resetting servos!')
-        reset_flag = 0
+        servo_reset_flag = 0  # deactivate flag for resetting servos
+
+        # deactivate flag for servo locomoting until it's triggered to restart
         servo_drive_flag = 0
 
 
 def publish_servo_info():
-    global id, num, battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage, k
+    global id, num, battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage, voltage_monitor_flag
     multi_servo_info = Multi_servo_info()
 
     for i in range(num):
@@ -122,9 +126,10 @@ def publish_servo_info():
 
         multi_servo_info.input_voltage.append(voltage[i])
 
-    # we don't have to monitor voltage at every loop, so get sparsed at a time per 100 loops
-    if k % 100 == 0:
-        k = 1
+    # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
+    # monitor per 500 cycles (cycles usually at over 50Hz)
+    if voltage_monitor_flag % 500 == 0:
+        voltage_monitor_flag = 1
         for j in range(num):
             voltage[j] = Kondo_B3M.get_servo_voltage(id[j])
             if voltage[j] < BATTERY_VOLTAGE_WARN and battery_voltage_warn_flag == 0:
@@ -135,24 +140,26 @@ def publish_servo_info():
                 print("")
                 rospy.logfatal('battery voltage is fatally low !')
 
-    k = k + 1
+    voltage_monitor_flag = voltage_monitor_flag + 1
     multi_servo_info_pub.publish(multi_servo_info)
     del multi_servo_info
 
 
+# callback function to trigger servo reset
 def callback_servo_reset(trigger):
-    global reset_flag
-    if trigger.data == 1:
-        servo_drive_flag = 0
-        reset_flag = 1
+    global servo_reset_flag
+    if trigger.data == 1:  # if flag is active
+        servo_drive_flag = 0  # deactivate servo driving flag to stop locomoting servos
+        servo_reset_flag = 1  # activate flag to reset servo
     else:
         pass
 
 
+# callback function to trigger restarting servos
 def callback_servo_drive(trigger):
     global servo_drive_flag
-    if trigger.data == 1 and servo_drive_flag == 0:
-        servo_drive_flag = 1
+    if trigger.data == 1 and servo_drive_flag == 0:  # if flag is active and servos are not been locomoted
+        servo_drive_flag = 1  # activate servo driving flag
         rospy.logwarn('restarting servos!')
     else:
         pass
