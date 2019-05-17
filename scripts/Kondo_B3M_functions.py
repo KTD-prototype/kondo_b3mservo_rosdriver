@@ -237,7 +237,7 @@ def control_servo_by_Torque_multicast(args):
 
     # print(torque_command)
     # print("")
-    command_length = 3 + 3 * length + 3
+    command_length = (3 + 3 * length + 3) & 0b11111111
     SUM = (command_length + 0x04 + 0x00 + id_sum +
            torque_command_sum + 0x3c + length) & 0b11111111
 
