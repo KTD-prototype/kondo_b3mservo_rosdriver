@@ -19,12 +19,12 @@ merged_command = []
 num = 0
 initial_process_flag = 1
 found_servo_flag = 1
-MINIMUM_STEP_OF_TARGET_TORQUE = 100
+MINIMUM_STEP_OF_TARGET_TORQUE = 50
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
-BATTERY_VOLTAGE_WARN = 14200
-BATTERY_VOLTAGE_FATAL = 13800
+BATTERY_VOLTAGE_WARN = 11000  # 11000[mV] at 3cell LiPo battery
+BATTERY_VOLTAGE_FATAL = 10500   # 10500[mV] at 3cell LiPo battery (3.5V/cell)
 voltage = []
 
 voltage_monitor_flag = 0
@@ -83,6 +83,7 @@ def callback_servo_command(multi_servo_command):
         ramped_target_torque[i] = ramp_target_torque(
             target_torque[i], pre_target_torque[i])
 
+    print(ramped_target_torque)
     for j in range(num):
         merged_command.append(id[j])
     for k in range(num):
@@ -128,7 +129,7 @@ def publish_servo_info():
 
     # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
     # monitor per 500 cycles (cycles usually at over 50Hz)
-    if voltage_monitor_flag % 500 == 0:
+    if voltage_monitor_flag % 50 == 0:
         voltage_monitor_flag = 1
         for j in range(num):
             voltage[j] = Kondo_B3M.get_servo_voltage(id[j])

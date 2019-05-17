@@ -222,6 +222,7 @@ def control_servo_by_Torque(ID, Torque_mNm):
 
 
 def control_servo_by_Torque_multicast(args):
+    # now = time.time()
     length = len(args) / 2
     id = []
     torque_command = []
@@ -254,7 +255,10 @@ def control_servo_by_Torque_multicast(args):
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(control_servo_by_Torque_multicast_command)
-    time.sleep(0.01)
+    time.sleep(0.005)
+    # dt = time.time() - now
+    # print(dt)
+    # print("")
     args = []
 
 
