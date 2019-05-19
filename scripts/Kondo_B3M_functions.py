@@ -62,15 +62,15 @@ def change_servocontrol_mode(ID, mode):
     ser.write(change_servocontrol_mode_command)
     time.sleep(0.1)  # wait until this process done
     if mode == 0:
-        set_servo_gain_to_presets(ID, mode)
+        set_servo_gain_to_presets(ID, 0)
         print("set servo ID:" + str(ID) +
               " to position control mode with preset gain #0")
     elif mode == 4:
-        set_servo_gain_to_presets(ID, mode)
+        set_servo_gain_to_presets(ID, 1)
         print("set servo ID:" + str(ID) +
               " to velocity control mode with preset gain #1")
     elif mode == 8:
-        set_servo_gain_to_presets(ID, mode)
+        set_servo_gain_to_presets(ID, 2)
         print("set servo ID:" + str(ID) +
               " to current(torque) control mode with preset gain #2")
     elif mode == 12:
