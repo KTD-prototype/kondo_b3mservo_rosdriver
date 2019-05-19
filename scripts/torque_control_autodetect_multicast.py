@@ -25,8 +25,8 @@ MINIMUM_STEP_OF_TARGET_TORQUE = 7000
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
-BATTERY_VOLTAGE_WARN = 11000  # 11000[mV] at 3cell LiPo battery
-BATTERY_VOLTAGE_FATAL = 10500   # 10500[mV] at 3cell LiPo battery (3.5V/cell)
+BATTERY_VOLTAGE_WARN = 11200  # 11000[mV] at 3cell LiPo battery
+BATTERY_VOLTAGE_FATAL = 10700   # 10500[mV] at 3cell LiPo battery (3.5V/cell)
 voltage = []
 
 voltage_monitor_flag = 0
