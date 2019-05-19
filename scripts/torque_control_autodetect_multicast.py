@@ -41,8 +41,8 @@ def initial_process():
     global id, num, initial_process_flag, the_number_of_servo_pub
     global target_torque, ramped_target_torque, pre_target_torque, voltage
 
-    # for i in range(255):
-    for i in range(10):
+    # for i in range(255): # investigate all possible connected servos from ID 0 to 255
+    for i in range(10):  # investigate only ID:0 to 10 to shorten time to detect connected servos
         # Kondo_B3M.resetServo(i)
         result = Kondo_B3M.initServo(i)
         # print(result)
@@ -85,7 +85,7 @@ def callback_servo_command(multi_servo_command):
         ramped_target_torque[i] = ramp_target_torque(
             target_torque[i], pre_target_torque[i])
 
-    print(ramped_target_torque)
+    # print(ramped_target_torque)
     for j in range(num):
         merged_command.append(id[j])
     for k in range(num):

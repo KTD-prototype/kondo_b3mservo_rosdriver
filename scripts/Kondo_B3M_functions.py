@@ -35,7 +35,7 @@ def resetServo(ID):
     resetServo_command += [chr(0x06), chr(0x05),
                            chr(0x00), chr(ID), chr(0x02), chr(SUM)]
     ser.write(resetServo_command)
-    time.sleep(0.5)  # wait until this process done
+    time.sleep(0.1)  # wait until this process done
     print("Reset servo ID:" + str(ID))
 
 
@@ -47,7 +47,7 @@ def enFreeServo(ID):
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
-    time.sleep(0.5)  # wait until this process done
+    time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to FREE mode")
 
 
@@ -86,7 +86,7 @@ def set_servo_trajectory_to_5Poly(ID):
     set_servo_trajectory_to_5Poly_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(0x05), chr(0x29), chr(0x01), chr(SUM)]
     ser.write(set_servo_trajectory_to_5Poly_command)
-    time.sleep(0.0001)  # wait until this process done
+    time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to 5-poly Trajectory")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
@@ -99,7 +99,7 @@ def set_servo_trajectory_to_EVEN(ID):
     set_servo_trajectory_to_EVEN_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(0x01), chr(0x29), chr(0x01), chr(SUM)]
     ser.write(set_servo_trajectory_to_EVEN_command)
-    time.sleep(0.0001)  # wait until this process done
+    time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to Even Trajectroy")
     ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
@@ -255,7 +255,7 @@ def control_servo_by_Torque_multicast(args):
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(control_servo_by_Torque_multicast_command)
-    time.sleep(0.005)
+    time.sleep(0.002)
     # dt = time.time() - now
     # print(dt)
     # print("")
@@ -312,7 +312,7 @@ def get_servo_Velocity(ID):
     ser.write(get_servo_Velocity_command)
     # wait until receive the data (3 bytes at minimum)
     while True:
-        if ser.inWaiting() > 3:
+        if ser.inWaiting() == 7:
             break
 
     # process the reply from servo. first 4 bytes is general information, so you can discard it.
