@@ -45,7 +45,7 @@ def initial_process():
     for i in range(10):  # investigate only ID:0 to 10 to shorten time to detect connected servos
         # Kondo_B3M.resetServo(i)
         result = Kondo_B3M.initServo(i)
-        print(result)
+        # print(result)
         if result == 1:
             id.append(i)
             num = num + 1
