@@ -64,10 +64,10 @@ To solve this you can take two ways : <br>
   * change device name : ***/dev/Kondo_USB-RS485_converter*** in ***NODE_FILE.py*** and ***Kondo_B3M_functions.py*** to appropriate name such as ***/dev/ttyUSB0***  
   * change and fix the device name recognized by your PC by using symbolic link
 <br>
-Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.
-<br>
+Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.  
 After fixing those error, try again to boot the node.  
-<br>
+
+
 e.g.  
 `python position_control_autodetect.py`
 
