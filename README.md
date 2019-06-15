@@ -55,7 +55,7 @@ As simple way to use, execute arbitrary node file (position, velocity, or torque
 
 e.g.  
 `roscore`
-(in another terminal, )
+<br>(in another terminal, )<br>
 `python position_control_autodetect.py`  
 
 You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***  
