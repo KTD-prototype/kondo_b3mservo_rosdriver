@@ -68,7 +68,7 @@ Former option is more easier, but Later may effective since sometimes your devic
 <br>
 After fixing those error, try again to boot the node.  
 <br>
-e.g.
+e.g.<br>
 `python position_control_autodetect.py`
 
 the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
