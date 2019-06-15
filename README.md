@@ -1,15 +1,20 @@
-# kondo-b3mservo-controller-ros  
+# kondo-b3mservo-rosdriver  
+
 ## Overview  
 ROS package for control of servo motor by Kondo Kagaku inc.  
+
 ## Description  
-This package is for control of serial servo (B3Mseries) by Kondo Kagaku inc via ROS.  
+This package is for control of serial servo (B3Mseries) by Kondo Kagaku Inc via ROS.  
 It includes nodes for send/receive commands to/from servos and pub/sub them, an additional file to wrap functions to generate commands to servos, and peripherals.(a sample file to control by a joystick, etc.)  
+
 ## Demo  
+sorry, still in prepare
 
 ## Requirements
-Ubuntu16.04  
-python2.7.12  
-ROS kinetic kame  
+confirmed environment is as follows:
+  Ubuntu16.04  
+  python2.7.12  
+  ROS kinetic kame  
 
 ## Usage  
 ## Install
