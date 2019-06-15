@@ -35,8 +35,8 @@ confirmed environment is as follows:
 <br>
 ## How to use
 in directory ***scripts***, you have several files:
-  * generate_command_autodetect_joy.py
-  * Kondo_B3M_functions.py
+  * generate_command_autodetect_joy.py  : command generator to your servo from ROS joystick package
+  * Kondo_B3M_functions.py  :  collection of functions to generate servo command
   * Kondo_B3M_functions.pyc
   * position_control_autodetect.py
   * torque_control_autodetect.py
