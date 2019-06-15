@@ -66,12 +66,14 @@ To solve this you can take two ways : <br>
 <br>
 Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.  
 After fixing those error, try again to boot the node.  
-
+<br>
 
 e.g.  
 `python position_control_autodetect.py`
 
 the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
-Then, you can send your command! (supposing you are running node for position control)
+Then, you can send your command! (supposing you are running node for position control)  
+<br>
+
 e.g.  
 `rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`
