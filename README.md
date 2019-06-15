@@ -82,9 +82,15 @@ e.g.(at another terminal,)
 
 Which type of message to publish depends on which control mode did you selected (which script are you running.)  
 
+<br>
 If you want to control servo by your joy stick, you can use the launch files(suppose you already installed ROS package for joystick) :
 <br>
 
-`roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`
-`roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`
-`roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`
+`roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`  
+`roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`  
+`roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`  
+
+Joy stick assignment is as follows:
+ * position control : left and right of LEFT JOY STICK
+ * velocity control : left and right of RIGHT JOY STICK
+ * torque control : up and down of LEFT JOY STICK
