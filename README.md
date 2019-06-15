@@ -67,3 +67,10 @@ To solve this you can take two ways : <br>
 Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.
 <br>
 After fixing those error, try again to boot the node.
+
+e.g.
+`python position_control_autodetect.py`
+<br>(in another terminal, )<br>
+`rostopic echo /multi_servo_command [POSITION_COMMAND_#1, POSITION_COMMAND_#2, etc]`
+
+the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
