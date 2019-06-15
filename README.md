@@ -54,3 +54,6 @@ As simple way to use, execute arbitrary node file (position, velocity, or torque
 e.g :  
 `python position_control_autodetect.py`<br>
 You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***  
+To solve this you can take two ways : <br>
+  * change device name in ***<node file>.py*** and ***Kondo_B3M_functions.py*** to appropriate name such as ***/dev/ttyUSB0***  
+  * change recognized device name in your PC by using symbolic link
