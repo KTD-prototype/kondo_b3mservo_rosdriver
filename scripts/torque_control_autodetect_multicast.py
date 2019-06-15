@@ -42,7 +42,7 @@ def initial_process():
     global target_torque, ramped_target_torque, pre_target_torque, voltage
 
     # for i in range(255): # investigate all possible connected servos from ID 0 to 255
-    for i in range(10):  # investigate only ID:0 to 10 to shorten time to detect connected servos
+    for i in range(255):  # investigate only ID:0 to 10 to shorten time to detect connected servos
         # Kondo_B3M.resetServo(i)
         result = Kondo_B3M.initServo(i)
         # print(result)

@@ -19,7 +19,7 @@ def initServo(ID):
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
     ser.write(enFreeServo_command)
     # print("set servo ID:" + str(ID) + " to FREE mode")
-    time.sleep(0.02)  # wait until this process done
+    time.sleep(0.01)  # wait until this process done
     if ser.inWaiting() == 5:
         ret = 1
     else:

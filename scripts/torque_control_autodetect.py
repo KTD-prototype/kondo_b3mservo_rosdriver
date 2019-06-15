@@ -22,8 +22,8 @@ MINIMUM_STEP_OF_TARGET_TORQUE = 250
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
-BATTERY_VOLTAGE_WARN = 14200
-BATTERY_VOLTAGE_FATAL = 13800
+BATTERY_VOLTAGE_WARN = 11200
+BATTERY_VOLTAGE_FATAL = 10700
 voltage = []
 
 k = 0
@@ -38,7 +38,7 @@ def initial_process():
 
     if initial_process_flag == 1:
         # for i in range(255):
-        for i in range(10):
+        for i in range(255):
             # Kondo_B3M.resetServo(i)
             result = Kondo_B3M.initServo(i)
             # print(result)

@@ -21,8 +21,8 @@ MINIMUM_STEP_OF_TARGET_TORQUE = 300
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
-BATTERY_VOLTAGE_WARN = 14200
-BATTERY_VOLTAGE_FATAL = 13800
+BATTERY_VOLTAGE_WARN = 11200
+BATTERY_VOLTAGE_FATAL = 10700
 voltage = []
 
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
@@ -34,7 +34,7 @@ def initial_process():
     if initial_process_flag == 1:
         for i in range(255):
             # Kondo_B3M.resetServo(i)
-            result = Kondo_B3M.enFreeServo(i)
+            result = Kondo_B3M.initServo(i)
             # print(result)
             if result == 1:
                 id.append(i)
