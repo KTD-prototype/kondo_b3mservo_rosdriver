@@ -34,6 +34,7 @@ confirmed environment is as follows:
 <br>
 <br>
 ## Before use
+Confirm that you have connected your B3M servo to your PC via [RS485-USB adapter](https://kondo-robot.com/product/02133)  
 First, you have to go through several process to use serial servos by ***Kondo Kagaku Inc***.<br>
 You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)<br>
 
@@ -52,6 +53,7 @@ in directory ***scripts***, you have several files:
   * ***torque_control_autodetect_multicast.py*** : node to control servos by its torque (using multi-cast mode to send torque command)
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
-as simple way to use, execute arbitrary node file (position, velocity, or torque control)
+As simple way to use, execute arbitrary node file (position, velocity, or torque control)
 e.g :
 `python position_control_autodetect.py`
+You may have an error that you cannot
