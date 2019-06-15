@@ -4,7 +4,7 @@
 - [kondo-b3mservo-rosdriver](#kondo-b3mservo-rosdriver)
 	- [Overview](#overview)
 	- [Description](#description)
-	- [Demo](#demo)
+	- [Demonstration](#demonstration)
 	- [Requirements](#requirements)
 	- [Install](#install)
 	- [Before use](#before-use)
@@ -28,7 +28,7 @@ It includes nodes for send/receive commands to/from servos and pub/sub them, an 
 <br>
 <br>
 
-## Demo
+## Demonstration
 sorry, still in prepare
 <br>
 <br>
