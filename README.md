@@ -35,10 +35,10 @@ confirmed environment is as follows:
 <br>
 ## How to use
 in directory ***scripts***, you have several files:
-  *generate_command_autodetect_joy.py
-  *Kondo_B3M_functions.py
-  *Kondo_B3M_functions.pyc
-  *position_control_autodetect.py
-  *torque_control_autodetect.py
-  *torque_control_autodetect_multicast.py
-  *velocity_control_autodetect.py
+  * generate_command_autodetect_joy.py
+  * Kondo_B3M_functions.py
+  * Kondo_B3M_functions.pyc
+  * position_control_autodetect.py
+  * torque_control_autodetect.py
+  * torque_control_autodetect_multicast.py
+  * velocity_control_autodetect.py
