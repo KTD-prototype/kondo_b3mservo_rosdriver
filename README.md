@@ -55,7 +55,7 @@ As simple way to use, execute arbitrary node file (position, velocity, or torque
 
 e.g.  
 `roscore`
-<br>(in another terminal, )<br>
+<br>(in another terminal, suppose you want to control by position,)<br>
 `python position_control_autodetect.py`  
 
 You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***  
@@ -65,7 +65,7 @@ To solve this you can take two ways : <br>
   * change and fix the device name recognized by your PC by using symbolic link
 <br>
 Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.  
-After fixing those error, try again to boot the node.  
+After fixing those error, try again to run the node.  
 <br>
 
 e.g.  
@@ -80,4 +80,11 @@ e.g.(at another terminal,)
 `rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_velocity:[1000, 1000]}"`  
 `rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_torque:[500, 500]}"`
 
-which type of message to publish depends on which control mode did you selected (which script are you running.)  
+Which type of message to publish depends on which control mode did you selected (which script are you running.)  
+
+If you want to control servo by your joy stick, you can use the launch files(suppose you already installed ROS package for joystick) :
+<br>
+
+`roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`
+`roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`
+`roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`
