@@ -20,6 +20,6 @@ confirmed environment is as follows:
   * ROS kinetic kame  
 ##
 ## Install
-'git clone git@github.com:k24koba/kondo-b3mservo-roscontrol.git'  
-'cd ~/**name of ROS workspace(for example, catkin_ws)**'  
-'catkin_make'  
+`git clone git@github.com:k24koba/kondo-b3mservo-roscontrol.git`  
+`cd ~/**name of ROS workspace(for example, catkin_ws)**`  
+`catkin_make`  
