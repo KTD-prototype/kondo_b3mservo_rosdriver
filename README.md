@@ -54,6 +54,8 @@ in directory ***scripts***, you have several files:
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)  
 
 e.g.  
+`roscore`
+(in another terminal, )
 `python position_control_autodetect.py`  
 
 You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***  
@@ -63,3 +65,5 @@ To solve this you can take two ways : <br>
   * change and fix the device name recognized by your PC by using symbolic link
 <br>
 Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.
+<br>
+After fixing those error, try again to boot the node.
