@@ -108,7 +108,7 @@ Which type of message to publish depends on which control mode did you selected 
 If you want to control servo by your joy stick, you can use the launch files (suppose you already installed ROS package for joystick) :
 <br>
 
-  `$ roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`<br>
+`$ roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`<br>
 `$ roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`<br>
 `$ roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`<br>
 
