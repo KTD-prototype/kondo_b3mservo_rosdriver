@@ -88,17 +88,17 @@ Former option is more easier, but Later may effective since sometimes your devic
 After fixing those error, try again to run the node.
 <br>
 
-e.g.
+e.g.<br>
 `python position_control_autodetect.py`
 
 the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
 Then, you can send your command! (supposing you are running node for position control)
 <br>
 
-e.g.(at another terminal,)
-`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`
-`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_velocity:[1000, 1000]}"`
-`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_torque:[500, 500]}"`
+e.g.(at another terminal,)<br>
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`<br>
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_velocity:[1000, 1000]}"`<br>
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_torque:[500, 500]}"`<br>
 
 Which type of message to publish depends on which control mode did you selected (which script are you running.)
 
@@ -108,9 +108,9 @@ Which type of message to publish depends on which control mode did you selected 
 If you want to control servo by your joy stick, you can use the launch files (suppose you already installed ROS package for joystick) :
 <br>
 
-`roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`
-`roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`
-`roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`
+`roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`<br>
+`roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`<br>
+`roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`<br>
 
 Joy stick assignment is as follows:
  * position control : left and right of LEFT JOY STICK
