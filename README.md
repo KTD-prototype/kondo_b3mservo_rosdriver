@@ -49,6 +49,8 @@ in directory ***scripts***, you have several files:
   * ***torque_control_autodetect.py***  : node to control servos by its velocity
   * ***torque_control_autodetect_multicast.py*** : node to control servos by its torque (using multi-cast mode to send torque command)
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
+<br>
+
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)  
 e.g.  
 `catkin_make`  
