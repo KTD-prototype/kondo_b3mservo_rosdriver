@@ -75,5 +75,5 @@ the script will automatically detect and recognize how many servo are you connec
 Then, you can send your command! (supposing you are running node for position control)  
 <br>
 
-e.g.  
+e.g.(at another terminal,)  
 `rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`
