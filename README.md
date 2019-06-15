@@ -112,7 +112,18 @@ If you want to control servo by your joy stick, you can use the launch files (su
 `$ roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`<br>
 `$ roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`<br>
 
-Joy stick assignment is as follows:
+Joy stick assignment is as follows (May be you should press other botton to start controlling via joystick):
  * position control : left and right of LEFT JOY STICK
  * velocity control : left and right of RIGHT JOY STICK
  * torque control : up and down of LEFT JOY STICK
+<br>
+
+
+### Getting servo information
+If you want to see servo information, command as follows in another terminal:
+`$ rostopic echo /multi_servo_info`
+<br>
+Then you can see
+ * encoder_count
+ * input_voltage (battery voltage)
+ * motor_velocity
