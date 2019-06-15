@@ -86,6 +86,7 @@ e.g.(at another terminal,)
 Which type of message to publish depends on which control mode did you selected (which script are you running.)  
 
 <br>
+
 ### Manual control by joystick (game pad)
 If you want to control servo by your joy stick, you can use the launch files(suppose you already installed ROS package for joystick) :
 <br>
