@@ -41,6 +41,7 @@ You can consult official website about this process(https://kondo-robot.com/faq/
 <br>
 <br>
 ## How to use
+### General descriptions
 in directory ***scripts***, you can see several files and each descriptions are as bellow:
   * ***generate_command_autodetect_joy.py***  : command generator to your servo from ROS joystick package
   * ***Kondo_B3M_functions.py***  :  collection of functions to generate servo command
@@ -51,6 +52,8 @@ in directory ***scripts***, you can see several files and each descriptions are 
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
 
+
+### Manual control by publishing command message directly from a terminal
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)  
 
 e.g.  
@@ -83,6 +86,7 @@ e.g.(at another terminal,)
 Which type of message to publish depends on which control mode did you selected (which script are you running.)  
 
 <br>
+### Manual control by joystick (game pad)
 If you want to control servo by your joy stick, you can use the launch files(suppose you already installed ROS package for joystick) :
 <br>
 
