@@ -76,4 +76,8 @@ Then, you can send your command! (supposing you are running node for position co
 <br>
 
 e.g.(at another terminal,)  
-`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_position:[1000, 1000]}"`  
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_velocity:[1000, 1000]}"`  
+`rostopic pub /multi_servo_command kondo_b3mservo_rosdver/Multi_servo_command "{target_torque:[500, 500]}"`
+
+which type of message to publish depends on which control mode did you selected (which script are you running.)  
