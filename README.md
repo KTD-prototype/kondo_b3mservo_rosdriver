@@ -1,22 +1,8 @@
 # kondo-b3mservo-rosdriver
-　　
+
 ## Overview
 ROS package for control of servo motor by ***Kondo Kagaku Inc***.
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [kondo-b3mservo-rosdriver](#kondo-b3mservo-rosdriver)
-	- [Overview](#overview)
-	- [Description](#description)
-	- [Demo](#demo)
-	- [Requirements](#requirements)
-	- [Install](#install)
-	- [Before use](#before-use)
-	- [How to use](#how-to-use)
-		- [General descriptions](#general-descriptions)
-		- [Manual control by publishing command message directly from a terminal](#manual-control-by-publishing-command-message-directly-from-a-terminal)
-		- [Manual control by joystick (game pad)](#manual-control-by-joystick-game-pad)
-
-<!-- /TOC -->
 <br>
 <br>
 <br>
