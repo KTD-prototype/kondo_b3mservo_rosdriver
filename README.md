@@ -24,7 +24,6 @@ confirmed environment is as follows:
 <br>
 <br>
 <br>
-
 ## Install
 `cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g catkin_ws)/src`  
 `git clone git@github.com:k24koba/kondo-b3mservo-rosdriver.git`  
@@ -36,13 +35,10 @@ confirmed environment is as follows:
 ## Before use
 Confirm that you have connected your B3M servo to your PC via [RS485-USB adapter](https://kondo-robot.com/product/02133)  
 First, you have to go through several process to use serial servos by ***Kondo Kagaku Inc***.<br>
-You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)<br>
-
-
+You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
 <br>
 <br>
 <br>
-
 ## How to use
 in directory ***scripts***, you have several files:
   * ***generate_command_autodetect_joy.py***  : command generator to your servo from ROS joystick package
@@ -54,6 +50,6 @@ in directory ***scripts***, you have several files:
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)
-e.g :
-`python position_control_autodetect.py`
-You may have an error that you cannot
+e.g :  
+`python position_control_autodetect.py`  
+You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***  
