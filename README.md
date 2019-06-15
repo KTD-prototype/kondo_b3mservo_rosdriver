@@ -26,7 +26,7 @@ confirmed environment is as follows:
 <br>
 
 ## Install
-`cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g catkin_ws)/src`
+`cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g catkin_ws)/src`  
 `git clone git@github.com:k24koba/kondo-b3mservo-rosdriver.git`  
 `cd ~/catkin_ws`  
 `catkin_make`  
@@ -34,12 +34,14 @@ confirmed environment is as follows:
 <br>
 <br>
 ## Before use
-First, you have to go through several process to use serial servos by ***Kondo Kagaku Inc***.
-You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
+First, you have to go through several process to use serial servos by ***Kondo Kagaku Inc***.<br>
+You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)<br>
+
 
 <br>
 <br>
 <br>
+
 ## How to use
 in directory ***scripts***, you have several files:
   * ***generate_command_autodetect_joy.py***  : command generator to your servo from ROS joystick package
@@ -50,7 +52,6 @@ in directory ***scripts***, you have several files:
   * ***torque_control_autodetect_multicast.py*** : node to control servos by its torque (using multi-cast mode to send torque command)
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
-before proceed to following process,
 as simple way to use, execute arbitrary node file (position, velocity, or torque control)
 e.g :
 `python position_control_autodetect.py`
