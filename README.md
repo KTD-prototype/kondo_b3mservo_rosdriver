@@ -42,7 +42,6 @@ confirmed environment is as follows:
 <br>
 <br>
 <br>
-
 ## Install
 `cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g catkin_ws)/src`
 `git clone git@github.com:k24koba/kondo-b3mservo-rosdriver.git`
