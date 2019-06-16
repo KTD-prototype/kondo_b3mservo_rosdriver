@@ -40,9 +40,6 @@ confirmed environment is as follows:
   * Ubuntu16.04
   * python2.7.12
   * ROS kinetic kame
-  * [B3M-SC-1170-A (Kondo Kagaku Inc.)](https://kondo-robot.com/product/03092)
-* [RS485-USB adapter](https://kondo-robot.com/product/02133)
-* 3 cell Lithium Polymer battery
 <br>
 <br>
 
@@ -72,7 +69,10 @@ in directory ***scripts***, you can see several files and each descriptions are 
   * ***torque_control_autodetect_multicast.py*** : node to control servos by its torque (using multi-cast mode to send torque command)
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
-
+Each nodes (for position, velocity, torque control) will scan your serial port you set in the node, and automatically identify how many servos are you connected and what is their IDs are.
+After process above, it will immediately get ready to receive your command via ROS message!
+Command will be an array of integer number, which indicates target position[*0.01deg]/velocity[*0.01deg/sec]/torque[mNm].
+After receiving your command, the node will return servo information via ROS message.
 
 ### Manual control by publishing command message directly from a terminal
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)
