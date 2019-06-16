@@ -45,7 +45,7 @@ confirmed environment is as follows:
 ### Hardware
 confirmed components is as follows:<br>
 	* [B3M-SC-1170-A (Kondo Kagaku Inc.)](https://kondo-robot.com/product/03092)
-	* [RS485-USB adapter](https://kondo-robot.com/product/02133)
+	* [RS485-USB adapter](https://kondo-robot.com/product/02133)  
 	* 3 cell Lithium Polymer battery (11.1V @nominal)
 <br>
 <br>
