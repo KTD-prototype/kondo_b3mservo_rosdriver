@@ -42,7 +42,7 @@ confirmed environment is as follows:
   * Ubuntu16.04
   * python2.7.12
   * ROS kinetic kame
-	* servo motor : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
+* servo motor : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
   * serial interface between servo and PC : [RS485-USB adapter](https://kondo-robot.com/product/02133)
   * power source : 3 cell Lithium Polymer Battery
 <br>
