@@ -17,8 +17,8 @@
 <!-- /TOC -->
 
 ## Overview
-ROS package for control of servo motor by ***Kondo Kagaku Inc***.
-近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。  
+ROS package for control of servo motor by ***Kondo Kagaku Inc***.<br>
+近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。
 日本語版のREADMEやコメントが入ったバージョンも準備中です！
 <br>
 <br>
