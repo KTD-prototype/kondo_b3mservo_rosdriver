@@ -43,7 +43,7 @@ confirmed environment is as follows:
   * ROS kinetic kame
 
 ### Hardware
-confirmed components is as follows:<br>
+confirmed components is as follows:  
 	* [B3M-SC-1170-A (Kondo Kagaku Inc.)](https://kondo-robot.com/product/03092)<br>
 	* [RS485-USB adapter](https://kondo-robot.com/product/02133)<br>
 	* 3 cell Lithium Polymer battery (11.1V @nominal)
