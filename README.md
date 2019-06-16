@@ -25,7 +25,7 @@ ROS package for control of servo motor by ***Kondo Kagaku Inc***.<br>
 <br>
 
 ## Description
-This package is for control of serial servo (B3Mseries) by ***Kondo Kagaku Inc*** via ROS.
+This package is for control of serial servo (B3Mseries) by ***Kondo Kagaku Inc*** via ROS.<br>
 It includes nodes for send/receive commands to/from servos and pub/sub them, an additional file to wrap functions to generate commands to servos, and peripherals.(a sample file to control by a joystick, etc.)
 <br>
 <br>
