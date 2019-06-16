@@ -6,6 +6,7 @@ import time
 import math
 import struct
 
+#
 # open serial port
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
