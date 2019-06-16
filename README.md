@@ -5,7 +5,7 @@
 	- [Overview](#overview)
 	- [Description](#description)
 	- [Demonstration](#demonstration)
-	- [Requirements](#requirements)
+	- [Basic Requirements](#basic-requirements)
 	- [Install](#install)
 	- [Before use](#before-use)
 	- [How to use](#how-to-use)
@@ -37,7 +37,7 @@ sorry, still in prepare
 <br>
 <br>
 
-## Requirements
+## Basic Requirements
 confirmed environment is as follows:
   * Ubuntu16.04
   * python2.7.12
