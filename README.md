@@ -17,8 +17,8 @@
 <!-- /TOC -->
 
 ## Overview
-ROS package for control of servo motor by ***Kondo Kagaku Inc***.
-Still available in English (at this README and comments) but　日本語版のREADMEやコメントが入ったバージョンも準備中です！
+ROS package for control of servo motor by ***Kondo Kagaku Inc***.<br>
+日本語版のREADMEやコメントが入ったバージョンも準備中です！
 <br>
 <br>
 <br>
