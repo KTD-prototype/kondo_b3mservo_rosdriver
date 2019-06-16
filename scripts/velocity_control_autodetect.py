@@ -61,7 +61,7 @@ def callback_multi_position_control(multi_servo_command):
 
     target_velocity = multi_servo_command.target_velocity
     target_velocity = list(target_velocity)
-    print(target_velocity)
+    # print(target_velocity)
 
     for i in range(num):
         Kondo_B3M.control_servo_by_Velocity(

@@ -61,7 +61,7 @@ def callback_multi_position_control(multi_servo_command):
 
     target_position = multi_servo_command.target_position
     target_position = list(target_position)
-    print(target_position)
+    # print(target_position)
 
     for i in range(num):
         Kondo_B3M.control_servo_by_position_without_time(
