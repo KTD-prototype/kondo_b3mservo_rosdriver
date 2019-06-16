@@ -41,8 +41,8 @@ confirmed environment is as follows:
   * python2.7.12
   * ROS kinetic kame
   * [B3M-SC-1170-A (Kondo Kagaku Inc.)](https://kondo-robot.com/product/03092)
-	* [RS485-USB adapter](https://kondo-robot.com/product/02133)
-* 3 cell Lithium Polymer battery 
+* [RS485-USB adapter](https://kondo-robot.com/product/02133)
+* 3 cell Lithium Polymer battery
 <br>
 <br>
 
