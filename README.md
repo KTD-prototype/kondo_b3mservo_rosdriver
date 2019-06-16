@@ -69,9 +69,9 @@ in directory ***scripts***, you can see several files and each descriptions are 
   * ***torque_control_autodetect_multicast.py*** : node to control servos by its torque (using multi-cast mode to send torque command)
   * ***velocity_control_autodetect.py*** : node to control servos by its torque
 <br>
-Each nodes (for position, velocity, torque control) will scan your serial port you set in the node, and automatically identify how many servos are you connected and what is their IDs are.
-After process above, it will immediately get ready to receive your command via ROS message!
-Command will be an array of integer number, which indicates target position[*0.01deg]/velocity[*0.01deg/sec]/torque[mNm].
+Each nodes (for position, velocity, torque control) will scan your serial port you set in the node, and automatically identify how many servos are you connected and what is their IDs are.<br>
+After process above, it will immediately get ready to receive your command via ROS message!<br>
+Command will be an array of integer number, which indicates target position[*0.01deg]/velocity[*0.01deg/sec]/torque[mNm].<br>
 After receiving your command, the node will return servo information via ROS message.
 
 ### Manual control by publishing command message directly from a terminal
