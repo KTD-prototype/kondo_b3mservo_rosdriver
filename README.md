@@ -32,7 +32,7 @@ It includes nodes for send/receive commands to/from servos and pub/sub them, an 
 <br>
 
 ## Demonstration
-Demonstration video to introduce position control by manual publishing, and torque control by joy stick.
+Demonstration video to introduce position control by manual publishing, and torque control by joy stick.<br>
 ![result](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/tree/media/sample.gif)
 <br>
 <br>
