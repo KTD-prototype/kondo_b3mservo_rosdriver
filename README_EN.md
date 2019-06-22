@@ -76,7 +76,7 @@ in directory ***scripts***, you can see several files and each descriptions are 
 Each nodes (for position, velocity, torque control) will scan your serial port you set in the node, and automatically identify how many servos are you connected and what is their IDs are.<br>
 After process above, it will immediately get ready to receive your command via ROS message!<br>
 Command will be an array of integer number ordered by their IDs, which indicates target position[*0.01deg] / velocity[*0.01deg/sec] / torque[mNm].<br>
-For example, if you send position command : [4500], then your servo will move to Angle 45 [deg]. If you send [4500, -3000] to  ***2*** servos with IDs: 1, 2, then your servo with ID:1 will move to angle 45 [deg], and your servo with ID:2 will move to angle -30 [deg].
+For example, if you send position command : [4500], then your servo will move to Angle 45 [deg]. If you send [4500, -3000] to 2 servos with IDs: 1, 2, then your servo with ID:1 will move to angle 45 [deg], and your servo with ID:2 will move to angle -30 [deg].
 After receiving your command, the node will return servo information via ROS message.
 <br>
 
