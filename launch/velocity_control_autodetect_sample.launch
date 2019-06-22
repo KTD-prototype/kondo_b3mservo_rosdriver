@@ -4,7 +4,7 @@
   <node name="generate_command_autodetect_joy"   pkg="kondo_b3mservo_rosdriver" type="generate_command_autodetect_joy.py" output="screen"/>
 
   <node name="joy_node"   pkg="joy" type="joy_node">
-    <param name="autorepeat_rate" value="10"/>
+    <param name="autorepeat_rate" value="100"/>
   </node>
 
 </launch>
