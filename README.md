@@ -71,15 +71,17 @@ PCと[RS485-USB adapter](https://kondo-robot.com/product/02133)が接続され�
 <br>新しいターミナルを開いて、以下のようにノードを立ち上げます<br>
 `		$ python position_control.py`
 
-以下のようなエラーを吐くかもしれません<br>
+そのままだと、以下のようなエラーを吐くと思われます（申し訳ありません）<br>
  ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***
 <br>
+<br>
 解決には２通りの方法があって : <br>
-  * コード中のデバイス名を変更する : ***position_control.py***および***Kondo_B3M_functions.py***の中にある***/dev/Kondo_USB-RS485_converter***　を例えば ***/dev/ttyUSB0***　のような、お手持ちのUSB/シリアルI/Fのデバイス名に変更する
+  * コード中のデバイス名を変更する : ***position_control.py***および***Kondo_B3M_functions.py***の中にある ***/dev/Kondo_USB-RS485_converter***　を例えば ***/dev/ttyUSB0***　のような、お手持ちのUSB/シリアルI/Fのデバイス名に変更する
   * シンボリックリンクを固定することで、デバイス名を***dev/Kondo_USB-RS485_converter***に変更・固定する（[参考](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)）
 <br>
 前者のほうが手っ取り早いですが、PCの再起動やデバイスの再起動のたびにデバイス名が変わる可能性があります。
 いずれかの対処をしたら、再度ノードを立ち上げます。
+<br>
 <br>
 
 例（位置制御の場合）<br>
