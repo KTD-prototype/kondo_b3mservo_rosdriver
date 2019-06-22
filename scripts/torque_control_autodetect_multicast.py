@@ -111,8 +111,8 @@ def publish_servo_info():
             Kondo_B3M.get_encoder_total_count(id[i]))
 
         # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
-        # multi_servo_info.motor_velocity.append(
-        #     Kondo_B3M.get_servo_Velocity(id[i]))
+        multi_servo_info.motor_velocity.append(
+            Kondo_B3M.get_servo_Velocity(id[i]))
 
         # if you want to ommit motor current(due to low control rate, for example), comment out script bellow
         multi_servo_info.motor_current.append(
