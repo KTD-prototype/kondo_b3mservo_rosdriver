@@ -238,8 +238,6 @@ def control_servo_by_Torque_multicast(args):
         torque_command_sum = torque_command_sum + \
             (torque_command[i] & 0xff) + (torque_command[i] >> 8)
 
-    # print(torque_command)
-    # print("")
     command_length = (3 + 3 * length + 3) & 0b11111111
     SUM = (command_length + 0x04 + 0x00 + id_sum +
            torque_command_sum + 0x3c + length) & 0b11111111
@@ -256,10 +254,7 @@ def control_servo_by_Torque_multicast(args):
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(control_servo_by_Torque_multicast_command)
-    time.sleep(0.002)
-    # dt = time.time() - now
-    # print(dt)
-    # print("")
+    time.sleep(0.0015)
     args = []
 
 
@@ -487,14 +482,12 @@ def get_encoder_total_count(ID):
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(get_encoder_total_count_command)
-    now = time.time()
+
     # # wait until receive the data (4 bytes at minimum)
     while True:
         if ser.inWaiting() == 9:
             break
-    dt = time.time() - now
-    # print(dt)
-    # print("")
+
     # process the reply from servo. first 4 bytes is general information, so you can discard it.
     # next 4 bytes are encoder count, so get them and merge by little endian
     Receive = ser.read(4)

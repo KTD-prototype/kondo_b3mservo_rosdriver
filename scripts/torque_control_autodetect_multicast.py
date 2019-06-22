@@ -57,22 +57,20 @@ def initial_process():
 
 
 def callback_servo_command(multi_servo_command):
-    global num, target_torque, id, merged_command, servo_reset_flag, servo_drive_flag
-    target_torque = multi_servo_command.target_torque
-    target_torque = list(target_torque)
-
-    # print(ramped_target_torque)
-    for j in range(num):
-        merged_command.append(id[j])
-    for k in range(num):
-        merged_command.append(target_torque[k])
+    global num, target_torque, id, merged_command
+    global servo_reset_flag, servo_drive_flag
 
     # actual locomotions are only conducted when the flag is active
     if servo_drive_flag == 1:
+        target_torque = multi_servo_command.target_torque
+        target_torque = list(target_torque)
+        for i in range(num):
+            merged_command.append(id[i])
+        for j in range(num):
+            merged_command.append(target_torque[j])
         Kondo_B3M.control_servo_by_Torque_multicast(merged_command)
-
-    publish_servo_info()
-    merged_command = []
+        publish_servo_info()
+        merged_command = []
 
     # if flag for resetting servos is active
     if servo_reset_flag == 1:
@@ -85,13 +83,19 @@ def callback_servo_command(multi_servo_command):
 
 
 def publish_servo_info():
-    global id, num, battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage, voltage_monitor_flag
+    global id, num, voltage
+    global servo_drive_flag
+    global battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage_monitor_flag
+
+    # deactivate servo_drive_flag to prevent from sending torque command to the servos before completing this process
+    servo_drive_flag = 0
+
     multi_servo_info = Multi_servo_info()
 
     # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
     # monitor per 100 cycles
     if voltage_monitor_flag == 100:
-        voltage_monitor_flag = 1
+        voltage_monitor_flag = 0
         for j in range(num):
             voltage[j] = Kondo_B3M.get_servo_voltage(id[j])
             if voltage[j] < BATTERY_VOLTAGE_WARN and battery_voltage_warn_flag == 0:
@@ -102,11 +106,9 @@ def publish_servo_info():
                 print("")
                 rospy.logfatal('battery voltage is fatally low !')
     voltage_monitor_flag = voltage_monitor_flag + 1
-    if voltage_monitor_flag > 100:
-        voltage_monitor_flag = 0
+    voltage = list(voltage)
 
     for i in range(num):
-        voltage = list(voltage)
         multi_servo_info.encoder_count.append(
             Kondo_B3M.get_encoder_total_count(id[i]))
 
@@ -122,6 +124,9 @@ def publish_servo_info():
 
     multi_servo_info_pub.publish(multi_servo_info)
     del multi_servo_info
+
+    # activate servo_drive_flag again since this process has completed
+    servo_drive_flag = 1
 
 
 # callback function to trigger servo reset
