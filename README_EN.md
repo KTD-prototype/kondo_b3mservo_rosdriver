@@ -104,7 +104,7 @@ the script will automatically detect and recognize how many servo are you connec
 Then, you can send your command! (supposing you are running node for position control)
 <br>
 
-e.g.(at another terminal,)<br>
+e.g.(at another terminal, in case you are controlling ***2*** servos)<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_position:[1000, 1000]}"`<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_velocity:[1000, 1000]}"`<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_torque:[500, 500]}"`<br>
@@ -133,7 +133,7 @@ If you want to see servo information, command as follows in another terminal:
 `		$ rostopic echo /multi_servo_info`
 <br>
 Then you can see
- * encoder_count
- * input_voltage (battery voltage)
- * motor_velocity
- * motor_current
+ * encoder_count [count]
+ * input_voltage (battery voltage) [mV]
+ * motor_velocity [*0.01 deg/sec]
+ * motor_current [mA]
