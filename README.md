@@ -50,10 +50,10 @@ confirmed environment is as follows:
 <br>
 
 ## Install
-`$ cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g. catkin_ws)/src`<br>
-`$ git clone git@github.com:k24koba/kondo_b3mservo_rosdriver.git`<br>
-`$ cd ~/catkin_ws`<br>
-`$ catkin_make`
+		`$ cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g. catkin_ws)/src`<br>
+		`$ git clone git@github.com:k24koba/kondo_b3mservo_rosdriver.git`<br>
+		`$ cd ~/catkin_ws`<br>
+		`$ catkin_make`
 <br>
 <br>
 <br>
@@ -85,9 +85,9 @@ After receiving your command, the node will return servo information via ROS mes
 As simple way to use, execute arbitrary node file (position, velocity, or torque control)
 
 e.g.<br>
-`$ roscore`
+		`$ roscore`
 <br>(in another terminal, suppose you want to control by position,)<br>
-`$ python position_control_autodetect.py`
+		`$ python position_control.py`
 
 You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***
 <br>
@@ -100,16 +100,16 @@ After fixing those error, try again to run the node.
 <br>
 
 e.g.<br>
-`$ python position_control_autodetect.py`
+		`$ python position_control.py`
 
 the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
 Then, you can send your command! (supposing you are running node for position control)
 <br>
 
 e.g.(at another terminal,)<br>
-`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_position:[1000, 1000]}"`<br>
-`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_velocity:[1000, 1000]}"`<br>
-`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_torque:[500, 500]}"`<br>
+		`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_position:[1000, 1000]}"`<br>
+		`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_velocity:[1000, 1000]}"`<br>
+		`$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_torque:[500, 500]}"`<br>
 
 Which type of message to publish depends on which control mode did you selected (which script are you running.)
 
@@ -119,9 +119,9 @@ Which type of message to publish depends on which control mode did you selected 
 If you want to control servo by your joy stick, you can use the launch files (suppose you already installed ROS package for joystick) :
 <br>
 
-`$ roslaunch kondo_b3mservo_rosdver position_control_autodetect_sample.launch`<br>
-`$ roslaunch kondo_b3mservo_rosdver velocity_control_autodetect_sample.launch`<br>
-`$ roslaunch kondo_b3mservo_rosdver torque_control_autodetect_sample.launch`<br>
+		`$ roslaunch kondo_b3mservo_rosdver position_control_sample.launch`<br>
+		`$ roslaunch kondo_b3mservo_rosdver velocity_control_sample.launch`<br>
+		`$ roslaunch kondo_b3mservo_rosdver torque_control_sample.launch`<br>
 
 Joy stick assignment is as follows (May be you should press other botton to start controlling via joystick):
  * position control : left and right of LEFT JOY STICK
@@ -132,9 +132,10 @@ Joy stick assignment is as follows (May be you should press other botton to star
 
 ### Getting servo information
 If you want to see servo information, command as follows in another terminal:
-`$ rostopic echo /multi_servo_info`
+		`$ rostopic echo /multi_servo_info`
 <br>
 Then you can see
  * encoder_count
  * input_voltage (battery voltage)
  * motor_velocity
+ * motor_current
