@@ -197,7 +197,7 @@ def control_servo_by_Velocity_multicast(args):
     id = []
     velocity_command = []
     id_sum = 0
-    velocity_command_sum
+    velocity_command_sum = 0
 
     for i in range(num_of_servos):
         id.append(args[i])
@@ -210,14 +210,16 @@ def control_servo_by_Velocity_multicast(args):
 
     command_length = (3 + 3 * num_of_servos + 3) & 0b11111111
     SUM = (command_length + 0x04 + 0x00 + id_sum +
-           velocity_command_sum + 0x3c + num_of_servos) & 0b11111111
+           velocity_command_sum + 0x30 + num_of_servos) & 0b11111111
 
     control_servo_by_Velocity_multicast_command = []
     control_servo_by_Velocity_multicast_command += [
         chr(command_length), chr(0x04), chr(0x00)]
+
     for j in range(num_of_servos):
         control_servo_by_Velocity_multicast_command += [
             chr(id[j]), chr(velocity_command[j] & 0xff), chr(velocity_command[j] >> 8)]
+
     control_servo_by_Velocity_multicast_command += [
         chr(0x30), chr(num_of_servos), chr(SUM)]
 
@@ -281,9 +283,11 @@ def control_servo_by_Torque_multicast(args):
     control_servo_by_Torque_multicast_command = []
     control_servo_by_Torque_multicast_command += [
         chr(command_length), chr(0x04), chr(0x00)]
+
     for j in range(num_of_servos):
         control_servo_by_Torque_multicast_command += [
             chr(id[j]), chr(torque_command[j] & 0xff), chr(torque_command[j] >> 8)]
+
     control_servo_by_Torque_multicast_command += [
         chr(0x3c), chr(num_of_servos), chr(SUM)]
 
