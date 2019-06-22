@@ -1,55 +1,39 @@
 # kondo-b3mservo-rosdriver
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [kondo-b3mservo-rosdriver](#kondo-b3mservo-rosdriver)
-	- [Overview](#overview)
-	- [Description](#description)
-	- [Demonstration](#demonstration)
-	- [Basic Requirements](#basic-requirements)
-	- [Install](#install)
-	- [Before use](#before-use)
-	- [How to use](#how-to-use)
-		- [General descriptions](#general-descriptions)
-		- [Manual control by publishing command message directly from a terminal](#manual-control-by-publishing-command-message-directly-from-a-terminal)
-		- [Manual control by joystick (game pad)](#manual-control-by-joystick-game-pad)
-		- [Getting servo information](#getting-servo-information)
 
-<!-- /TOC -->
-
-## Overview
-ROS package for control of servo motor by ***Kondo Kagaku Inc***.<br>
+## 概要
 近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
-日本語版のREADMEやコメントが入ったバージョンも準備中です！
+日本語のコメントが入ったバージョンも準備中です！
 <br>
 <br>
 <br>
 
-## Description
-This package is for control of serial servo (B3Mseries) by ***Kondo Kagaku Inc*** via ROS.<br>
-It includes nodes for send/receive commands to/from servos and pub/sub them, an additional file to wrap functions to generate commands to servos, and peripherals.(a sample file to control by a joystick, etc.)
+## パッケージ説明
+近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
+ROSのメッセージを送ることで位置制御、速度制御、トルク制御が可能なほか、ROSメッセージを通じたサーボの情報取得、ジョイスティックによる操作が可能です。
 <br>
 <br>
 <br>
 
-## Demonstration
-Demonstration video to introduce position control by manual publishing, and torque control by joy stick.<br>
+## デモ動画
+コンソールからのROSメッセージパブリッシュによる位置制御、ゲームパッドによるトルク制御のデモ<br>
 ![result](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/media/sample.gif?raw=true)
 <br>
 <br>
 <br>
 
-## Basic Requirements
-confirmed environment is as follows:
+## 動作確認済みの環境
+以下の環境で動作確認しています:
   * Ubuntu16.04
   * python2.7.12
   * ROS kinetic kame
-* servo motor : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
-* serial interface between servo and PC : [RS485-USB adapter](https://kondo-robot.com/product/02133)
-* power source : 3 cell Lithium Polymer Battery
+* サーボ : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
+* PCとサーボを接続するUSB-シリアルI/F : [RS485-USB adapter](https://kondo-robot.com/product/02133)
+* 電源 : 3セル LiPo バッテリ
 <br>
 <br>
 
-## Install
+## インストール
 `   $ cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g. catkin_ws)/src`<br>
 `   $ git clone git@github.com:k24koba/kondo_b3mservo_rosdriver.git`<br>
 `   $ cd ~/catkin_ws`<br>
@@ -57,83 +41,84 @@ confirmed environment is as follows:
 <br>
 <br>
 <br>
-## Before use
-Confirm that you have connected your B3M servo to your PC via [RS485-USB adapter](https://kondo-robot.com/product/02133)
-First, you have to go through several process to use serial servos by ***Kondo Kagaku Inc***.<br>
-You can consult official website about this process(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
+## 使用する前に
+PCと[RS485-USB adapter](https://kondo-robot.com/product/02133)が接続されていることを確認してください。<br>
+近藤科学をUbuntuで使うためには予めドライバをPCにインストール（PCのFTDIと近藤科学製品の関連付け）する必要があります。<br>
+やりかたは近藤科学社のWEBサイトに掲載されています。(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
 <br>
 <br>
 <br>
-## How to use
-### General descriptions
-in directory ***scripts***, you can see several files and each descriptions are as bellow:
-  * ***generate_command_autodetect_joy.py***  : command generator to your servo from ROS joystick package
-  * ***Kondo_B3M_functions.py***  :  collection of functions to generate servo command
-  * ***position_control.py***  : node to control servos by its position (angle)
-  * ***torque_control.py***  : node to control servos by its torque
-  * ***velocity_control.py*** : node to control servos by its velocity
+## 使い方
+### ノードの構成
+***scripts***　のディレクトリは以下のようなファイル構成となっています。
+  * ***generate_command_autodetect_joy.py***  : ゲームコントローラ（ジョイスティック）の情報を受け取り、サーボ指令値を生成・パブリッシュするノード
+  * ***Kondo_B3M_functions.py***  :  サーボへのコマンド関数の集まり
+  * ***position_control.py***  : 位置（角度）制御用のノード
+  * ***torque_control.py***  : トルク制御用のノード
+  * ***velocity_control.py*** : 速度制御用のノード
 <br>
-Each nodes (for position, velocity, torque control) will scan your serial port you set in the node, and automatically identify how many servos are you connected and what is their IDs are.<br>
-After process above, it will immediately get ready to receive your command via ROS message!<br>
-Command will be an array of integer number, which indicates target position[*0.01deg] / velocity[*0.01deg/sec] / torque[mNm].<br>
-After receiving your command, the node will return servo information via ROS message.
+それぞれのノード（位置、トルク、速度制御ノード）は自動でUSBｰシリアルI/Fが接続されたポートをスキャンして、接続されているサーボの個数とIDを検出します。<br>
+サーボへの指令値やサーボからの情報はサーボの個数だけ、IDが小さい順に並んだリストとしてやりとりします。<br>
+指令値の単位は　位置：[*0.01°]、速度：[*0.01°/秒]、トルク：[mNm]です。たとえば位置指令値4500と送れば、サーボは45°の位置に動きます。<br>
+指令値を送ると、サーボはその時のエンコーダ値等の情報を返してきますので、ROSメッセージの形で読み取り可能です。
 <br>
 
-### Manual control by publishing command message directly from a terminal
-As simple way to use, execute arbitrary node file (position, velocity, or torque control)
+### ターミナルから直接ROSメッセージを送って制御する場合
+最もシンプルなやり方です。
 
-e.g.<br>
+例（位置制御の場合）<br>
 `		$ roscore`
-<br>(in another terminal, suppose you want to control by position,)<br>
+<br>新しいターミナルを開いて、以下のようにノードを立ち上げます<br>
 `		$ python position_control.py`
 
-You may have an error such as ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***
+以下のようなエラーを吐くかもしれません<br>
+ ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***
 <br>
-To solve this you can take two ways : <br>
-  * change device name : ***/dev/Kondo_USB-RS485_converter*** in ***NODE_FILE.py*** and ***Kondo_B3M_functions.py*** to appropriate name such as ***/dev/ttyUSB0***
-  * change and fix the device name recognized by your PC by using symbolic link
+解決には２通りの方法があって : <br>
+  * コード中のデバイス名を変更する : ***position_control.py***および***Kondo_B3M_functions.py***の中にある***/dev/Kondo_USB-RS485_converter***　を例えば ***/dev/ttyUSB0***　のような、お手持ちのUSB/シリアルI/Fのデバイス名に変更する
+  * シンボリックリンクを固定することで、デバイス名を***dev/Kondo_USB-RS485_converter***に変更・固定する（[参考](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)）
 <br>
-Former option is more easier, but Later may effective since sometimes your device name automatically recognized by your PC will changed through rebooting or reconnecting.
-After fixing those error, try again to run the node.
+前者のほうが手っ取り早いですが、PCの再起動やデバイスの再起動のたびにデバイス名が変わる可能性があります。
+いずれかの対処をしたら、再度ノードを立ち上げます。
 <br>
 
-e.g.<br>
+例（位置制御の場合）<br>
 `		$ python position_control.py`
 
-the script will automatically detect and recognize how many servo are you connected, and IDs of each servos.
-Then, you can send your command! (supposing you are running node for position control)
+ノードが立ち上がり、自動で接続されたサーボの個数とIDを検出します。
+ノードが立ち上がったら、ターミナルからメッセージをパブリッシュすることで制御できます。
 <br>
 
-e.g.(at another terminal,)<br>
+メッセージ例(位置制御、速度制御、トルク制御　＠サーボ２個の場合)<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_position:[1000, 1000]}"`<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_velocity:[1000, 1000]}"`<br>
 `		$ rostopic pub /multi_servo_command kondo_b3mservo_rosdriver/Multi_servo_command "{target_torque:[500, 500]}"`<br>
 
-Which type of message to publish depends on which control mode did you selected (which script are you running.)
+送るメッセージの種類は、位置／速度／トルクのどの制御をしているかに依存します。
 
 <br>
 
-### Manual control by joystick (game pad)
-If you want to control servo by your joy stick, you can use the launch files (suppose you already installed ROS package for joystick) :
+### ジョイスティックによる制御
+ジョイスティック（ゲームコントローラ）による制御には、Launchファイルを使うと便利です。（事前にジョイスティックのROSのパッケージをインストールする必要あり）
 <br>
 
 `		$ roslaunch kondo_b3mservo_rosdver position_control_sample.launch`<br>
 `		$ roslaunch kondo_b3mservo_rosdver velocity_control_sample.launch`<br>
 `		$ roslaunch kondo_b3mservo_rosdver torque_control_sample.launch`<br>
 
-Joy stick assignment is as follows (May be you should press other botton to start controlling via joystick):
- * position control : left and right of LEFT JOY STICK
- * velocity control : left and right of RIGHT JOY STICK
- * torque control : up and down of LEFT JOY STICK
+ジョイスティックのコマンド対応は以下です（指令値を送る前に、どこかのボタンを押す必要があるかもしれません）:
+ * 位置制御 : 左スティックの左右方向
+ * 速度制御 : 右スティックの左右方向
+ * トルク制御 : 左スティックの上下
 <br>
 
 
-### Getting servo information
-If you want to see servo information, command as follows in another terminal:
+### サーボの情報を取得する
+サーボの情報を取得する場合、以下のようにメッセージをサブスクライブできます:
 `		$ rostopic echo /multi_servo_info`
 <br>
-Then you can see
- * encoder_count
- * input_voltage (battery voltage)
- * motor_velocity
- * motor_current
+今のところ、見られる情報は以下の四種類です。
+ * エンコーダのカウント値[count]
+ * 電源電圧[mV]
+ * サーボ回転速度[*0.01deg/sec]
+ * サーボ電流値[mA]
