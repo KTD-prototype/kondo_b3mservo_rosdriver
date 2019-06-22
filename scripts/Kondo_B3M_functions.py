@@ -177,6 +177,46 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     #       str(Angle_centDeg / 100.0) + "[deg]")
 
 
+def control_servo_by_Position_multicast(args):
+    num_of_servos = len(args) / 2
+    id = []
+    position_command = []
+    id_sum = 0
+    position_command_sum = 0
+
+    for i in range(num_of_servos):
+        id.append(args[i])
+        position_command.append(args[i + num_of_servos])
+        if position_command[i] < 0:
+            position_command[i] = 65536 + position_command[i]
+        id_sum = id_sum + id[i]
+        position_command_sum = position_command_sum + \
+            (position_command[i] & 0xff) + (position_command[i] >> 8)
+
+    command_length = (3 + 3 * num_of_servos + 3) & 0b11111111
+    SUM = (command_length + 0x04 + 0x00 + id_sum +
+           position_command_sum + 0x2A + num_of_servos) & 0b11111111
+
+    control_servo_by_Position_multicast_command = []
+    control_servo_by_Position_multicast_command += [
+        chr(command_length), chr(0x04), chr(0x00)]
+
+    for j in range(num_of_servos):
+        control_servo_by_Position_multicast_command += [
+            chr(id[j]), chr(position_command[j] & 0xff), chr(position_command[j] >> 8)]
+
+    control_servo_by_Position_multicast_command += [
+        chr(0x2A), chr(num_of_servos), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
+    ser.write(control_servo_by_Position_multicast_command)
+
+    # wait for a certain seconds since multicast mode wouldn't reply anything to you
+    time.sleep(0.0015)
+    args = []
+
+
 def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/sec)
     # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
     if Velocity_centDeg_perSec < 0:
