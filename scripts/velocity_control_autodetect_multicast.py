@@ -37,9 +37,7 @@ def initial_process():
     global target_velocity, voltage
 
     for i in range(255):
-        # Kondo_B3M.resetServo(i)
         result = Kondo_B3M.initServo(i)
-        # print(result)
         if result == 1:
             id.append(i)
             num = num + 1
