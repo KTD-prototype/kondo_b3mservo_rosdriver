@@ -1,7 +1,23 @@
 # kondo-b3mservo-rosdriver
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [kondo-b3mservo-rosdriver](#kondo-b3mservo-rosdriver)
+	- [概要](#概要)
+	- [パッケージ説明](#説明)
+	- [デモ動画](#動画)
+	- [動作確認済みの環境](#動作確認済環境)
+	- [インストール](#)
+	- [使用する前に](#使用前)
+	- [使い方](#使方)
+		- [ノードの構成](#構成)
+		- [ターミナルから直接ROSメッセージを送って制御する場合](#直接ros送制御場合)
+		- [ジョイスティックによる制御](#制御)
+		- [サーボの情報を取得する](#情報取得)
+
+<!-- /TOC -->
 
 ## 概要
+[README file in English is available](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/README_EN.md)<br>
 近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
 日本語のコメントが入ったバージョンも準備中です！
 <br>
@@ -9,7 +25,6 @@
 <br>
 
 ## パッケージ説明
-[README file in English is available](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/README_EN.md)<br>
 近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
 ROSのメッセージを送ることで位置制御、速度制御、トルク制御が可能なほか、ROSメッセージを通じたサーボの情報取得、ジョイスティックによる操作が可能です。
 <br>
