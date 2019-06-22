@@ -9,7 +9,7 @@
 <br>
 
 ## パッケージ説明
-README file in English is available at [HERE](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/README_EN.md)
+[README file in English is available](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/README_EN.md)<br>
 近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
 ROSのメッセージを送ることで位置制御、速度制御、トルク制御が可能なほか、ROSメッセージを通じたサーボの情報取得、ジョイスティックによる操作が可能です。
 <br>
