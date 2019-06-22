@@ -13,11 +13,12 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
 # initialize (= reset) servo whose id is "ID"
 def initServo(ID):
-    ser.reset_input_buffer()  # flush serial buffer before starting this process
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
     enFreeServo_command = []
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
     ser.write(enFreeServo_command)
     # print("set servo ID:" + str(ID) + " to FREE mode")
     time.sleep(0.005)  # wait until this process done
@@ -30,11 +31,11 @@ def initServo(ID):
 
 # reset servo whose id is "ID"
 def resetServo(ID):
-    ser.reset_input_buffer()  # flush serial buffer before starting this process
     SUM = (0x06 + 0x05 + 0x00 + ID + 0x02) & 0b11111111
     resetServo_command = []
     resetServo_command += [chr(0x06), chr(0x05),
                            chr(0x00), chr(ID), chr(0x02), chr(SUM)]
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
     ser.write(resetServo_command)
     time.sleep(0.1)  # wait until this process done
     print("Reset servo ID:" + str(ID))
@@ -42,11 +43,11 @@ def resetServo(ID):
 
 # enfree servo whose id is "ID"
 def enFreeServo(ID):
-    ser.reset_input_buffer()  # flush serial buffer before starting this process
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x02 + 0x28 + 0x01) & 0b11111111
     enFreeServo_command = []
     enFreeServo_command += [chr(0x08), chr(0x04), chr(0x00),
                             chr(ID), chr(0x02), chr(0x28), chr(0x01), chr(SUM)]
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
     ser.write(enFreeServo_command)
     time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to FREE mode")
@@ -55,11 +56,12 @@ def enFreeServo(ID):
 # IDが"ID"なサーボを位置制御モード、スタンバイにする関数（軌道生成：別途指定、　制御ゲイン：プリセット#0）
 # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
 def change_servocontrol_mode(ID, mode):
-
     SUM = (0x08 + 0x04 + 0x00 + ID + mode + 0x28 + 0x01) & 0b11111111
     change_servocontrol_mode_command = []
     change_servocontrol_mode_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(mode), chr(0x28), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(change_servocontrol_mode_command)
     time.sleep(0.1)  # wait until this process done
     if mode == 0:
@@ -81,48 +83,45 @@ def change_servocontrol_mode(ID, mode):
 
 # IDが"ID"なサーボの位置制御モード時の軌道生成を5-polyモードにする関数
 def set_servo_trajectory_to_5Poly(ID):
-
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x05 + 0x29 + 0x01) & 0b11111111
     set_servo_trajectory_to_5Poly_command = []
     set_servo_trajectory_to_5Poly_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(0x05), chr(0x29), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(set_servo_trajectory_to_5Poly_command)
     time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to 5-poly Trajectory")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 # IDが"ID"なサーボの位置制御モード時の軌道生成をEVENモード（等速）にする関数
 def set_servo_trajectory_to_EVEN(ID):
-
     SUM = (0x08 + 0x04 + 0x00 + ID + 0x01 + 0x29 + 0x01) & 0b11111111
     set_servo_trajectory_to_EVEN_command = []
     set_servo_trajectory_to_EVEN_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(0x01), chr(0x29), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(set_servo_trajectory_to_EVEN_command)
     time.sleep(0.1)  # wait until this process done
     print("set servo ID:" + str(ID) + " to Even Trajectroy")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 # IDが"ID"なサーボの制御ゲインをプリセットのものに設定する関数
 # プリセット0:位置制御用、1:速度制御用、2:トルク制御用
 def set_servo_gain_to_presets(ID, PresetNumber):
-
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     SUM = (0x08 + 0x04 + 0x00 + ID + PresetNumber + 0x5c + 0x01) & 0b11111111
     set_servo_gain_to_presets_command = []
     set_servo_gain_to_presets_command += [chr(0x08), chr(0x04), chr(
         0x00), chr(ID), chr(PresetNumber), chr(0x5c), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(set_servo_gain_to_presets_command)
     time.sleep(0.1)  # wait until this process done
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 # IDが"ID"なサーボの位置を、目標時間"Time(ms)"をかけて"Angle(/100 deg)"にセットする関数
 def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
-
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
     else:
@@ -133,19 +132,18 @@ def control_servo_by_position_with_time(ID, Angle_centDeg, Time_msec):
     control_servo_by_position_with_time_command = []
     control_servo_by_position_with_time_command += [chr(0x09), chr(0x06), chr(0x00), chr(ID), chr(
         modAngle & 0xff), chr(modAngle >> 8), chr(Time_msec & 0xff), chr(Time_msec >> 8), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(control_servo_by_position_with_time_command)
     time.sleep(1.0 * Time_msec / 1000)
     print("set servo ID:" + str(ID) + " to position " +
           str(Angle_centDeg / 100) + "[deg] by " + str(Time_msec) + "[ms]")
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
 
 
 # IDが"ID"なサーボの位置を"Angle(/100 deg)"にセットする関数、余裕時間として"Time[ms]"を見ておく
 # 軌道生成を行わないので急峻な動きになる。
 # 移動に要する時間は関数呼び出し側で確保する必要あり。
 def control_servo_by_position_without_time(ID, Angle_centDeg):
-
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     if Angle_centDeg < 0:  # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
         modAngle = 65536 + Angle_centDeg
     else:  # 目標角度が正の場合でも、コンソールにAngle値を表示したいので、信号送信用の変数はmodAngleとする
@@ -156,6 +154,8 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     control_servo_by_position_without_time_command = []
     control_servo_by_position_without_time_command += [chr(0x09), chr(0x04), chr(0x00), chr(
         ID), chr(modAngle & 0xff), chr(modAngle >> 8), chr(0x2A), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(control_servo_by_position_without_time_command)
     # 通信が来るまで待つ
     while True:
@@ -166,9 +166,8 @@ def control_servo_by_position_without_time(ID, Angle_centDeg):
     #       str(Angle_centDeg / 100.0) + "[deg]")
 
 
-def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/sec)
-
-    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
+# function to control servo by velocity [*0.01 deg/sec]
+def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):
     # 目標角度が負の場合、-1→65535(0xffff)、-32000→33536(0x8300)と変換
     if Velocity_centDeg_perSec < 0:
         modVelocity = 65536 + Velocity_centDeg_perSec
@@ -180,6 +179,8 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
     control_servo_by_Velocity_command = []
     control_servo_by_Velocity_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
         modVelocity & 0xff), chr(modVelocity >> 8), chr(0x30), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
     ser.write(control_servo_by_Velocity_command)
     # 通信が来るまで待つ
     while True:
@@ -188,6 +189,45 @@ def control_servo_by_Velocity(ID, Velocity_centDeg_perSec):  # velocity(100*deg/
             break
     # print("set servo ID:" + str(ID) + " to Velocity " +
     #       str(Velocity_centDeg_perSec / 100.0) + "[deg/sec]")
+
+
+# function to control servo by velocity [*0.01 deg/sec] at multicast mode
+def control_servo_by_Velocity_multicast(args):
+    num_of_servos = len(args) / 2
+    id = []
+    velocity_command = []
+    id_sum = 0
+    velocity_command_sum
+
+    for i in range(num_of_servos):
+        id.append(args[i])
+        velocity_command.append(args[i + num_of_servos])
+        if velocity_command[i] < 0:
+            velocity_command[i] = 65536 + velocity_command[i]
+        id_sum = id_sum + id[i]
+        velocity_command_sum = velocity_command_sum + \
+            (velocity_command[i] & 0xff) + (velocity_command[i] >> 8)
+
+    command_length = (3 + 3 * num_of_servos + 3) & 0b11111111
+    SUM = (command_length + 0x04 + 0x00 + id_sum +
+           velocity_command_sum + 0x3c + num_of_servos) & 0b11111111
+
+    control_servo_by_Velocity_multicast_command = []
+    control_servo_by_Velocity_multicast_command += [
+        chr(command_length), chr(0x04), chr(0x00)]
+    for j in range(num_of_servos):
+        control_servo_by_Velocity_multicast_command += [
+            chr(id[j]), chr(velocity_command[j] & 0xff), chr(velocity_command[j] >> 8)]
+    control_servo_by_Velocity_multicast_command += [
+        chr(0x30), chr(num_of_servos), chr(SUM)]
+
+    # flush input buffer before sending something
+    ser.reset_input_buffer()
+    ser.write(control_servo_by_Velocity_multicast_command)
+
+    # wait for a certain seconds since multicast mode wouldn't reply anything to you
+    time.sleep(0.0015)
+    args = []
 
 
 # IDが"ID"なサーボの目標トルクを"Torque(mNm)"にセットする関数
@@ -212,10 +252,6 @@ def control_servo_by_Torque(ID, Torque_mNm):
         if ser.inWaiting() == 5:
             ser.reset_input_buffer()  # 返信データを読み取ってバッファから消しておく
             break
-    # time.sleep(0.012)
-    # dt = time.time() - now
-    # print(dt)
-    # print("")
 
     # print results
     # print("set servo ID:" + str(ID)
@@ -223,37 +259,39 @@ def control_servo_by_Torque(ID, Torque_mNm):
 
 
 def control_servo_by_Torque_multicast(args):
-    # now = time.time()
-    length = len(args) / 2
+    num_of_servos = len(args) / 2
     id = []
     torque_command = []
     id_sum = 0
     torque_command_sum = 0
-    for i in range(length):
+
+    for i in range(num_of_servos):
         id.append(args[i])
-        torque_command.append(args[i + length])
+        torque_command.append(args[i + num_of_servos])
         if torque_command[i] < 0:
             torque_command[i] = 65536 + torque_command[i]
         id_sum = id_sum + id[i]
         torque_command_sum = torque_command_sum + \
             (torque_command[i] & 0xff) + (torque_command[i] >> 8)
 
-    command_length = (3 + 3 * length + 3) & 0b11111111
+    command_length = (3 + 3 * num_of_servos + 3) & 0b11111111
     SUM = (command_length + 0x04 + 0x00 + id_sum +
-           torque_command_sum + 0x3c + length) & 0b11111111
+           torque_command_sum + 0x3c + num_of_servos) & 0b11111111
 
     control_servo_by_Torque_multicast_command = []
     control_servo_by_Torque_multicast_command += [
         chr(command_length), chr(0x04), chr(0x00)]
-    for j in range(length):
+    for j in range(num_of_servos):
         control_servo_by_Torque_multicast_command += [
             chr(id[j]), chr(torque_command[j] & 0xff), chr(torque_command[j] >> 8)]
     control_servo_by_Torque_multicast_command += [
-        chr(0x3c), chr(length), chr(SUM)]
+        chr(0x3c), chr(num_of_servos), chr(SUM)]
 
     # flush input buffer before sending something
     ser.reset_input_buffer()
     ser.write(control_servo_by_Torque_multicast_command)
+
+    # wait for a certain seconds since multicast mode wouldn't reply anything to you
     time.sleep(0.0015)
     args = []
 
