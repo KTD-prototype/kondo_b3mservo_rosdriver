@@ -4,7 +4,6 @@
 import serial
 import time
 import rospy
-import Kondo_B3M_functions as Kondo_B3M
 from std_msgs.msg import Int16
 from sensor_msgs.msg import Joy
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command

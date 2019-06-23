@@ -28,6 +28,8 @@ voltage_monitor_flag = 0
 servo_reset_flag = 0
 servo_drive_flag = 1
 
+# open serial port
+# you have to modify device name according to your environment, or fix device name as follows by symbolic link.
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 

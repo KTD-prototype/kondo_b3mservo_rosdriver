@@ -4,10 +4,11 @@
 import serial
 import time
 import math
-import struct
+import sys
 
-#
+
 # open serial port
+# you have to modify device name according to your environment, or fix device name as follows by symbolic link.
 ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 
 
