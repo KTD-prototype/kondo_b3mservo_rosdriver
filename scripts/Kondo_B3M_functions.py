@@ -654,7 +654,7 @@ def read_position_minLimit(ID):
                                        chr(0x00), chr(ID), chr(0x05), chr(0x02), chr(SUM)]
 
     ser.reset_input_buffer()  # flush serial buffer before starting this process
-    ser.write(read_position_minlimit_command)
+    ser.write(read_position_minLimit_command)
     # 通信が来るまで待つ
     while True:
         if ser.inWaiting() == 7:
@@ -667,8 +667,10 @@ def read_position_minLimit(ID):
     position_minLimit2 = ord(position_minLimit2)
 
     position_minLimit = (position_minLimit2 << 8) | position_minLimit1
-    print("minimum position limit of servo ID: " + str(ID) +
-          " is " + str(position_minLimit) + "[*0.01 deg]")
+    if position_minLimit > 32000:
+        position_minLimit = position_minLimit - 65536
+    # print("minimum position limit of servo ID: " + str(ID) +
+    #       " is " + str(position_minLimit) + "[*0.01 deg]")
     return position_minLimit
 
 
@@ -679,7 +681,7 @@ def read_position_MaxLimit(ID):
                                        chr(0x00), chr(ID), chr(0x07), chr(0x02), chr(SUM)]
 
     ser.reset_input_buffer()  # flush serial buffer before starting this process
-    ser.write(read_position_Maxlimit_command)
+    ser.write(read_position_MaxLimit_command)
     # 通信が来るまで待つ
     while True:
         if ser.inWaiting() == 7:
@@ -692,8 +694,10 @@ def read_position_MaxLimit(ID):
     position_MaxLimit2 = ord(position_MaxLimit2)
 
     position_MaxLimit = (position_MaxLimit2 << 8) | position_MaxLimit1
-    print("Maximum position limit of servo ID: " + str(ID) +
-          " is " + str(position_MaxLimit) + "[*0.01 deg]")
+    if position_MaxLimit > 32000:
+        position_MaxLimit = position_MaxLimit - 65536
+    # print("Maximum position limit of servo ID: " + str(ID) +
+    #       " is " + str(position_MaxLimit) + "[*0.01 deg]")
     return position_MaxLimit
 
 
