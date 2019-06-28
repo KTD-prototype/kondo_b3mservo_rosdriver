@@ -647,6 +647,56 @@ def read_current_limit(ID):
     return current_limit
 
 
+def read_position_minLimit(ID):
+    SUM = (0x07 + 0x03 + 0x00 + ID + 0x05 + 0x02) & 0b11111111
+    read_position_minLimit_command = []
+    read_position_minLimit_command += [chr(0x07), chr(0x03),
+                                       chr(0x00), chr(ID), chr(0x05), chr(0x02), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    ser.write(read_position_minlimit_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 7:
+            break
+
+    Receive = ser.read(4)
+    position_minLimit1 = ser.read(1)
+    position_minLimit2 = ser.read(1)
+    position_minLimit1 = ord(position_minLimit1)
+    position_minLimit2 = ord(position_minLimit2)
+
+    position_minLimit = (position_minLimit2 << 8) | position_minLimit1
+    print("minimum position limit of servo ID: " + str(ID) +
+          " is " + str(position_minLimit) + "[*0.01 deg]")
+    return position_minLimit
+
+
+def read_position_MaxLimit(ID):
+    SUM = (0x07 + 0x03 + 0x00 + ID + 0x07 + 0x02) & 0b11111111
+    read_position_MaxLimit_command = []
+    read_position_MaxLimit_command += [chr(0x07), chr(0x03),
+                                       chr(0x00), chr(ID), chr(0x07), chr(0x02), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    ser.write(read_position_Maxlimit_command)
+    # 通信が来るまで待つ
+    while True:
+        if ser.inWaiting() == 7:
+            break
+
+    Receive = ser.read(4)
+    position_MaxLimit1 = ser.read(1)
+    position_MaxLimit2 = ser.read(1)
+    position_MaxLimit1 = ord(position_MaxLimit1)
+    position_MaxLimit2 = ord(position_MaxLimit2)
+
+    position_MaxLimit = (position_MaxLimit2 << 8) | position_MaxLimit1
+    print("Maximum position limit of servo ID: " + str(ID) +
+          " is " + str(position_MaxLimit) + "[*0.01 deg]")
+    return position_MaxLimit
+
+
 def read_time_for_determine_that_servo_is_locked(ID):
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x14 + 0x01) & 0b11111111
     read_servo_lock_time_command = []
