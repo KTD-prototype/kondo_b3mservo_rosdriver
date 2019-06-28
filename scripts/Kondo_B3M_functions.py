@@ -647,6 +647,40 @@ def read_current_limit(ID):
     return current_limit
 
 
+def change_position_minLimit(ID, new_limit):
+    if new_limit < 0:
+        new_limit = new_limit + 65536
+
+    SUM = (0x09 + 0x04 + 0x00 + ID + (new_limit & 0xff) +
+           (new_limit >> 8) + 0x05 + 0x01) & 0b11111111
+    change_position_minLimit_command = []
+    change_position_minLimit_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
+        new_limit & 0xff), chr(new_limit >> 8), chr(0x05), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    ser.write(change_position_minLimit_command)
+    time.sleep(0.1)
+    # print("set current limit of servo ID: " +
+    #       str(ID) + " as " + str(current_limit) + "[mA]")
+
+
+def change_position_MaxLimit(ID, new_limit):
+    if new_limit < 0:
+        new_limit = new_limit + 65536
+
+    SUM = (0x09 + 0x04 + 0x00 + ID + (new_limit & 0xff) +
+           (new_limit >> 8) + 0x07 + 0x01) & 0b11111111
+    change_position_MaxLimit_command = []
+    change_position_MaxLimit_command += [chr(0x09), chr(0x04), chr(0x00), chr(ID), chr(
+        new_limit & 0xff), chr(new_limit >> 8), chr(0x07), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    ser.write(change_position_MaxLimit_command)
+    time.sleep(0.1)
+    # print("set current limit of servo ID: " +
+    #       str(ID) + " as " + str(current_limit) + "[mA]")
+
+
 def read_position_minLimit(ID):
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x05 + 0x02) & 0b11111111
     read_position_minLimit_command = []
@@ -754,4 +788,4 @@ def save_RAM_to_ROM(ID):
     ser.reset_input_buffer()  # flush serial buffer before starting this process
     ser.write(save_RAM_to_ROM_command)
     time.sleep(0.1)
-    print("save parameters to ROM of servo ID: " + str(ID))
+    # print("save parameters to ROM of servo ID: " + str(ID))
