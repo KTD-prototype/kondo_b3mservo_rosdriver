@@ -15,8 +15,6 @@ target_position = []
 id = []
 merged_command = []
 num = 0
-initial_process_flag = 1
-found_servo_flag = 1
 
 battery_voltage_warn_flag = 0
 battery_voltage_fatal_flag = 0
@@ -35,7 +33,7 @@ time.sleep(0.1)
 
 
 def initial_process():
-    global id, num, the_number_of_servo_pub
+    global id, num
     global target_position, voltage
 
     for i in range(255):
