@@ -6,6 +6,7 @@ import time
 import math
 import sys
 
+accumulated_position_error = 0
 
 # open serial port
 # you have to modify device name according to your environment, or fix device name as follows by symbolic link.
@@ -344,11 +345,29 @@ def control_servo_by_Torque_multicast(args):
     args = []
 
 
-def control_servo_position_by_Torque(ID, )
+def control_servo_position_by_Torque(ID, target_position):
+    global accumulated_position_error
+    Kp = 1
+    Kd = 0.02
+    Ki = 0.001
+    # print(ID)
+    # print(target_position)
+    current_position = get_servo_Position(ID)
+    current_velocity = get_servo_Velocity(ID)
+    accumulated_position_error = accumulated_position_error + \
+        (target_position - current_position)
+    target_torque = (target_position - current_position) * \
+        Kp - (current_velocity) * Kd + accumulated_position_error * Ki
+    target_torque = int(target_torque)
+    print(target_torque)
+    if target_torque > 32000:
+        target_torque = 32000
+    elif target_torque < -32000:
+        target_torque = -32000
+    control_servo_by_Torque(ID, target_torque)
+
 
 # IDが"ID"なサーボの角度取得
-
-
 def get_servo_Position(ID):
     # アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x2c + 0x02) & 0b11111111
