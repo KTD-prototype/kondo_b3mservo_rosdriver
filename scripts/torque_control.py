@@ -9,7 +9,7 @@ import sys
 from std_msgs.msg import Int16, Int8
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
-import Kondo_B3M_functions as Kondo_B3M
+import drive_function as Drive
 
 target_torque = []
 id = []
@@ -37,7 +37,7 @@ def initial_process():
     global target_torque, voltage
 
     for i in range(255):  # investigate only ID:0 to 10 to shorten time to detect connected servos
-        result = Kondo_B3M.initServo(i)
+        result = Drive.initServo(i)
         if result == 1:
             id.append(i)
             num = num + 1
@@ -67,7 +67,7 @@ def callback_servo_command(multi_servo_command):
             merged_command.append(id[i])
         for j in range(num):
             merged_command.append(target_torque[j])
-        Kondo_B3M.control_servo_by_Torque_multicast(merged_command)
+        Drive.control_servo_by_Torque_multicast(merged_command)
         publish_servo_info()
         merged_command = []
 
@@ -96,7 +96,7 @@ def publish_servo_info():
     if voltage_monitor_flag == 100:
         voltage_monitor_flag = 0
         for j in range(num):
-            voltage[j] = Kondo_B3M.get_servo_voltage(id[j])
+            voltage[j] = Drive.get_servo_voltage(id[j])
             if voltage[j] < BATTERY_VOLTAGE_WARN and battery_voltage_warn_flag == 0:
                 print("")
                 rospy.logwarn('battery voltage is low !')
@@ -109,15 +109,15 @@ def publish_servo_info():
 
     for i in range(num):
         multi_servo_info.encoder_count.append(
-            Kondo_B3M.get_encoder_total_count(id[i]))
+            Drive.get_encoder_total_count(id[i]))
 
         # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
         multi_servo_info.motor_velocity.append(
-            Kondo_B3M.get_servo_Velocity(id[i]))
+            Drive.get_servo_Velocity(id[i]))
 
         # if you want to ommit motor current(due to low control rate, for example), comment out script bellow
         multi_servo_info.motor_current.append(
-            Kondo_B3M.get_servo_Current(id[i]))
+            Drive.get_servo_Current(id[i]))
 
         multi_servo_info.input_voltage.append(voltage[i])
 
@@ -152,18 +152,18 @@ def callback_servo_drive(trigger):
 def initialize_servo_for_torque_control():
     global num, id
     for i in range(num):  # start resetting and initiating servos again
-        Kondo_B3M.resetServo(id[i])
-        Kondo_B3M.enFreeServo(id[i])
-        Kondo_B3M.reset_encoder_total_count(id[i])
+        Drive.resetServo(id[i])
+        Drive.enFreeServo(id[i])
+        Drive.reset_encoder_total_count(id[i])
         # mode : 00>positionCTRL, 04>velocityCTRL, 08>current(torque)CTRL, 12>feedforwardCTRL
-        Kondo_B3M.change_servocontrol_mode(id[i], 8)
+        Drive.change_servocontrol_mode(id[i], 8)
 
 
 # enfreeing servo process for end of the script
 def enfree_servo_after_node_ends(signal, frame):
     global id, num
     for i in range(num):
-        Kondo_B3M.enFreeServo(id[i])
+        Drive.enFreeServo(id[i])
     sys.exit(0)
 
 
