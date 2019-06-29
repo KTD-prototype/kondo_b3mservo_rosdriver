@@ -132,7 +132,6 @@ def set_servo_gain_to_presets(ID, PresetNumber):
     time.sleep(0.1)  # wait until this process done
 
 
-
 # サーボの電流制限値を変更する関数
 def change_current_limit(ID, current_limit_mA):
     SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff) +

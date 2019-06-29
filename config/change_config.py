@@ -33,7 +33,6 @@ def change_config():
         Config.save_RAM_to_ROM(id[i])
 
 
-
 def read_config():
     global id, num
     global position_minLimit, position_MaxLimit

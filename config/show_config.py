@@ -39,9 +39,11 @@ def show_config():
     for i in range(num):
         print("-----------------------------------------------")
         print("CONFIGURATION OF SERVO ID : " + str(id[i]))
-        print("     minimum position : " + str(position_minLimit[i]/100) + "[deg]")
-        print("     Maximum position : " + str(position_MaxLimit[i]/100) + "[deg]")
-        print("     Current limit    : "+str(current_limit[i])+"[mA]")
+        print("     minimum position : " +
+              str(position_minLimit[i] / 100) + "[deg]")
+        print("     Maximum position : " +
+              str(position_MaxLimit[i] / 100) + "[deg]")
+        print("     Current limit    : " + str(current_limit[i]) + "[mA]")
 
 
 def initial_process():
