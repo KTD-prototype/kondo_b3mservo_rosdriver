@@ -650,8 +650,8 @@ def read_current_limit(ID):
     current_limit2 = ord(current_limit2)
 
     current_limit = (current_limit2 << 8) | current_limit1
-    print("current limit of servo ID: " + str(ID) +
-          " is " + str(current_limit) + "[mA]")
+    # print("current limit of servo ID: " + str(ID) +
+    #       " is " + str(current_limit) + "[mA]")
     return current_limit
 
 

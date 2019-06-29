@@ -14,6 +14,7 @@ import Kondo_B3M_functions as Kondo_B3M
 
 position_minLimit = []
 position_MaxLimit = []
+current_limit = []
 id = []
 num = 0
 
@@ -30,6 +31,7 @@ def get_config():
         position_minLimit.append(Kondo_B3M.read_position_minLimit(
             id[i]))
         position_MaxLimit.append(Kondo_B3M.read_position_MaxLimit(id[i]))
+        current_limit.append(Kondo_B3M.read_current_limit(id[i]))
 
 
 def show_config():
@@ -38,8 +40,9 @@ def show_config():
     for i in range(num):
         print("-----------------------------------------------")
         print("CONFIGURATION OF SERVO ID : " + str(id[i]))
-        print("     minimum position : " + str(position_minLimit[i]))
-        print("     Maximum position : " + str(position_MaxLimit[i]))
+        print("     minimum position : " + str(position_minLimit[i]/100) + "[deg]")
+        print("     Maximum position : " + str(position_MaxLimit[i]/100) + "[deg]")
+        print("     Current limit    : "+str(current_limit[i])+"[mA]")
 
 
 def initial_process():

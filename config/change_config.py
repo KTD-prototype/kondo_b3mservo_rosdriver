@@ -27,6 +27,8 @@ def change_config():
     global id, num
     Kondo_B3M.change_position_minLimit(3, -32000)
     Kondo_B3M.change_position_MaxLimit(3, 32000)
+    Kondo_B3M.change_current_limit(3, 10000)
+    Kondo_B3M.change_current_limit(4, 10000)
 
     for i in range(num):
         Kondo_B3M.save_RAM_to_ROM(id[i])
