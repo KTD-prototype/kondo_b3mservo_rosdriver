@@ -24,32 +24,42 @@ time.sleep(0.1)
 
 def change_config():
     global id, num
-    Config.change_position_minLimit(3, -32000)
-    Config.change_position_MaxLimit(3, 32000)
-    Config.change_current_limit(3, 10000)
-    Config.change_current_limit(4, 10000)
+
+    # 任意のIDのサーボに対し任意の値で設定変更が可能。以下は例。
+
+    # Config.change_position_minLimit(3, -32000)
+    # Config.change_position_MaxLimit(3, 32000)
+    # Config.change_current_limit(3, 10000)
+    # Config.change_current_limit(4, 10000)
 
     for i in range(num):
         Config.save_RAM_to_ROM(id[i])
 
 
+#　変更したパラメータを確認するため、読み出し
 def read_config():
     global id, num
     global position_minLimit, position_MaxLimit
     for i in range(num):
-        position_minLimit.append(Config.read_position_minLimit(
-            id[i]))
-        position_MaxLimit.append(Config.read_position_MaxLimit(id[i]))
+        # 何か読み出したいなら、以下のpassはコメントアウト
+        pass
+
+        # 任意のパラメータを確認のため呼び出し
+        # position_minLimit.append(Config.read_position_minLimit(
+        #     id[i]))
+        # position_MaxLimit.append(Config.read_position_MaxLimit(id[i]))
 
 
+# 変更したパラメータを確認するため、読みだしたパラメータを表示
 def show_config():
     global id, num
     global position_minLimit, position_MaxLimit
     for i in range(num):
-        print("-----------------------------------------------")
-        print("CONFIGURATION OF SERVO ID : " + str(id[i]))
-        print("     minimum position : " + str(position_minLimit[i]))
-        print("     Maximum position : " + str(position_MaxLimit[i]))
+        # print("-----------------------------------------------")
+        # print("CONFIGURATION OF SERVO ID : " + str(id[i]))
+        # print("     minimum position : " + str(position_minLimit[i]))
+        # print("     Maximum position : " + str(position_MaxLimit[i]))
+        pass
 
 
 def initial_process():
