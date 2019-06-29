@@ -435,6 +435,7 @@ def get_servo_Velocity(ID):
     return Velocity
 
 
+# サーボ電流値を読み取る関数
 def get_servo_Current(ID):
     # アドレス0x48から2バイト分（=電流値）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x48 + 0x02) & 0b11111111
@@ -465,6 +466,7 @@ def get_servo_Current(ID):
     return Current
 
 
+# サーボにかかる電圧を読み取る関数
 def get_servo_voltage(ID):
     # アドレス0x4aから2バイト分（=電流値）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x4a + 0x02) & 0b11111111
@@ -494,10 +496,11 @@ def get_servo_voltage(ID):
     return voltage
 
 
+# サーボ内MUCの温度を読み取る関数
 def get_mcu_temperature(ID):
-    # アドレス0x44から2バイト分（=電流値）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x44 + 0x02) & 0b11111111
     get_mcu_temperature_command = []
+    # アドレス0x44から2バイト分（=電流値）読みだす信号を作成し、送信
     get_mcu_temperature_command += [chr(0x07), chr(0x03),
                                     chr(0x00), chr(ID), chr(0x44), chr(0x02), chr(SUM)]
 
@@ -525,6 +528,7 @@ def get_mcu_temperature(ID):
     return mcu_temperature
 
 
+# サーボ本体温度を読み取る関数
 def get_servo_temperature(ID):
     # アドレス0x46から2バイト分（=電流値）読みだす信号を作成し、送信
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x46 + 0x02) & 0b11111111
@@ -556,6 +560,7 @@ def get_servo_temperature(ID):
     return servo_temperature
 
 
+# サーボのエンコーダカウントをリセットする関数
 def reset_encoder_total_count(ID):
     SUM = (0x0B + 0x04 + 0x00 + ID + 0x00 + 0x00 +
            0x00 + 0x00 + 0x52 + 0x01) & 0b11111111
@@ -569,6 +574,7 @@ def reset_encoder_total_count(ID):
     print("reset encoder")
 
 
+# サーボのエンコーダカウントを読み取る関数
 def get_encoder_total_count(ID):
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x52 + 0x04) & 0b11111111
     get_encoder_total_count_command = []
@@ -606,6 +612,7 @@ def get_encoder_total_count(ID):
     return EncoderCount
 
 
+# サーボの電流制限値を変更する関数
 def change_current_limit(ID, current_limit_mA):
     SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff) +
            (current_limit_mA >> 8) + 0x11 + 0x01) & 0b11111111
@@ -622,6 +629,7 @@ def change_current_limit(ID, current_limit_mA):
           str(ID) + " as " + str(current_limit) + "[mA]")
 
 
+# サーボの電流制限値を読み取る関数
 def read_current_limit(ID):
     SUM = (0x07 + 0x03 + 0x00 + ID + 0x11 + 0x02) & 0b11111111
     read_current_limit_command = []
