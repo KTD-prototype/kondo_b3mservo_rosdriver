@@ -14,6 +14,7 @@ import config_function as Config
 position_minLimit = []
 position_MaxLimit = []
 current_limit = []
+gains_all = []
 id = []
 num = 0
 
@@ -31,6 +32,7 @@ def get_config():
             id[i]))
         position_MaxLimit.append(Config.read_position_MaxLimit(id[i]))
         current_limit.append(Config.read_current_limit(id[i]))
+        gains_all.append(Config.read_preset_gains(id[i]))
 
 
 def show_config():
@@ -44,6 +46,13 @@ def show_config():
         print("     Maximum position : " +
               str(position_MaxLimit[i] / 100) + "[deg]")
         print("     Current limit    : " + str(current_limit[i]) + "[mA]")
+        gain_for_specific_id = gains_all[i]
+
+        for j in range(3):
+            preset_gains = []
+            for k in range(5):
+                preset_gains.append(gain_for_specific_id[j * 5 + k])
+            print("     preset gains " + str(j) + "  " + str(preset_gains))
 
 
 def initial_process():

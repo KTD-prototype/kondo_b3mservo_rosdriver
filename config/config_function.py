@@ -307,6 +307,54 @@ def read_servo_output_to_countup_time_to_determine_that_servo_is_locked(ID):
     return int_lock_output
 
 
+def read_preset_gains(ID):
+    GAIN_ARRAY = []
+    for i in range(15):
+        if i == 0:
+            address = 0x5e
+        elif i % 5 == 4 or i % 5 == 0:
+            address = previous_address + 2
+        else:
+            address = previous_address + 4
+
+        SUM = (0x07 + 0x03 + 0x00 + ID + address + 0x04) & 0b11111111
+        command = []
+        command += [chr(0x07), chr(0x03),
+                    chr(0x00), chr(ID), chr(address), chr(0x04), chr(SUM)]
+
+        # print(command)
+
+        ser.reset_input_buffer()
+        ser.write(command)
+
+        # 返信が来るまで待つ（共通の返信４バイト、ほしい返信４バイト、合計バイト１バイトの合計９バイト
+        while True:
+            if ser.inWaiting() == 9:
+                break
+
+        # 返信バイトの処理。最初の４バイトは共通なので破棄。
+        # 次の４バイトがゲイン値なので、リトルエンディアンで格納。
+        Discard = ser.read(4)
+        receive1 = ser.read(1)
+        receive2 = ser.read(1)
+        receive3 = ser.read(1)
+        receive4 = ser.read(1)
+
+        receive1 = ord(receive1)
+        receive2 = ord(receive2)
+        receive3 = ord(receive3)
+        receive4 = ord(receive4)
+
+        receive = (receive4 << 24) | (
+            receive3 << 16) | (receive2 << 8) | receive1
+
+        GAIN_ARRAY.append(receive)
+        previous_address = address
+
+    # print(GAIN_ARRAY)
+    return GAIN_ARRAY
+
+
 def save_RAM_to_ROM(ID):
     SUM = (0x05 + 0x02 + 0x00 + ID) & 0b11111111
     save_RAM_to_ROM_command = []
