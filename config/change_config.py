@@ -9,8 +9,7 @@ import sys
 from std_msgs.msg import Int16
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
-sys.path.append('../scripts')
-import Kondo_B3M_functions as Kondo_B3M
+import config_function as Config
 
 position_minLimit = []
 position_MaxLimit = []
@@ -25,13 +24,13 @@ time.sleep(0.1)
 
 def change_config():
     global id, num
-    Kondo_B3M.change_position_minLimit(3, -32000)
-    Kondo_B3M.change_position_MaxLimit(3, 32000)
-    Kondo_B3M.change_current_limit(3, 10000)
-    Kondo_B3M.change_current_limit(4, 10000)
+    Config.change_position_minLimit(3, -32000)
+    Config.change_position_MaxLimit(3, 32000)
+    Config.change_current_limit(3, 10000)
+    Config.change_current_limit(4, 10000)
 
     for i in range(num):
-        Kondo_B3M.save_RAM_to_ROM(id[i])
+        Config.save_RAM_to_ROM(id[i])
 
 
 
@@ -39,9 +38,9 @@ def read_config():
     global id, num
     global position_minLimit, position_MaxLimit
     for i in range(num):
-        position_minLimit.append(Kondo_B3M.read_position_minLimit(
+        position_minLimit.append(Config.read_position_minLimit(
             id[i]))
-        position_MaxLimit.append(Kondo_B3M.read_position_MaxLimit(id[i]))
+        position_MaxLimit.append(Config.read_position_MaxLimit(id[i]))
 
 
 def show_config():
@@ -57,7 +56,7 @@ def show_config():
 def initial_process():
     global id, num
     for i in range(255):
-        result = Kondo_B3M.initServo(i)
+        result = Config.initServo(i)
         if result == 1:
             id.append(i)
             num = num + 1

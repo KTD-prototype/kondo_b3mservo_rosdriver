@@ -9,8 +9,7 @@ import sys
 from std_msgs.msg import Int16
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
-sys.path.append('../scripts')
-import Kondo_B3M_functions as Kondo_B3M
+import config_function as Config
 
 position_minLimit = []
 position_MaxLimit = []
@@ -28,10 +27,10 @@ def get_config():
     global id, num
     global position_minLimit, position_MaxLimit
     for i in range(num):
-        position_minLimit.append(Kondo_B3M.read_position_minLimit(
+        position_minLimit.append(Config.read_position_minLimit(
             id[i]))
-        position_MaxLimit.append(Kondo_B3M.read_position_MaxLimit(id[i]))
-        current_limit.append(Kondo_B3M.read_current_limit(id[i]))
+        position_MaxLimit.append(Config.read_position_MaxLimit(id[i]))
+        current_limit.append(Config.read_current_limit(id[i]))
 
 
 def show_config():
@@ -48,7 +47,7 @@ def show_config():
 def initial_process():
     global id, num
     for i in range(255):
-        result = Kondo_B3M.initServo(i)
+        result = Config.initServo(i)
         if result == 1:
             id.append(i)
             num = num + 1

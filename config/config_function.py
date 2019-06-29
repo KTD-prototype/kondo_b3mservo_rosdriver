@@ -6,7 +6,6 @@ import time
 import math
 import sys
 
-accumulated_position_error = 0
 
 # open serial port
 # you have to modify device name according to your environment, or fix device name as follows by symbolic link.
@@ -133,7 +132,7 @@ def set_servo_gain_to_presets(ID, PresetNumber):
     time.sleep(0.1)  # wait until this process done
 
 
-    
+
 # サーボの電流制限値を変更する関数
 def change_current_limit(ID, current_limit_mA):
     SUM = (0x09 + 0x04 + 0x00 + ID + (current_limit_mA & 0xff) +
