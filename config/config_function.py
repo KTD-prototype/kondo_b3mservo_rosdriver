@@ -307,9 +307,15 @@ def read_servo_output_to_countup_time_to_determine_that_servo_is_locked(ID):
     return int_lock_output
 
 
+# プリセットゲインを読みとる関数。(P, D, I, 静止摩擦、 動摩擦)
+# デフォルト：プリセットゲイン0（位置制御用）：42000,400,1000,0,0
+# デフォルト：プリセットゲイン1（速度制御用）：20000,200,8000,0,0
+# デフォルト：プリセットゲイン2（トルク制御用）：5,0,70,0,0
 def read_preset_gains(ID):
     GAIN_ARRAY = []
+    # 全部で１５種類のパラメータ
     for i in range(15):
+        # 読みだす数値が２バイトと４バイトが混在しており、場合分けしないと読み出しアドレスがずれる
         if i == 0:
             address = 0x5e
         elif i % 5 == 4 or i % 5 == 0:
@@ -317,42 +323,107 @@ def read_preset_gains(ID):
         else:
             address = previous_address + 4
 
-        SUM = (0x07 + 0x03 + 0x00 + ID + address + 0x04) & 0b11111111
-        command = []
-        command += [chr(0x07), chr(0x03),
-                    chr(0x00), chr(ID), chr(address), chr(0x04), chr(SUM)]
+        # 上記と別の場合分けをして、２バイトの数字なら２バイト読みだす信号、４バイトの数字なら４バイトを読みだす信号を生成し、読み出し
+        # ２バイト読み出し（静止摩擦係数、動摩擦係数の読み出し時）
+        if i % 5 == 3 or i % 5 == 4:
+            SUM = (0x07 + 0x03 + 0x00 + ID + address + 0x02) & 0b11111111
+            command = []
+            command += [chr(0x07), chr(0x03),
+                        chr(0x00), chr(ID), chr(address), chr(0x02), chr(SUM)]
 
-        # print(command)
+            ser.reset_input_buffer()
+            ser.write(command)
 
-        ser.reset_input_buffer()
-        ser.write(command)
+            # 返信が来るまで待つ（共通の返信４バイト、ほしい返信2バイト、合計バイト１バイトの合計7バイト
+            while True:
+                if ser.inWaiting() == 7:
+                    break
 
-        # 返信が来るまで待つ（共通の返信４バイト、ほしい返信４バイト、合計バイト１バイトの合計９バイト
-        while True:
-            if ser.inWaiting() == 9:
-                break
+            # 返信バイトの処理。最初の４バイトは共通なので破棄。
+            # 次の２バイトがゲイン値なので、リトルエンディアンで格納。
+            Discard = ser.read(4)
+            receive1 = ser.read(1)
+            receive2 = ser.read(1)
 
-        # 返信バイトの処理。最初の４バイトは共通なので破棄。
-        # 次の４バイトがゲイン値なので、リトルエンディアンで格納。
-        Discard = ser.read(4)
-        receive1 = ser.read(1)
-        receive2 = ser.read(1)
-        receive3 = ser.read(1)
-        receive4 = ser.read(1)
+            receive1 = ord(receive1)
+            receive2 = ord(receive2)
 
-        receive1 = ord(receive1)
-        receive2 = ord(receive2)
-        receive3 = ord(receive3)
-        receive4 = ord(receive4)
+            receive = (receive2 << 8) | receive1
 
-        receive = (receive4 << 24) | (
-            receive3 << 16) | (receive2 << 8) | receive1
+            GAIN_ARRAY.append(receive)
+            previous_address = address
 
-        GAIN_ARRAY.append(receive)
-        previous_address = address
+        # ４バイト読み出し（P,D,Iの各ゲイン）の場合
+        else:
+            SUM = (0x07 + 0x03 + 0x00 + ID + address + 0x04) & 0b11111111
+            command = []
+            command += [chr(0x07), chr(0x03),
+                        chr(0x00), chr(ID), chr(address), chr(0x04), chr(SUM)]
+
+            ser.reset_input_buffer()
+            ser.write(command)
+
+            # 返信が来るまで待つ（共通の返信４バイト、ほしい返信４バイト、合計バイト１バイトの合計９バイト
+            while True:
+                if ser.inWaiting() == 9:
+                    break
+
+            # 返信バイトの処理。最初の４バイトは共通なので破棄。
+            # 次の４バイトがゲイン値なので、リトルエンディアンで格納。
+            Discard = ser.read(4)
+            receive1 = ser.read(1)
+            receive2 = ser.read(1)
+            receive3 = ser.read(1)
+            receive4 = ser.read(1)
+
+            receive1 = ord(receive1)
+            receive2 = ord(receive2)
+            receive3 = ord(receive3)
+            receive4 = ord(receive4)
+
+            receive = (receive4 << 24) | (
+                receive3 << 16) | (receive2 << 8) | receive1
+
+            GAIN_ARRAY.append(receive)
+            previous_address = address
 
     # print(GAIN_ARRAY)
+    # サーボ１つあたり１５種類のパラメータが格納されたリストを１単位として、それらを複数格納したリストとして戻り値を返す
     return GAIN_ARRAY
+
+
+# プリセットゲインを変更する関数。(P, D, I, 静止摩擦、 動摩擦)
+# アドレス：プリセットゲイン0（位置制御用）：0x5e,0x62,0x66,0x6a,0x6c
+# デフォルト：プリセットゲイン1（速度制御用）：0x6e,0x72,0x76,0x7a,0x7c
+# デフォルト：プリセットゲイン2（トルク制御用）：0x7e,0x82,0x86,0x8a,0x8c
+def change_preset_gain(ID, address, value):
+    if value > 65535:
+        value1 = value & 0xff
+        value2 = (value >> 8) & 0xff
+        value3 = (value >> 16) & 0xff
+        value4 = (value >> 24) & 0xff
+        SUM = (0x0b + 0x04 + 0x00 + ID + value1 + value2 +
+               value3 + value4 + address + 0x01) & 0b11111111
+
+        change_gain_command = []
+        change_gain_command += [chr(0x0b), chr(0x04), chr(0x00), chr(ID), chr(value1), chr(
+            value2), chr(value3), chr(value4), chr(address), chr(0x01), chr(SUM)]
+
+    else:
+        value1 = value & 0xff
+        value2 = value >> 8
+        SUM = (0x09 + 0x04 + 0x00 + ID + value1 +
+               value2 + address + 0x01) & 0b11111111
+
+        change_gain_command = []
+        change_gain_command += [chr(0x09), chr(0x04), chr(0x00), chr(
+            ID), chr(value1), chr(value2), chr(address), chr(0x01), chr(SUM)]
+
+    ser.reset_input_buffer()  # flush serial buffer before starting this process
+    ser.write(change_gain_command)
+    time.sleep(0.1)
+    # print("set current limit of servo ID: " +
+    #       str(ID) + " as " + str(current_limit) + "[mA]")
 
 
 def save_RAM_to_ROM(ID):
