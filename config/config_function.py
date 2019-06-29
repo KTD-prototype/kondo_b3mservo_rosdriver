@@ -397,7 +397,24 @@ def read_preset_gains(ID):
 # デフォルト：プリセットゲイン1（速度制御用）：0x6e,0x72,0x76,0x7a,0x7c
 # デフォルト：プリセットゲイン2（トルク制御用）：0x7e,0x82,0x86,0x8a,0x8c
 def change_preset_gain(ID, address, value):
-    if value > 65535:
+    if address == 0x6a or address == 0x6c or address == 0x7a or address == 0x7c or address == 0x8a or address == 0x8c:
+        if value > 65535:
+            print("the value you have input is out of range. it must be 0 to 65535")
+
+        else:
+            value1 = value & 0xff
+            value2 = value >> 8
+            SUM = (0x09 + 0x04 + 0x00 + ID + value1 +
+                   value2 + address + 0x01) & 0b11111111
+
+            change_gain_command = []
+            change_gain_command += [chr(0x09), chr(0x04), chr(0x00), chr(
+                ID), chr(value1), chr(value2), chr(address), chr(0x01), chr(SUM)]
+            ser.reset_input_buffer()  # flush serial buffer before starting this process
+            ser.write(change_gain_command)
+            time.sleep(0.1)
+
+    else:
         value1 = value & 0xff
         value2 = (value >> 8) & 0xff
         value3 = (value >> 16) & 0xff
@@ -409,21 +426,9 @@ def change_preset_gain(ID, address, value):
         change_gain_command += [chr(0x0b), chr(0x04), chr(0x00), chr(ID), chr(value1), chr(
             value2), chr(value3), chr(value4), chr(address), chr(0x01), chr(SUM)]
 
-    else:
-        value1 = value & 0xff
-        value2 = value >> 8
-        SUM = (0x09 + 0x04 + 0x00 + ID + value1 +
-               value2 + address + 0x01) & 0b11111111
-
-        change_gain_command = []
-        change_gain_command += [chr(0x09), chr(0x04), chr(0x00), chr(
-            ID), chr(value1), chr(value2), chr(address), chr(0x01), chr(SUM)]
-
-    ser.reset_input_buffer()  # flush serial buffer before starting this process
-    ser.write(change_gain_command)
-    time.sleep(0.1)
-    # print("set current limit of servo ID: " +
-    #       str(ID) + " as " + str(current_limit) + "[mA]")
+        ser.reset_input_buffer()  # flush serial buffer before starting this process
+        ser.write(change_gain_command)
+        time.sleep(0.1)
 
 
 def save_RAM_to_ROM(ID):
