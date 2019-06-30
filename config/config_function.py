@@ -394,8 +394,11 @@ def read_preset_gains(ID):
 
 # プリセットゲインを変更する関数。(P, D, I, 静止摩擦、 動摩擦)
 # アドレス：プリセットゲイン0（位置制御用）：0x5e,0x62,0x66,0x6a,0x6c
-# デフォルト：プリセットゲイン1（速度制御用）：0x6e,0x72,0x76,0x7a,0x7c
-# デフォルト：プリセットゲイン2（トルク制御用）：0x7e,0x82,0x86,0x8a,0x8c
+# デフォルト：プリセットゲイン0（位置制御用）：42000,400,1000,0,0
+# アドレス：プリセットゲイン1（速度制御用）：0x6e,0x72,0x76,0x7a,0x7c
+# デフォルト：プリセットゲイン1（速度制御用）：20000,200,8000,0,0
+# アドレス：プリセットゲイン2（トルク制御用）：0x7e,0x82,0x86,0x8a,0x8c
+# デフォルト：プリセットゲイン2（トルク制御用）：5,0,70,0,0
 def change_preset_gain(ID, address, value):
     if address == 0x6a or address == 0x6c or address == 0x7a or address == 0x7c or address == 0x8a or address == 0x8c:
         if value > 65535:
@@ -412,7 +415,7 @@ def change_preset_gain(ID, address, value):
                 ID), chr(value1), chr(value2), chr(address), chr(0x01), chr(SUM)]
             ser.reset_input_buffer()  # flush serial buffer before starting this process
             ser.write(change_gain_command)
-            time.sleep(0.1)
+            time.sleep(0.01)
 
     else:
         value1 = value & 0xff
@@ -428,7 +431,7 @@ def change_preset_gain(ID, address, value):
 
         ser.reset_input_buffer()  # flush serial buffer before starting this process
         ser.write(change_gain_command)
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 
 def save_RAM_to_ROM(ID):
@@ -439,5 +442,5 @@ def save_RAM_to_ROM(ID):
 
     ser.reset_input_buffer()  # flush serial buffer before starting this process
     ser.write(save_RAM_to_ROM_command)
-    time.sleep(0.1)
+    time.sleep(0.01)
     # print("save parameters to ROM of servo ID: " + str(ID))

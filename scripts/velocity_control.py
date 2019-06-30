@@ -16,8 +16,6 @@ id = []
 merged_command = []
 num = 0
 
-battery_voltage_warn_flag = 0
-battery_voltage_fatal_flag = 0
 BATTERY_VOLTAGE_WARN = 11200
 BATTERY_VOLTAGE_FATAL = 10700
 voltage = []
@@ -82,8 +80,7 @@ def callback_servo_command(multi_servo_command):
 
 def publish_servo_info():
     global id, num, voltage
-    global servo_drive_flag
-    global battery_voltage_warn_flag, battery_voltage_fatal_flag, voltage_monitor_flag
+    global servo_drive_flag, voltage_monitor_flag
 
     # deactivate servo_drive_flag to prevent from sending velocity command to the servos before completing this process
     servo_drive_flag = 0
@@ -96,11 +93,10 @@ def publish_servo_info():
         voltage_monitor_flag = 0
         for j in range(num):
             voltage[j] = Drive.get_servo_voltage(id[j])
-            if voltage[j] < BATTERY_VOLTAGE_WARN and battery_voltage_warn_flag == 0:
+            if voltage[j] < BATTERY_VOLTAGE_WARN:
                 print("")
                 rospy.logwarn('battery voltage is low !')
-                battery_voltage_warn_flag = 1
-            elif voltage[j] < BATTERY_VOLTAGE_FATAL and battery_voltage_fatal_flag == 0:
+            elif voltage[j] < BATTERY_VOLTAGE_FATAL:
                 print("")
                 rospy.logfatal('battery voltage is fatally low !')
     voltage_monitor_flag = voltage_monitor_flag + 1

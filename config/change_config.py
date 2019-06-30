@@ -32,7 +32,13 @@ def change_config():
     # Config.change_current_limit(3, 10000)
     # Config.change_current_limit(4, 10000)
 
-    Config.change_preset_gain(3, 0x6a, 0)
+    # Config.change_preset_gain(3, 0x6e, 20000)
+    # Config.change_preset_gain(3, 0x72, 200)
+    # Config.change_preset_gain(3, 0x76, 8000)
+    Config.change_preset_gain(3, 0x7a, 0)
+    Config.change_preset_gain(3, 0x7c, 0)
+    Config.change_preset_gain(3, 0x8a, 0)
+    Config.change_preset_gain(3, 0x8c, 0)
     for i in range(num):
         Config.save_RAM_to_ROM(id[i])
 
