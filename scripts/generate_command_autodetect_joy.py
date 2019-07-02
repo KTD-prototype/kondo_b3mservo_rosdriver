@@ -15,6 +15,7 @@ num = 0
 target_position = []
 target_velocity = []
 target_torque = []
+target_position_by_torque = []
 
 
 def callback_init(number):
@@ -24,21 +25,27 @@ def callback_init(number):
         target_position.append(0)
         target_velocity.append(0)
         target_torque.append(0)
+        target_position_by_torque.append(0)
     initial_process_flag = 0
 
 
 def callback_generate_multi_command(joy_msg):
-    global target_position, target_velocity, target_torque, num, initial_process_flag
+    global target_position, target_velocity, target_torque, target_position_by_torque
+    global num, initial_process_flag
     multi_servo_command = Multi_servo_command()
 
     for i in range(num):
         target_position[i] = joy_msg.axes[0] * 32000  # left stick LR
         target_velocity[i] = joy_msg.axes[3] * 32767  # right stick LR
         target_torque[i] = joy_msg.axes[1] * 7000  # left stick FB
+        # right sitck FR
+        target_position_by_torque[i] = joy_msg.axes[4] * 16000
 
         multi_servo_command.target_position.append(target_position[i])
         multi_servo_command.target_velocity.append(target_velocity[i])
         multi_servo_command.target_torque.append(target_torque[i])
+        multi_servo_command.target_position_by_torque.append(
+            target_position_by_torque[i])
     pub.publish(multi_servo_command)
     del multi_servo_command
 
