@@ -32,13 +32,18 @@ def change_config():
     # Config.change_current_limit(3, 10000)
     # Config.change_current_limit(4, 10000)
 
-    # Config.change_preset_gain(3, 0x6e, 20000)
-    # Config.change_preset_gain(3, 0x72, 200)
-    # Config.change_preset_gain(3, 0x76, 8000)
-    Config.change_preset_gain(3, 0x7a, 0)
-    Config.change_preset_gain(3, 0x7c, 0)
-    Config.change_preset_gain(3, 0x8a, 0)
-    Config.change_preset_gain(3, 0x8c, 0)
+    # Config.change_preset_gain(3, 0x6e, 20000)  # P gain for vel
+    # Config.change_preset_gain(3, 0x72, 200)  # D gain for vel
+    # Config.change_preset_gain(3, 0x76, 8000)  # I gain for vel
+    # Config.change_preset_gain(3, 0x7a, 0)  # stat friction for vel
+    # Config.change_preset_gain(3, 0x7c, 0)  # dyna friction for vel
+
+    # Config.change_preset_gain(3, 0x7e, 5)  # P gain for tor
+    # Config.change_preset_gain(3, 0x82, 0)  # D gain for tor
+    # Config.change_preset_gain(3, 0x86, 70)  # I gain for tor
+    # Config.change_preset_gain(3, 0x8a, 0)  # stat friction for tor
+    # Config.change_preset_gain(3, 0x8c, 0)  # dyna friction for tor
+
     for i in range(num):
         Config.save_RAM_to_ROM(id[i])
 
