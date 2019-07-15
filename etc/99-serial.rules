@@ -1,0 +1,9 @@
+ACTION=="add", \ #デバイスが見つかった時の実行
+KERNEL=="ttyUSB*", \
+SUBSYSTEM=="tty", \
+ATTRS{idVendor}=="165c", \ #vender番号で条件
+ATTRS{idProduct}=="0009", \ #product番号で条件
+ATTRS{serial}=="KOUSB485", \
+SYMLINK+="Kondo_USB-RS485_converter", \ #新しい別名の追加
+MODE="666", \ #権限
+RUN+="/bin/sh -c 'echo 1 > /sys/bus/usb-serial/devices/$kernel/latency_timer'" #実行する行動
