@@ -51,7 +51,7 @@ ROSのメッセージを送ることで位置制御、速度制御、トルク�
 
 ## インストール
 `   $ cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g. catkin_ws)/src`<br>
-`   $ git clone git@github.com:k24koba/kondo_b3mservo_rosdriver.git`<br>
+`   $ git clone git@github.com:KTD-prototype/kondo_b3mservo_rosdriver.git`<br>
 `   $ cd ~/catkin_ws`<br>
 `   $ catkin_make`
 <br>
