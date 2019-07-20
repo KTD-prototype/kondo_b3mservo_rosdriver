@@ -63,7 +63,7 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 <br>
 <br>
 <br>
-  
+
 ## インストール(catkin_wsという名前のディレクトリで作業している場合)
 `   $ cd ~/catkin_ws/src`<br>
 `   $ git clone git@github.com:KTD-prototype/kondo_b3mservo_rosdriver.git`<br>
@@ -72,27 +72,35 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 <br>
 <br>
 <br>
-## 使用する前に
-PCと[RS485-USB adapter](https://kondo-robot.com/product/02133)が接続されていることを確認してください。<br>
-近藤科学をUbuntuで使うためには予めドライバをPCにインストール（PCのFTDIと近藤科学製品の関連付け）する必要があります。<br>
-やりかたは近藤科学社のWEBサイトに掲載されています。(https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
-<br>
-<br>
-<br>
+
 ## 使い方
 ### ノードの構成
-***scripts***　のディレクトリは以下のようなファイル構成となっています。
+ディレクトリは以下のようなファイル構成となっています。
+***scripts***　
   * ***generate_command_autodetect_joy.py***  : ゲームコントローラ（ジョイスティック）の情報を受け取り、サーボ指令値を生成・パブリッシュするノード
   * ***Kondo_B3M_functions.py***  :  サーボへのコマンド関数の集まり
   * ***position_control.py***  : 位置（角度）制御用のノード
   * ***torque_control.py***  : トルク制御用のノード
   * ***velocity_control.py*** : 速度制御用のノード
+
+***config***　
+  * ***change_config.py***  : サーボの設定値を変更するpythonスクリプト
+  * ***config_function.py***  :  サーボの設定値変更のためのコマンド関数の集まり
+  * ***show_config.py***  : 接続されているサーボの設定値をコンソールに表示するスクリプト
+
+***launch***　
+  * ***position_control_by_torque_sample.launch***  : ジョイスティックの右スティック（上下）の値に応じたトルク制御（位置フィードバック）を行うlaunchファイル
+  * ***position_control_sample.launch***  :  ジョイスティックの左スティック（左右）の値に応じた位置制御を行うlaunchファイル
+  * ***torque_control_sample.launch***  : ジョイスティックの左スティック（上下）の値に応じたトルク制御を行うlaunchファイル
+  * ***velocity_control_sample.launch***  : ジョイスティックの右スティック（左右）の値に応じた速度制御を行うlaunchファイル
+  
 <br>
 それぞれのノード（位置、トルク、速度制御ノード）は自動でUSBｰシリアルI/Fが接続されたポートをスキャンして、接続されているサーボの個数とIDを検出します。<br>
 サーボへの指令値やサーボからの情報はサーボの個数だけ、IDが小さい順に並んだリストとしてやりとりします。<br>
 指令値の単位は　位置：[*0.01°]、速度：[*0.01°/秒]、トルク：[mNm]です。<br>
 たとえば位置指令値:[4500]と送れば、サーボは45°の位置に動きます。IDが1, 2のサーボを接続して[4500, -3000]と指令値を送れば、ID1のサーボが45°、ID2のサーボが-30°の位置に動きます。<br>
 指令値を送ると、サーボはその時のエンコーダ値等の情報を返してきますので、ROSメッセージの形で読み取り可能です。
+<br>
 <br>
 
 ### ターミナルから直接ROSメッセージを送って制御する場合
