@@ -55,7 +55,7 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 近藤科学のシリアル変換アダプタをUbuntuで使用するためには、事前にドライバのインストールが必要です。[やりかたはこちら](https://kondo-robot.com/faq/usb_adapter_for_linux_2019)<br>
 また、シリアル変換アダプタのUbuntu上での設定を何点か変更しています。
 * デバイス名を***Kondo_USB-RS485_converter***に固定
-* シリアル通信のレイテンシタイマを1msに固定（デフォルトは16msのため、サーボへのコマンド送信ごとに16msかかり、制御周期が上げられない）
+* シリアル通信のレイテンシタイマを1msに固定（デフォルトは16msのため、サーボへのコマンド送信ごとに16msかかり、制御周期が上げられない）<br>
 参考リンク：[udev_rulesでデバイス名固定とファイル書き込み](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)
 今回は[こちらのファイル](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/etc/99-serial.rules)を***/etc/udev/rules.d/***に配置して設定しました。
 最後に以下のコマンドでルールの再読み込みが必要です。
