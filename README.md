@@ -115,7 +115,7 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 `		$ python torque_control.py`
 `		`
 `		（速度制御の場合）`
-`		$ python velocity_control.py`
+`		$ python velocity_control.py`  
 
 そのままだと、以下のようなエラーを吐くと思われます（申し訳ありません）<br>
  ***serial.serialutil.SerialException: [Errno 2] could not open port /dev/Kondo_USB-RS485_converter: [Errno 2] No such file or directory: '/dev/Kondo_USB-RS485_converter'***
