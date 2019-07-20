@@ -50,7 +50,7 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 * サーボ : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
 * PCとサーボを接続するUSB-シリアルI/F : [RS485-USB adapter](https://kondo-robot.com/product/02133)
 * 電源 : 3セル LiPo バッテリ
-* ゲームパッド：[ロジクールF710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html)  
+* ゲームパッド：[ロジクールF710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html)
 
 近藤科学のシリアル変換アダプタをUbuntuで使用するためには、事前にドライバのインストールが必要です。[やりかたはこちら](https://kondo-robot.com/faq/usb_adapter_for_linux_2019)<br>
 また、シリアル変換アダプタのUbuntu上での設定を何点か変更しています。
@@ -58,7 +58,7 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 * シリアル通信のレイテンシタイマを1msに固定（デフォルトは16msのため、サーボへのコマンド送信ごとに16msかかり、制御周期が上げられない）
 参考リンク：[udev_rulesでデバイス名固定とファイル書き込み](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)
 今回はこちらのファイルを***/etc/udev/rules.d/***に配置して設定しました。
-最後に以下のコマンドでルールの再読み込みが必要です。
+最後に以下のコマンドでルールの再読み込みが必要です。  
 `   $ sudo udevadm control --reload-rules`<br>
 
 
