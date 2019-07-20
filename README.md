@@ -56,12 +56,13 @@ ROSメッセージを介して、サーボに指令値を送信し、位置制�
 また、シリアル変換アダプタのUbuntu上での設定を何点か変更しています。
 * デバイス名を***Kondo_USB-RS485_converter***に固定
 * シリアル通信のレイテンシタイマを1msに固定（デフォルトは16msのため、サーボへのコマンド送信ごとに16msかかり、制御周期が上げられない）<br>
-参考リンク：[udev_rulesでデバイス名固定とファイル書き込み](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)
-今回は[こちらのファイル](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/etc/99-serial.rules)を***/etc/udev/rules.d/***に配置して設定しました。
-最後に以下のコマンドでルールの再読み込みが必要です。
+参考リンク：[udev_rulesでデバイス名固定とファイル書き込み](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)<br>
+今回は[こちらのファイル](https://github.com/KTD-prototype/kondo_b3mservo_rosdriver/blob/master/etc/99-serial.rules)を***/etc/udev/rules.d/***に配置して設定しました。<br>
+最後に以下のコマンドでルールの再読み込みが必要です。<br>
 `   $ sudo udevadm control --reload-rules`<br>
-
-
+<br>
+<br>
+<br>
 ## インストール(catkin_wsという名前のディレクトリで作業している場合)
 `   $ cd ~/catkin_ws/src`<br>
 `   $ git clone git@github.com:KTD-prototype/kondo_b3mservo_rosdriver.git`<br>
