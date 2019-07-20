@@ -26,7 +26,12 @@
 
 ## パッケージ説明
 近藤科学のサーボモータ（B3Mシリーズ）をROSで動かすためのパッケージです。<br>
-ROSのメッセージを送ることで位置制御、速度制御、トルク制御が可能なほか、ROSメッセージを通じたサーボの情報取得、ジョイスティックによる操作が可能です。
+ROSメッセージを介して、サーボに指令値を送信し、位置制御、速度制御、トルク制御ができます。<br>
+位置、速度、トルクの各制御モードは、立ち上げるノードを選ぶことで切り替えます。<br>
+位置、速度、トルクの各制御モードは、立ち上げるノードを選ぶことで切り替えます。<br>
+<br>
+近藤科学のB3Mシリーズサーボは予めIDが振られていますが、このパッケージでは、接続されたサーボのIDを自動検出します。<br>
+指令値は対象のサーボIDが小さい順に並んだ配列として送信します。<br>
 <br>
 <br>
 <br>
@@ -46,11 +51,21 @@ ROSのメッセージを送ることで位置制御、速度制御、トルク�
 * サーボ : [B3M-SC-1170-A](https://kondo-robot.com/product/03092)
 * PCとサーボを接続するUSB-シリアルI/F : [RS485-USB adapter](https://kondo-robot.com/product/02133)
 * 電源 : 3セル LiPo バッテリ
+* ゲームパッド：[ロジクールF710](https://gaming.logicool.co.jp/ja-jp/products/gamepads/f710-wireless-gamepad.html)
 <br>
+近藤科学のシリアル変換アダプタをUbuntuで使用するためには、事前にドライバのインストールが必要です。[やりかたはこちら](https://kondo-robot.com/faq/usb_adapter_for_linux_2019)
 <br>
+また、シリアル変換アダプタのUbuntu上での設定を何点か変更しています。
+* デバイス名を***Kondo_USB-RS485_converter***に固定
+* シリアル通信のレイテンシタイマを1msに固定（デフォルトは16msのため、サーボへのコマンド送信ごとに16msかかり、制御周期が上げられない）
+参考リンク：[udev_rulesでデバイス名固定とファイル書き込み](https://woodencaliper.hatenablog.com/entry/2018/06/30/175622)
+今回はこちらのファイルを***/etc/udev/rules.d/***に配置して設定しました。
+最後に以下のコマンドでルールの再読み込みが必要です。
+`   $ sudo udevadm control --reload-rules`<br>
 
-## インストール
-`   $ cd ~/NAME_OF_YOUR_ROS_WORKSPACE(e.g. catkin_ws)/src`<br>
+
+## インストール(catkin_wsという名前のディレクトリで作業している場合)
+`   $ cd ~/catkin_ws/src`<br>
 `   $ git clone git@github.com:KTD-prototype/kondo_b3mservo_rosdriver.git`<br>
 `   $ cd ~/catkin_ws`<br>
 `   $ catkin_make`
