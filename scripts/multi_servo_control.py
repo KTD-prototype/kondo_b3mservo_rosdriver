@@ -27,7 +27,7 @@ BATTERY_VOLTAGE_WARN = 11200
 BATTERY_VOLTAGE_FATAL = 10700
 battery_voltage = []
 
-voltage_monitor_flag = 0
+voltage_monitor_count = 0
 servo_reset_flag = 0
 servo_drive_flag = 1
 
@@ -55,43 +55,44 @@ def initial_process():
     rospy.loginfo("you are controlling a servo whose ID is : " + str(SERVO_ID) +
                   " at " + str(CONTROL_MODE) + "where 0:positon, 4:velocity, 8:torque, 16:position by torque")
 
-    initialize_servo()
-
-    # initialize lists for servo command and servo information
+    # initialize each servos
     for i in range(len(SERVO_ID)):
+        # initialize servo command and information
         target_position.append(0)
         target_velocity.append(0)
         target_torque.append(0)
         target_position_by_torque.append(0)
         battery_voltage.append(0)
+    initialize_servo()
 
 
-def callback_servo_command(servo_command):
-    global SERVO_ID, servo_reset_flag, servo_drive_flag
+def callback_servo_command(multi_servo_command):
+    global SERVO_ID, CONTROL_MODE, servo_reset_flag, servo_drive_flag
 
-    # actual locomotions are only conducted when the flag is active
+    # drive servos only when the flag is active
     if servo_drive_flag == 1:
-        if CONTROL_MODE == 'position':
-            target_position = servo_command.target_position
-            Drive.control_servo_by_position_without_time(SERVO_ID, target_position)
+        # get servo command
+        target_position = multi_servo_command.target_position
+        target_velocity = multi_servo_command.target_velocity
+        target_torque = multi_servo_command.target_torque
+        target_position_by_torque = multi_servo_command.target_position_by_torque
 
-        elif CONTROL_MODE == 'velocity':
-            target_velocity = servo_command.target_velocity
-            Drive.control_servo_by_Velocity(SERVO_ID, target_velocity)
-
-        elif CONTROL_MODE == 'torque':
-            target_torque = servo_command.target_torque
-            Drive.control_servo_by_Torque(SERVO_ID, target_torque)
-
-        elif CONTROL_MODE == 'position_by_torque':
-            target_position_by_torque = servo_command.target_position_by_torque
-            Drive.control_servo_position_by_Torque(SERVO_ID, target_position_by_torque)
-
+        # drive each servos
+        for i in range(len(SERVO_ID)):
+            if CONTROL_MODE[i] == 0:
+                Drive.control_servo_by_position_without_time(SERVO_ID[i], target_position[i])
+            elif CONTROL_MODE[i] == 4:
+                Drive.control_servo_by_Velocity(SERVO_ID[i], target_velocity[i])
+            elif CONTROL_MODE[i] == 8:
+                Drive.control_servo_by_Torque(SERVO_ID[i], target_torque[i])
+            elif CONTROL_MODE[i] == 16:
+                Drive.control_servo_position_by_Torque(SERVO_ID[i], target_position_by_torque[i])
+        # publish information of servos as ROS message
         publish_servo_info()
 
     # if flag for resetting servos is active
     if servo_reset_flag == 1:
-        initialize_servo_for_position_control()
+        initialize_servo()
         rospy.logwarn('complete resetting servos!')
         servo_reset_flag = 0  # deactivate flag for resetting servos
 
@@ -100,8 +101,8 @@ def callback_servo_command(servo_command):
 
 
 def publish_servo_info():
-    global id, num, voltage
-    global servo_drive_flag, voltage_monitor_flag
+    global SERVO_ID, battery_voltage
+    global servo_drive_flag, voltage_monitor_count
 
     # deactivate servo_drive_flag to prevent from sending velocity command to the servos before completing this process
     servo_drive_flag = 0
@@ -110,26 +111,34 @@ def publish_servo_info():
 
     # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
     # monitor per 100 cycles
-    if voltage_monitor_flag == 100:
-        voltage_monitor_flag = 0
-        voltage = Drive.get_servo_voltage(SERVO_ID)
+    if voltage_monitor_count == 100:
+        voltage_monitor_count = 0  # reset count
 
-        if voltage[j] < BATTERY_VOLTAGE_FATAL:
-            print("")
+        # prepare flag paramter whether to warn voltage or not
+        voltage_fatal_flag = False
+        voltage_warn_flag = False
+        for i in range(len(SERVO_ID)):
+            battery_voltage[i] = Drive.get_servo_voltage(SERVO_ID[i])
+            if battery_voltage[i] < BATTERY_VOLTAGE_FATAL:
+                voltage_fatal_flag = True
+            elif battery_voltage[i] < BATTERY_VOLTAGE_WARN:
+                voltage_warn_flag = True
+
+        if voltage_fatal_flag == True:
             rospy.logfatal('battery voltage is fatally low !')
-        elif voltage < BATTERY_VOLTAGE_WARN:
-            print("")
+            voltage_fatal_flag = False
+        elif voltage_warn_flag == True:
             rospy.logwarn('battery voltage is low !')
+            voltage_warn_flag = False
 
-    voltage_monitor_flag = voltage_monitor_flag + 1
+    voltage_monitor_count = voltage_monitor_count + 1
 
-    servo_info.encoder_count = Drive.get_encoder_total_count(SERVO_ID)
-
-    # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
-    servo_info.motor_velocity = Drive.get_servo_Velocity(SERVO_ID)
-    servo_info.motor_current = Drive.get_servo_Current(SERVO_ID)
-
-    multi_servo_info.input_voltage.append(voltage[i])
+    for i in range(len(SERVO_ID)):
+        servo_info.encoder_count = Drive.get_encoder_total_count(SERVO_ID[i])
+        # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
+        servo_info.motor_velocity = Drive.get_servo_Velocity(SERVO_ID[i])
+        servo_info.motor_current = Drive.get_servo_Current(SERVO_ID[i])
+        multi_servo_info.input_voltage.append(battery_voltage[i])
 
     multi_servo_info_pub.publish(multi_servo_info)
     del multi_servo_info
@@ -141,18 +150,21 @@ def publish_servo_info():
 # initializing servo process
 def initialize_servo():
     global SERVO_ID, CONTROL_MODE
-
-    local_control_mode = []
+    local_control_mode = []  # parameters to indicates control modes for each servos
     for i in range(len(SERVO_ID)):
+        # reset servo before setting its control mode
         Drive.resetServo(SERVO_ID[i])
         Drive.enFreeServo(SERVO_ID[i])
         Drive.reset_encoder_total_count(SERVO_ID[i])
 
-        local_control_mode.append(CONTROL_MODE[i])
-        local_control_mode = list(local_control_mode)
-        if CONTROL_MODE[i] == 16:
-            local_control_mode[i] = 8
+        # set servo control mode : position, velocity, torque, or position_by_torque
+        local_control_mode.append(CONTROL_MODE[i])  # transcript control mode from it's global parameter to local
+        local_control_mode = list(local_control_mode)  # convert local parameter into "list" before modify them
 
+        # if control mode indicates "16", it means servo must be in control mode : position_by_torque.
+        # then, servo itself should be controlled based on torque.
+        if local_control_mode[i] == 16:
+            local_control_mode[i] = 8
         Drive.change_servocontrol_mode(SERVO_ID[i], local_control_mode[i])
 
 
