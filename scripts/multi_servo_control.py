@@ -25,11 +25,9 @@ num = 0
 # parameters for monitoring battery voltage[mV]
 BATTERY_VOLTAGE_WARN = 11200
 BATTERY_VOLTAGE_FATAL = 10700
-battery_voltage = []
-
 voltage_monitor_count = 0
-servo_reset_flag = 0
-servo_drive_flag = 1
+servo_reset_flag = False
+servo_drive_flag = True
 
 # open serial port
 # you have to modify device name according to your environment, or fix device name as follows by symbolic link.
@@ -39,39 +37,43 @@ time.sleep(0.1)
 
 def initial_process():
     global SERVO_ID, CONTROL_MODE
-    global target_position, target_velocity, target_torque, target_position_by_torque, battery_voltage
 
     SERVO_ID = rospy.get_param('~servo_id')
     CONTROL_MODE = rospy.get_param('~control_mode')
 
-    parameter_check_flag = 0
+    num = len(SERVO_ID)
+    the_number_of_servo_pub.publish(num)
+
+    # scan control modes of all servos. if there's invalid value, publish an alert.
+    # to avoid alerting multiple times, introduce check flag.
+    parameter_check_flag = False
     for i in range(len(SERVO_ID)):
         if CONTROL_MODE[i] != 0 and CONTROL_MODE[i] != 4 and CONTROL_MODE[i] != 8 and CONTROL_MODE[i] != 16:
-            if parameter_check_flag == 0:
+            if parameter_check_flag == False:
                 rospy.logfatal(
                     "there're something wrong in your ros_param : control_mode. They must be 0, 4, 8, or 16, for position, velocity, torque, and position_by_torque")
-                parameter_check_flag = 1
+                parameter_check_flag = True
 
+    # publish information of servos under control.
     rospy.loginfo("you are controlling a servo whose ID is : " + str(SERVO_ID) +
-                  " at " + str(CONTROL_MODE) + "where 0:positon, 4:velocity, 8:torque, 16:position by torque")
+                  " at control mode : " + str(CONTROL_MODE) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
 
-    # initialize each servos
-    for i in range(len(SERVO_ID)):
-        # initialize servo command and information
-        target_position.append(0)
-        target_velocity.append(0)
-        target_torque.append(0)
-        target_position_by_torque.append(0)
-        battery_voltage.append(0)
     initialize_servo()
 
 
 def callback_servo_command(multi_servo_command):
     global SERVO_ID, CONTROL_MODE, servo_reset_flag, servo_drive_flag
 
+    # prepare parameters as array for targets of control.
+    # each array should includes target values equivalent to tha total number of servos.
+    target_position = [] * len(SERVO_ID)
+    target_velocity = [] * len(SERVO_ID)
+    target_torque = [] * len(SERVO_ID)
+    target_position_by_torque = [] * len(SERVO_ID)
+
     # drive servos only when the flag is active
-    if servo_drive_flag == 1:
-        # get servo command
+    if servo_drive_flag == True:
+        # get servo command from ROS message
         target_position = multi_servo_command.target_position
         target_velocity = multi_servo_command.target_velocity
         target_torque = multi_servo_command.target_torque
@@ -87,27 +89,32 @@ def callback_servo_command(multi_servo_command):
                 Drive.control_servo_by_Torque(SERVO_ID[i], target_torque[i])
             elif CONTROL_MODE[i] == 16:
                 Drive.control_servo_position_by_Torque(SERVO_ID[i], target_position_by_torque[i])
+
         # publish information of servos as ROS message
         publish_servo_info()
 
     # if flag for resetting servos is active
-    if servo_reset_flag == 1:
+    if servo_reset_flag == True:
         initialize_servo()
         rospy.logwarn('complete resetting servos!')
-        servo_reset_flag = 0  # deactivate flag for resetting servos
+        servo_reset_flag = False  # deactivate flag for resetting servos
 
         # deactivate flag for servo locomoting until it's triggered to restart
-        servo_drive_flag = 0
+        servo_drive_flag = False
 
 
 def publish_servo_info():
-    global SERVO_ID, battery_voltage
+    global SERVO_ID
     global servo_drive_flag, voltage_monitor_count
 
     # deactivate servo_drive_flag to prevent from sending velocity command to the servos before completing this process
-    servo_drive_flag = 0
+    servo_drive_flag = False
 
-    servo_info = Servo_info()
+    # set up an instance for ROS message to be published
+    multi_servo_info = Multi_servo_info()
+
+    # prepare paramter to store battery voltage
+    battery_voltage = [0] * len(SERVO_ID)
 
     # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
     # monitor per 100 cycles
@@ -134,10 +141,10 @@ def publish_servo_info():
     voltage_monitor_count = voltage_monitor_count + 1
 
     for i in range(len(SERVO_ID)):
-        servo_info.encoder_count = Drive.get_encoder_total_count(SERVO_ID[i])
+        multi_servo_info.encoder_count.append(Drive.get_encoder_total_count(SERVO_ID[i]))
         # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
-        servo_info.motor_velocity = Drive.get_servo_Velocity(SERVO_ID[i])
-        servo_info.motor_current = Drive.get_servo_Current(SERVO_ID[i])
+        multi_servo_info.motor_velocity.append(Drive.get_servo_Velocity(SERVO_ID[i]))
+        multi_servo_info.motor_current.append(Drive.get_servo_Current(SERVO_ID[i]))
         multi_servo_info.input_voltage.append(battery_voltage[i])
 
     multi_servo_info_pub.publish(multi_servo_info)
@@ -151,6 +158,7 @@ def publish_servo_info():
 def initialize_servo():
     global SERVO_ID, CONTROL_MODE
     local_control_mode = []  # parameters to indicates control modes for each servos
+
     for i in range(len(SERVO_ID)):
         # reset servo before setting its control mode
         Drive.resetServo(SERVO_ID[i])
@@ -182,6 +190,9 @@ if __name__ == '__main__':
     rospy.init_node('single_servo_control')
     multi_servo_info_pub = rospy.Publisher(
         'multi_servo_info', Multi_servo_info, queue_size=1)
+
+    the_number_of_servo_pub = rospy.Publisher(
+        'the_number_of_servo', Int16, queue_size=1, latch=True)
 
     initial_process()
 

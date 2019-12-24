@@ -362,7 +362,7 @@ def control_servo_position_by_Torque(ID, target_position):
         target_torque = 32000
     elif target_torque < -32000:
         target_torque = -32000
-    print(target_torque)
+    # print(target_torque)
     control_servo_by_Torque(ID, target_torque)
 
 
