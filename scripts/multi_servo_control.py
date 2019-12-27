@@ -11,16 +11,9 @@ from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import drive_function as Drive
 
-target_position = []
-target_velocity = []
-target_torque = []
-target_position_by_torque = []
-
+# global parameters
 SERVO_ID = []  # servo IDs which you are controlling
 CONTROL_MODE = []  # servo control mode : position, velocity, torque
-
-merged_command = []
-num = 0
 
 # parameters for monitoring battery voltage[mV]
 BATTERY_VOLTAGE_WARN = 11200
@@ -35,14 +28,17 @@ ser = serial.Serial('/dev/Kondo_USB-RS485_converter', 1500000)
 time.sleep(0.1)
 
 
+# function that is called at initiation of this process, to configure the system and initialize servos
 def initial_process():
     global SERVO_ID, CONTROL_MODE
 
-    SERVO_ID = rospy.get_param('~servo_id')
-    CONTROL_MODE = rospy.get_param('~control_mode')
+    # get system configuration as ROS_params
+    SERVO_ID = rospy.get_param('~servo_id')  # IDs of servos those are connected, configured manually as an array
+    CONTROL_MODE = rospy.get_param('~control_mode')  # control modes of each servos, configured manually as an array
 
-    num = len(SERVO_ID)
-    the_number_of_servo_pub.publish(num)
+    # get the number of servos that are connected, and publish it as ROS message, to inform other node
+    the_number_of_servo = len(SERVO_ID)
+    the_number_of_servo_pub.publish(the_number_of_servo)
 
     # scan control modes of all servos. if there's invalid value, publish an alert.
     # to avoid alerting multiple times, introduce check flag.
@@ -58,6 +54,7 @@ def initial_process():
     rospy.loginfo("you are controlling a servo whose ID is : " + str(SERVO_ID) +
                   " at control mode : " + str(CONTROL_MODE) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
 
+    # initialize all servos
     initialize_servo()
 
 
@@ -103,6 +100,7 @@ def callback_servo_command(multi_servo_command):
         servo_drive_flag = False
 
 
+# function to get information from all servos, and publish them as ROS message
 def publish_servo_info():
     global SERVO_ID
     global servo_drive_flag, voltage_monitor_count
@@ -124,13 +122,16 @@ def publish_servo_info():
         # prepare flag paramter whether to warn voltage or not
         voltage_fatal_flag = False
         voltage_warn_flag = False
+
+        # survey voltages of all servos (frequently those are same since they're connected to same battery)
         for i in range(len(SERVO_ID)):
             battery_voltage[i] = Drive.get_servo_voltage(SERVO_ID[i])
-            if battery_voltage[i] < BATTERY_VOLTAGE_FATAL:
+            if battery_voltage[i] < BATTERY_VOLTAGE_FATAL:  # if the voltage is lower than a certain fatal value
                 voltage_fatal_flag = True
-            elif battery_voltage[i] < BATTERY_VOLTAGE_WARN:
+            elif battery_voltage[i] < BATTERY_VOLTAGE_WARN:  # if the voltage is lower than a certain warning value
                 voltage_warn_flag = True
 
+        # if more than one of values of voltage are lower than threshold, then display warning to the console.
         if voltage_fatal_flag == True:
             rospy.logfatal('battery voltage is fatally low !')
             voltage_fatal_flag = False
@@ -138,8 +139,10 @@ def publish_servo_info():
             rospy.logwarn('battery voltage is low !')
             voltage_warn_flag = False
 
+    # increment count to execute process above periodically
     voltage_monitor_count = voltage_monitor_count + 1
 
+    # contain information to ROS message
     for i in range(len(SERVO_ID)):
         multi_servo_info.encoder_count.append(Drive.get_encoder_total_count(SERVO_ID[i]))
         # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
@@ -147,6 +150,7 @@ def publish_servo_info():
         multi_servo_info.motor_current.append(Drive.get_servo_Current(SERVO_ID[i]))
         multi_servo_info.input_voltage.append(battery_voltage[i])
 
+    # publish ROS message
     multi_servo_info_pub.publish(multi_servo_info)
     del multi_servo_info
 
