@@ -148,6 +148,7 @@ def publish_servo_info():
         # if you want to ommit motor velocity(due to low control rate, for example), comment out script bellow.
         multi_servo_info.motor_velocity.append(Drive.get_servo_Velocity(SERVO_ID[i]))
         multi_servo_info.motor_current.append(Drive.get_servo_Current(SERVO_ID[i]))
+        multi_servo_info.motor_position.append(Drive.get_servo_Position(SERVO_ID[i]))
         multi_servo_info.input_voltage.append(battery_voltage[i])
 
     # publish ROS message
