@@ -39,7 +39,11 @@ def callback_generate_multi_command(joy_msg):
         target_velocity[i] = joy_msg.axes[3] * 32767  # right stick LR
         target_torque[i] = joy_msg.axes[1] * 7000  # left stick FB
         # right sitck FR
-        target_position_by_torque[i] = joy_msg.axes[0] * 16000
+        target_position_by_torque[i] = joy_msg.axes[0] * 32000
+        if target_position_by_torque[i] > 16000:
+            target_position_by_torque[i] = 16000
+        elif target_position_by_torque[i] < -16000:
+            target_position_by_torque[i] = -16000
 
         multi_servo_command.target_position.append(target_position[i])
         multi_servo_command.target_velocity.append(target_velocity[i])
