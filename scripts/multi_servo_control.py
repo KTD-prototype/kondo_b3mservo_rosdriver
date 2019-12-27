@@ -16,6 +16,7 @@ SERVO_ID = []  # servo IDs which you are controlling
 CONTROL_MODE = []  # servo control mode : position, velocity, torque
 
 # parameters for monitoring battery voltage[mV]
+battery_voltage = []
 BATTERY_VOLTAGE_WARN = 11200
 BATTERY_VOLTAGE_FATAL = 10700
 voltage_monitor_count = 0
@@ -102,7 +103,7 @@ def callback_servo_command(multi_servo_command):
 
 # function to get information from all servos, and publish them as ROS message
 def publish_servo_info():
-    global SERVO_ID
+    global SERVO_ID, battery_voltage
     global servo_drive_flag, voltage_monitor_count
 
     # deactivate servo_drive_flag to prevent from sending velocity command to the servos before completing this process
@@ -110,9 +111,6 @@ def publish_servo_info():
 
     # set up an instance for ROS message to be published
     multi_servo_info = Multi_servo_info()
-
-    # prepare paramter to store battery voltage
-    battery_voltage = [0] * len(SERVO_ID)
 
     # Don't have to monitor voltage at every loop, so get sparsed at a time per a certain loops
     # monitor per 100 cycles
@@ -123,7 +121,9 @@ def publish_servo_info():
         voltage_fatal_flag = False
         voltage_warn_flag = False
 
-        # survey voltages of all servos (frequently those are same since they're connected to same battery)
+        # convert battery_voltage paramter into "list" before refreshing it's values
+        battery_voltage = list(battery_voltage)
+        # survey and refresh voltages of all servos (frequently those are same since they're connected to same battery)
         for i in range(len(SERVO_ID)):
             battery_voltage[i] = Drive.get_servo_voltage(SERVO_ID[i])
             if battery_voltage[i] < BATTERY_VOLTAGE_FATAL:  # if the voltage is lower than a certain fatal value
@@ -160,7 +160,7 @@ def publish_servo_info():
 
 # initializing servo process
 def initialize_servo():
-    global SERVO_ID, CONTROL_MODE
+    global SERVO_ID, CONTROL_MODE, battery_voltage
     local_control_mode = []  # parameters to indicates control modes for each servos
 
     for i in range(len(SERVO_ID)):
@@ -178,6 +178,9 @@ def initialize_servo():
         if local_control_mode[i] == 16:
             local_control_mode[i] = 8
         Drive.change_servocontrol_mode(SERVO_ID[i], local_control_mode[i])
+
+        # prepare global parameter for battery voltage
+        battery_voltage.append(0)
 
 
 def enfree_servo_after_node_ends(signal, frame):
