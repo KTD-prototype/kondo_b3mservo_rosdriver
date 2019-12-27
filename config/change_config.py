@@ -36,7 +36,7 @@ def change_config():
     Config.change_preset_gain(3, 0x72, 200)  # D gain for vel
     Config.change_preset_gain(3, 0x76, 8000)  # I gain for vel
     Config.change_preset_gain(3, 0x7a, 0)  # stat friction for vel
-    Config.change_preset_gain(3, 0x7c, 100)  # dyna friction for vel
+    Config.change_preset_gain(3, 0x7c, 0)  # dyna friction for vel
 
     # Config.change_preset_gain(3, 0x7e, 5)  # P gain for tor
     # Config.change_preset_gain(3, 0x82, 0)  # D gain for tor
