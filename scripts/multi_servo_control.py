@@ -181,9 +181,9 @@ def initialize_servo():
 
 
 def enfree_servo_after_node_ends(signal, frame):
-    global id
-    for i in range(num):
-        Drive.enFreeServo(id[i])
+    global SERVO_ID
+    for i in range(len(SERVO_ID)):
+        Drive.enFreeServo(SERVO_ID[i])
     sys.exit(0)
 
 
