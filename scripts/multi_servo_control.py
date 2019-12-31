@@ -56,8 +56,7 @@ def initial_process():
                 parameter_check_flag = True
 
     # publish information of servos under control.
-    rospy.loginfo("you are controlling a servo whose ID is : " + str(SERVO_ID) +
-                  " at control mode : " + str(control_mode) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
+    rospy.loginfo("you are controlling servos whose ID is : " + str(SERVO_ID))
 
     # initialize all servos
     initialize_servo()
@@ -201,6 +200,8 @@ def change_control_mode(id, mode):
         if mode[i] == 16:
             local_mode[i] = 8
         Drive.change_servocontrol_mode(id[i], local_mode[i])
+    rospy.loginfo("you are controling " + str(len(id)) + " servos at control mode : " +
+                  str(mode) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
 
 
 def enfree_servo_after_node_ends(signal, frame):
