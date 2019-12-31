@@ -69,8 +69,7 @@ def callback_servo_command(multi_servo_command):
 
     # prepare parameters as array for targets of control.
     # each array should includes target values equivalent to tha total number of servos.
-    control_mode = list(control_mode)
-    control_mode_prev = list(control_mode_prev)
+    control_mode_command = [] * len(SERVO_ID)
     target_position = [] * len(SERVO_ID)
     target_velocity = [] * len(SERVO_ID)
     target_torque = [] * len(SERVO_ID)
@@ -79,11 +78,15 @@ def callback_servo_command(multi_servo_command):
     # drive servos only when the flag is active
     if servo_drive_flag == True:
         # get servo command from ROS message
-        control_mode = multi_servo_command.control_mode
+        control_mode_command = multi_servo_command.control_mode
         target_position = multi_servo_command.target_position
         target_velocity = multi_servo_command.target_velocity
         target_torque = multi_servo_command.target_torque
         target_position_by_torque = multi_servo_command.target_position_by_torque
+
+        # if there are command for control_mode, replace control mode parameters by this
+        if len(control_mode_command) != 0:
+            control_mode = control_mode_command
 
         # change control mode if they are changed
         if control_mode != control_mode_prev:
