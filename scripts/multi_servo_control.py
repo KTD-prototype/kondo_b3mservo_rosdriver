@@ -52,7 +52,7 @@ def initial_process():
         if control_mode[i] != 0 and control_mode[i] != 4 and control_mode[i] != 8 and control_mode[i] != 16:
             if parameter_check_flag == False:
                 rospy.logfatal(
-                    "there're something wrong in your ros_param : control_mode. They must be 0, 4, 8, or 16, for position, velocity, torque, and position_by_torque")
+                    "you should set ros_param : param_control_mode. They must be 0, 4, 8, or 16, for position, velocity, torque, and position_by_torque. otherwise, set them via ROS message, /multi_servo_command/control_mode")
                 parameter_check_flag = True
 
     # publish information of servos under control.
@@ -84,6 +84,11 @@ def callback_servo_command(multi_servo_command):
         target_velocity = multi_servo_command.target_velocity
         target_torque = multi_servo_command.target_torque
         target_position_by_torque = multi_servo_command.target_position_by_torque
+
+        # change control mode if they are changed
+        if control_mode != control_mode_prev:
+            change_control_mode(SERVO_ID, control_mode)
+            control_mode_prev = control_mode
 
         # drive each servos
         for i in range(len(SERVO_ID)):
@@ -170,7 +175,6 @@ def publish_servo_info():
 # initializing servo process
 def initialize_servo():
     global SERVO_ID, control_mode, battery_voltage
-    local_control_mode = []  # parameters to indicates control modes for each servos
 
     for i in range(len(SERVO_ID)):
         # reset servo before setting its control mode
@@ -178,18 +182,22 @@ def initialize_servo():
         Drive.enFreeServo(SERVO_ID[i])
         Drive.reset_encoder_total_count(SERVO_ID[i])
 
-        # set servo control mode : position, velocity, torque, or position_by_torque
-        local_control_mode.append(control_mode[i])  # transcript control mode from it's global parameter to local
-        local_control_mode = list(local_control_mode)  # convert local parameter into "list" before modify them
-
-        # if control mode indicates "16", it means servo must be in control mode : position_by_torque.
-        # then, servo itself should be controlled based on torque.
-        if local_control_mode[i] == 16:
-            local_control_mode[i] = 8
-        Drive.change_servocontrol_mode(SERVO_ID[i], local_control_mode[i])
-
         # prepare global parameter for battery voltage
         battery_voltage.append(0)
+
+    change_control_mode(SERVO_ID, control_mode)
+
+
+def change_control_mode(id, mode):
+    local_mode = mode  # parameters to indicates control modes for each servos
+    local_mode = list(local_mode)
+
+    # if control mode indicates "16", it means servo must be in control mode : position_by_torque.
+    # then, servo itself should be controlled based on torque.
+    for i in range(len(id)):
+        if mode[i] == 16:
+            local_mode[i] = 8
+        Drive.change_servocontrol_mode(id[i], local_mode[i])
 
 
 def enfree_servo_after_node_ends(signal, frame):
