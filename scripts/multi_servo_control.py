@@ -74,24 +74,29 @@ def callback_servo_command(multi_servo_command):
     target_torque = [] * len(SERVO_ID)
     target_position_by_torque = [] * len(SERVO_ID)
 
+    # get servo command from ROS message
+    control_mode_command = multi_servo_command.control_mode
+    target_position = multi_servo_command.target_position
+    target_velocity = multi_servo_command.target_velocity
+    target_torque = multi_servo_command.target_torque
+    target_position_by_torque = multi_servo_command.target_position_by_torque
+
+    # convert parameters to prepare for refresh their contents
+    control_mode = list(control_mode)
+    control_mode_prev = list(control_mode_prev)
+
+    # if there are command for control_mode, replace control mode parameters by this
+    if len(control_mode_command) != 0:
+        control_mode = control_mode_command
+
+    # change control mode if they are changed
+    if control_mode != control_mode_prev:
+        change_control_mode(SERVO_ID, control_mode)
+        control_mode_prev = control_mode
+
+
     # drive servos only when the flag is active
-    if servo_drive_flag == True:
-        # get servo command from ROS message
-        control_mode_command = multi_servo_command.control_mode
-        target_position = multi_servo_command.target_position
-        target_velocity = multi_servo_command.target_velocity
-        target_torque = multi_servo_command.target_torque
-        target_position_by_torque = multi_servo_command.target_position_by_torque
-
-        # if there are command for control_mode, replace control mode parameters by this
-        if len(control_mode_command) != 0:
-            control_mode = control_mode_command
-
-        # change control mode if they are changed
-        if control_mode != control_mode_prev:
-            change_control_mode(SERVO_ID, control_mode)
-            control_mode_prev = control_mode
-
+    elif servo_drive_flag == True:
         # drive each servos
         for i in range(len(SERVO_ID)):
             if control_mode[i] == 0:
@@ -103,8 +108,8 @@ def callback_servo_command(multi_servo_command):
             elif control_mode[i] == 16:
                 Drive.control_servo_position_by_Torque(SERVO_ID[i], target_position_by_torque[i])
 
-        # publish information of servos as ROS message
-        publish_servo_info()
+    # publish information of servos as ROS message
+    publish_servo_info()
 
     # if flag for resetting servos is active
     if servo_reset_flag == True:
@@ -202,6 +207,7 @@ def change_control_mode(id, mode):
         Drive.change_servocontrol_mode(id[i], local_mode[i])
     rospy.loginfo("you are controling " + str(len(id)) + " servos at control mode : " +
                   str(mode) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
+    time.sleep(0.5)
 
 
 def enfree_servo_after_node_ends(signal, frame):
