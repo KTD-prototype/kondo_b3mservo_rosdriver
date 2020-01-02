@@ -61,6 +61,10 @@ def initial_process():
     # initialize all servos
     initialize_servo()
 
+    # wait for a while, and publish current state
+    time.sleep(0.1)
+    publish_servo_info()
+
 
 def callback_servo_command(multi_servo_command):
     global SERVO_ID, control_mode, control_mode_prev
