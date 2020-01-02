@@ -88,13 +88,13 @@ def callback_servo_command(multi_servo_command):
     # if there are command for control_mode, replace control mode parameters by this
     if len(control_mode_command) != 0:
         control_mode = list(control_mode_command)
-        # print(control_mode, control_mode_prev, SERVO_ID)
+        print(control_mode, control_mode_prev, SERVO_ID)
 
     # change control mode if they are changed
     if control_mode != control_mode_prev:
         change_control_mode(SERVO_ID, control_mode)
         control_mode_prev = control_mode
-        # print(control_mode_prev, control_mode)
+        print(control_mode_prev, control_mode)
 
     # drive servos only when the flag is active
     elif servo_drive_flag == True:
