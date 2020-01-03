@@ -6,7 +6,7 @@ import serial
 import time
 import signal
 import sys
-from std_msgs.msg import Int16
+from std_msgs.msg import Int16, Boolean
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import drive_function as Drive
@@ -212,7 +212,18 @@ def change_control_mode(id, mode):
         Drive.change_servocontrol_mode(id[i], local_mode[i])
     rospy.loginfo("you are controling " + str(len(id)) + " servos at control mode : " +
                   str(mode) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
-    # time.sleep(0.5)
+
+
+def callback_encoder_reset(reset):
+    global SERVO_ID
+
+    reset_flag = False
+    reset_flag = reset.data
+    if reset_flag == True:
+        for i in range(len(SERVO_ID)):
+            Drive.reset_encoder_total_count(SERVO_ID[i])
+
+    rospy.loginfo("completed encoder count reset")
 
 
 def enfree_servo_after_node_ends(signal, frame):
@@ -237,5 +248,6 @@ if __name__ == '__main__':
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
                      callback_servo_command, queue_size=1)
+    rospy.Subscriber('encoder_reset_flag', Int8, callback_encoder_reset, queue_size=1)
 
     rospy.spin()
