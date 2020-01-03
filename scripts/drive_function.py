@@ -347,9 +347,9 @@ def control_servo_by_Torque_multicast(args):
 
 def control_servo_position_by_Torque(ID, target_position):
     global accumulated_position_error
-    Kp = 0.3
-    Kd = 0.02
-    Ki = 0.003
+    Kp = 0.6
+    Kd = 0.03
+    Ki = 0.0003
     # print(ID)
     current_position = get_servo_Position(ID)
     current_velocity = get_servo_Velocity(ID)
