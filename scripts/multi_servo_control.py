@@ -6,7 +6,7 @@ import serial
 import time
 import signal
 import sys
-from std_msgs.msg import Int16, Boolean
+from std_msgs.msg import Int16, Bool
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import drive_function as Drive
@@ -248,6 +248,6 @@ if __name__ == '__main__':
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
                      callback_servo_command, queue_size=1)
-    rospy.Subscriber('encoder_reset_flag', Int8, callback_encoder_reset, queue_size=1)
+    rospy.Subscriber('encoder_reset_flag', Bool, callback_encoder_reset, queue_size=1)
 
     rospy.spin()
