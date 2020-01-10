@@ -6,14 +6,15 @@ import serial
 import time
 import signal
 import sys
-from std_msgs.msg import Int16
+from std_msgs.msg import Int16, Bool
 from kondo_b3mservo_rosdriver.msg import Multi_servo_command
 from kondo_b3mservo_rosdriver.msg import Multi_servo_info
 import drive_function as Drive
 
 # global parameters
 SERVO_ID = []  # servo IDs which you are controlling
-CONTROL_MODE = []  # servo control mode : position, velocity, torque
+control_mode = []  # servo control mode : position, velocity, torque
+control_mode_prev = []  # servo control mode configured previously (introduced to detect chenge of control mode)
 
 # parameters for monitoring battery voltage[mV]
 battery_voltage = []
@@ -31,11 +32,14 @@ time.sleep(0.1)
 
 # function that is called at initiation of this process, to configure the system and initialize servos
 def initial_process():
-    global SERVO_ID, CONTROL_MODE
+    global SERVO_ID, control_mode, control_mode_prev
 
     # get system configuration as ROS_params
-    SERVO_ID = rospy.get_param('~servo_id')  # IDs of servos those are connected, configured manually as an array
-    CONTROL_MODE = rospy.get_param('~control_mode')  # control modes of each servos, configured manually as an array
+    SERVO_ID = rospy.get_param('~param_servo_id')  # IDs of servos those are connected, configured manually as an array
+
+    # control modes of each servos, configured manually as an array
+    control_mode = rospy.get_param('~param_control_mode')
+    control_mode_prev = control_mode
 
     # get the number of servos that are connected, and publish it as ROS message, to inform other node
     the_number_of_servo = len(SERVO_ID)
@@ -45,51 +49,72 @@ def initial_process():
     # to avoid alerting multiple times, introduce check flag.
     parameter_check_flag = False
     for i in range(len(SERVO_ID)):
-        if CONTROL_MODE[i] != 0 and CONTROL_MODE[i] != 4 and CONTROL_MODE[i] != 8 and CONTROL_MODE[i] != 16:
+        if control_mode[i] != 0 and control_mode[i] != 4 and control_mode[i] != 8 and control_mode[i] != 16:
             if parameter_check_flag == False:
                 rospy.logfatal(
-                    "there're something wrong in your ros_param : control_mode. They must be 0, 4, 8, or 16, for position, velocity, torque, and position_by_torque")
+                    "you should set ros_param : param_control_mode. They must be 0, 4, 8, or 16, for position, velocity, torque, and position_by_torque. otherwise, set them via ROS message, /multi_servo_command/control_mode")
                 parameter_check_flag = True
 
     # publish information of servos under control.
-    rospy.loginfo("you are controlling a servo whose ID is : " + str(SERVO_ID) +
-                  " at control mode : " + str(CONTROL_MODE) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
+    rospy.loginfo("you are controlling servos whose ID is : " + str(SERVO_ID))
 
     # initialize all servos
     initialize_servo()
 
+    # wait for a while, and publish current state
+    time.sleep(0.1)
+    publish_servo_info()
+
 
 def callback_servo_command(multi_servo_command):
-    global SERVO_ID, CONTROL_MODE, servo_reset_flag, servo_drive_flag
+    global SERVO_ID, control_mode, control_mode_prev
+    global servo_reset_flag, servo_drive_flag
 
     # prepare parameters as array for targets of control.
     # each array should includes target values equivalent to tha total number of servos.
+    control_mode_command = [] * len(SERVO_ID)
     target_position = [] * len(SERVO_ID)
     target_velocity = [] * len(SERVO_ID)
     target_torque = [] * len(SERVO_ID)
     target_position_by_torque = [] * len(SERVO_ID)
 
-    # drive servos only when the flag is active
-    if servo_drive_flag == True:
-        # get servo command from ROS message
-        target_position = multi_servo_command.target_position
-        target_velocity = multi_servo_command.target_velocity
-        target_torque = multi_servo_command.target_torque
-        target_position_by_torque = multi_servo_command.target_position_by_torque
+    # get servo command from ROS message
+    control_mode_command = multi_servo_command.control_mode
+    target_position = multi_servo_command.target_position
+    target_velocity = multi_servo_command.target_velocity
+    target_torque = multi_servo_command.target_torque
+    target_position_by_torque = multi_servo_command.target_position_by_torque
 
+    # convert parameters to prepare for refresh their contents
+    control_mode = list(control_mode)
+    control_mode_prev = list(control_mode_prev)
+
+    # if there are command for control_mode, replace control mode parameters by this
+    if len(control_mode_command) != 0:
+        control_mode = list(control_mode_command)
+        # print(control_mode, control_mode_prev, SERVO_ID)
+
+    # change control mode if they are changed
+    if control_mode != control_mode_prev:
+        change_control_mode(SERVO_ID, control_mode)
+        control_mode_prev = control_mode
+        # print(control_mode_prev, control_mode)
+
+    # drive servos only when the flag is active
+    elif servo_drive_flag == True:
         # drive each servos
         for i in range(len(SERVO_ID)):
-            if CONTROL_MODE[i] == 0:
+            if control_mode[i] == 0:
                 Drive.control_servo_by_position_without_time(SERVO_ID[i], target_position[i])
-            elif CONTROL_MODE[i] == 4:
+            elif control_mode[i] == 4:
                 Drive.control_servo_by_Velocity(SERVO_ID[i], target_velocity[i])
-            elif CONTROL_MODE[i] == 8:
+            elif control_mode[i] == 8:
                 Drive.control_servo_by_Torque(SERVO_ID[i], target_torque[i])
-            elif CONTROL_MODE[i] == 16:
+            elif control_mode[i] == 16:
                 Drive.control_servo_position_by_Torque(SERVO_ID[i], target_position_by_torque[i])
 
-        # publish information of servos as ROS message
-        publish_servo_info()
+    # publish information of servos as ROS message
+    publish_servo_info()
 
     # if flag for resetting servos is active
     if servo_reset_flag == True:
@@ -161,8 +186,7 @@ def publish_servo_info():
 
 # initializing servo process
 def initialize_servo():
-    global SERVO_ID, CONTROL_MODE, battery_voltage
-    local_control_mode = []  # parameters to indicates control modes for each servos
+    global SERVO_ID, control_mode, battery_voltage
 
     for i in range(len(SERVO_ID)):
         # reset servo before setting its control mode
@@ -170,18 +194,36 @@ def initialize_servo():
         Drive.enFreeServo(SERVO_ID[i])
         Drive.reset_encoder_total_count(SERVO_ID[i])
 
-        # set servo control mode : position, velocity, torque, or position_by_torque
-        local_control_mode.append(CONTROL_MODE[i])  # transcript control mode from it's global parameter to local
-        local_control_mode = list(local_control_mode)  # convert local parameter into "list" before modify them
-
-        # if control mode indicates "16", it means servo must be in control mode : position_by_torque.
-        # then, servo itself should be controlled based on torque.
-        if local_control_mode[i] == 16:
-            local_control_mode[i] = 8
-        Drive.change_servocontrol_mode(SERVO_ID[i], local_control_mode[i])
-
         # prepare global parameter for battery voltage
         battery_voltage.append(0)
+
+    change_control_mode(SERVO_ID, control_mode)
+
+
+def change_control_mode(id, mode):
+    local_mode = mode  # parameters to indicates control modes for each servos
+    local_mode = list(local_mode)
+
+    # if control mode indicates "16", it means servo must be in control mode : position_by_torque.
+    # then, servo itself should be controlled based on torque.
+    for i in range(len(id)):
+        if mode[i] == 16:
+            local_mode[i] = 8
+        Drive.change_servocontrol_mode(id[i], local_mode[i])
+    rospy.loginfo("you are controling " + str(len(id)) + " servos at control mode : " +
+                  str(mode) + " where 0:positon, 4:velocity, 8:torque, 16:position by torque")
+
+
+def callback_encoder_reset(reset):
+    global SERVO_ID
+
+    reset_flag = False
+    reset_flag = reset.data
+    if reset_flag == True:
+        for i in range(len(SERVO_ID)):
+            Drive.reset_encoder_total_count(SERVO_ID[i])
+
+    rospy.loginfo("completed encoder count reset")
 
 
 def enfree_servo_after_node_ends(signal, frame):
@@ -206,5 +248,6 @@ if __name__ == '__main__':
 
     rospy.Subscriber('multi_servo_command', Multi_servo_command,
                      callback_servo_command, queue_size=1)
+    rospy.Subscriber('encoder_reset_flag', Bool, callback_encoder_reset, queue_size=1)
 
     rospy.spin()
