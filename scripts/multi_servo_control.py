@@ -78,6 +78,9 @@ def callback_servo_command(multi_servo_command):
     target_torque = [] * len(SERVO_ID)
     target_position_by_torque = [] * len(SERVO_ID)
 
+    # default gain parameter for torque control with position target/feedback
+    gain = [0.6] * len(SERVO_ID)
+
     # get servo command from ROS message
     control_mode_command = multi_servo_command.control_mode
     target_position = multi_servo_command.target_position
@@ -85,6 +88,11 @@ def callback_servo_command(multi_servo_command):
     target_torque = multi_servo_command.target_torque
     target_position_by_torque = multi_servo_command.target_position_by_torque
     gain_target_position_by_torque = multi_servo_command.gain_target_position_by_torque
+
+    # if there're commands for gain_target_position_by_torque, replace it for default one.
+    if len(gain_target_position_by_torque) > 0:
+        for i in range(len(SERVO_ID)):
+            gain[i] = gain_target_position_by_torque[i]
 
     # convert parameters to prepare for refresh their contents
     control_mode = list(control_mode)
@@ -105,14 +113,14 @@ def callback_servo_command(multi_servo_command):
     elif servo_drive_flag == True:
         # drive each servos
         for i in range(len(SERVO_ID)):
-            if control_mode[i] == 0:
+            if control_mode[i] == 0:  # position control
                 Drive.control_servo_by_position_without_time(SERVO_ID[i], target_position[i])
-            elif control_mode[i] == 4:
+            elif control_mode[i] == 4:  # velocity control
                 Drive.control_servo_by_Velocity(SERVO_ID[i], target_velocity[i])
-            elif control_mode[i] == 8:
+            elif control_mode[i] == 8:  # torque control
                 Drive.control_servo_by_Torque(SERVO_ID[i], target_torque[i])
-            elif control_mode[i] == 16:
-                Drive.control_servo_position_by_Torque(SERVO_ID[i], target_position_by_torque[i])
+            elif control_mode[i] == 16:  # torque control with position target/feedback
+                Drive.control_servo_position_by_Torque_wGain(SERVO_ID[i], target_position_by_torque[i], gain[i])
 
     # publish information of servos as ROS message
     publish_servo_info()
