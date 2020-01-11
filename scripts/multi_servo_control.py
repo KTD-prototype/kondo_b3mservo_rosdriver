@@ -84,6 +84,7 @@ def callback_servo_command(multi_servo_command):
     target_velocity = multi_servo_command.target_velocity
     target_torque = multi_servo_command.target_torque
     target_position_by_torque = multi_servo_command.target_position_by_torque
+    gain_target_position_by_torque = multi_servo_command.gain_target_position_by_torque
 
     # convert parameters to prepare for refresh their contents
     control_mode = list(control_mode)

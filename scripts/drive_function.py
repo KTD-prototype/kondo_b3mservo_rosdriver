@@ -414,7 +414,7 @@ def control_servo_position_by_Torque_wGain(ID, target_position, gain):
 
     # gains for PID control
     Kp = gain
-    Kd = gain / 50
+    Kd = gain / 20
     Ki = 0.0003
 
     # get current survo information
