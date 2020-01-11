@@ -309,39 +309,64 @@ def control_servo_by_Torque(ID, Torque_mNm):
     #       + " to Torque " + str(Torque_mNm) + "[mNm]")
 
 
+# function to control multiple servos under torque control mode
+# arguments will a single list like [ID1, ID2, ... , Target Torque 1, Target Torque 2, ...]
 def control_servo_by_Torque_multicast(args):
-    # now = time.time()
-    length = len(args) / 2
+    # get a half of the arguments' length
+    length = len(args) / 2  # it indicates the number of servos under control
+
+    # prepare empty list to contain ID list and command list
     id = []
     torque_command = []
+
+    # prepare parameters for sum of ID and command
     id_sum = 0
     torque_command_sum = 0
+
+    # get IDs and commands from the argument
     for i in range(length):
-        id.append(args[i])
+        id.append(args[i])  # get servo IDs from 1st half of the arguments and contain to the list
+        # get servo commands from 2nd half of the arguments and contain to the list
         torque_command.append(args[i + length])
+
+        # exception processing to drive servo under negative torque command
         if torque_command[i] < 0:
             torque_command[i] = 65536 + torque_command[i]
+
+        # calculate sum of IDs and commands for serial communication
         id_sum = id_sum + id[i]
         torque_command_sum = torque_command_sum + \
             (torque_command[i] & 0xff) + (torque_command[i] >> 8)
 
-    command_length = (3 + 3 * length + 3) & 0b11111111
+    # calculate command length (bytes) :
+    command_length = (3 + 3 * length + 3) & 0b11111111  # lower 8 bit
+    # calculate command sum :
     SUM = (command_length + 0x04 + 0x00 + id_sum +
-           torque_command_sum + 0x3c + length) & 0b11111111
+           torque_command_sum + 0x3c + length) & 0b11111111  # lower 8 bit
 
+    # prepare empty list to contain command to send via serial communication
     control_servo_by_Torque_multicast_command = []
+
+    # append first 3 bytes of command to be sent (command length, WRITE command, OPTION)
     control_servo_by_Torque_multicast_command += [
         chr(command_length), chr(0x04), chr(0x00)]
+
+    # append each servo ID and torque command (ID, command_lower8bit, command_higher8bit)
     for j in range(length):
         control_servo_by_Torque_multicast_command += [
             chr(id[j]), chr(torque_command[j] & 0xff), chr(torque_command[j] >> 8)]
+
+    # append last 3 bytes of command to be sent (address to write command, the number of servos, sum of above)
     control_servo_by_Torque_multicast_command += [
         chr(0x3c), chr(length), chr(SUM)]
 
     # flush input buffer before sending something
     ser.reset_input_buffer()
+    # send the command
     ser.write(control_servo_by_Torque_multicast_command)
+    # wait until the motion will be completed (at multicast mode, there's no reply from servos)
     time.sleep(0.0015)
+    # flush the arguments
     args = []
 
 
