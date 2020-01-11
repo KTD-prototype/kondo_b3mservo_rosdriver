@@ -413,9 +413,9 @@ def control_servo_position_by_Torque_wGain(ID, target_position, gain):
     global accumulated_position_error  # error for integral control
 
     # gains for PID control
-    Kp = gain
-    Kd = gain / 20
-    Ki = 0.0003
+    Kp = gain  # use the argument directly
+    Kd = gain / 20  # approx x0.05 from the Kp
+    Ki = 0.0003  # fixed
 
     # get current survo information
     current_position = get_servo_Position(ID)
