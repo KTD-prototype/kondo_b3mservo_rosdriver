@@ -408,6 +408,44 @@ def control_servo_position_by_Torque(ID, target_position):
     control_servo_by_Torque(ID, target_torque)
 
 
+# (with adjustable gain) torque control with position target / position feedback
+def control_servo_position_by_Torque_wGain(ID, target_position, gain):
+    global accumulated_position_error  # error for integral control
+
+    # gains for PID control
+    Kp = gain
+    Kd = gain / 50
+    Ki = 0.0003
+
+    # get current survo information
+    current_position = get_servo_Position(ID)
+    current_velocity = get_servo_Velocity(ID)
+
+    # culculate accumulated error for integral control
+    accumulated_position_error = accumulated_position_error + \
+        (target_position - current_position)
+
+    # regulate MAX/min of accumulated error to avoid unintended motion of a servo
+    if accumulated_position_error > 100000:
+        accumulated_position_error = 100000
+    elif accumulated_position_error < -100000:
+        accumulated_position_error = -100000
+
+    # PID control of target torque by position feedback
+    target_torque = (target_position - current_position) * \
+        Kp - (current_velocity) * Kd + accumulated_position_error * Ki
+    target_torque = int(target_torque)
+
+    # regulate MAX/min of target torque value under acceptable value
+    if target_torque > 32000:
+        target_torque = 32000
+    elif target_torque < -32000:
+        target_torque = -32000
+
+    # Drive servo according to calculated target torque value
+    control_servo_by_Torque(ID, target_torque)
+
+
 # IDが"ID"なサーボの角度取得
 def get_servo_Position(ID):
     # アドレス0x2cから2バイト分（=角度）読みだす信号を作成し、送信
