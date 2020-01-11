@@ -345,28 +345,41 @@ def control_servo_by_Torque_multicast(args):
     args = []
 
 
+# torque control with position target / position feedback
 def control_servo_position_by_Torque(ID, target_position):
-    global accumulated_position_error
+    global accumulated_position_error  # error for integral control
+
+    # gains for PID control
     Kp = 0.6
     Kd = 0.03
     Ki = 0.0003
-    # print(ID)
+
+    # get current survo information
     current_position = get_servo_Position(ID)
     current_velocity = get_servo_Velocity(ID)
+
+    # culculate accumulated error for integral control
     accumulated_position_error = accumulated_position_error + \
         (target_position - current_position)
+
+    # regulate MAX/min of accumulated error to avoid unintended motion of a servo
     if accumulated_position_error > 100000:
         accumulated_position_error = 100000
     elif accumulated_position_error < -100000:
         accumulated_position_error = -100000
+
+    # PID control of target torque by position feedback
     target_torque = (target_position - current_position) * \
         Kp - (current_velocity) * Kd + accumulated_position_error * Ki
     target_torque = int(target_torque)
+
+    # regulate MAX/min of target torque value under acceptable value
     if target_torque > 32000:
         target_torque = 32000
     elif target_torque < -32000:
         target_torque = -32000
-    # print(target_torque)
+
+    # Drive servo according to calculated target torque value
     control_servo_by_Torque(ID, target_torque)
 
 
